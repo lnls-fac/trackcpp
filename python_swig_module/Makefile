@@ -10,7 +10,7 @@ INTERFACEOBJS = trackcpp_wrap.o \
 		        elementswrapper.o
 TRACKCPPOBJS = elements.o \
 			   kicktable.o \
-			   trackc++.o \
+			   trackcpp.o \
 			   tracking.o \
 			   passmethods.o \
 			   lattice.o \

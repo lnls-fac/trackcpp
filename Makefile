@@ -18,7 +18,7 @@ SOURCES_CPP	= 	lattice.cpp \
 			elements.cpp \
 			passmethods.cpp \
 			tracking.cpp \
-			trackc++.cpp \
+			trackcpp.cpp \
 			tests.cpp \
 			sirius_v500.cpp \
 			flat_file.cpp optics.cpp \
@@ -32,7 +32,7 @@ INC             =
 prefix = ../..
 OBJDIR = build
 
-ifeq ($(MAKECMDGOALS),trackc++-debug)
+ifeq ($(MAKECMDGOALS),trackcpp-debug)
 	CFLAGS		= $(MACHINE) $(DBG_FLAG) $(DFLAGS)
 else
 	CFLAGS		= $(MACHINE) $(OPT_FLAG) $(DFLAGS)
@@ -50,11 +50,11 @@ ifeq ($(shell hostname), uv100)
 endif
 
 
-.PHONY: all alllibs trackc++ clean cleanall
+.PHONY: all alllibs trackcpp clean cleanall
 
 #### TARGETS ####
 
-all:	alllibs trackc++
+all:	alllibs trackcpp
 
 #### GENERATES DEPENDENCY FILE ####
 $(shell $(CXX) -MM $(SOURCES_CPP) $(SOURCES_C) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
@@ -63,12 +63,12 @@ $(shell $(CXX) -MM $(SOURCES_CPP) $(SOURCES_C) | sed 's/.*\.o/$(OBJDIR)\/&/' > .
 alllibs:
 	cd tracking_mp; make all;
 
-trackc++: $(OBJDIR)/trackc++
+trackcpp: $(OBJDIR)/trackcpp
 
-trackc++-debug:	$(OBJECTS)
+trackcpp-debug:	$(OBJECTS)
 	$(CXX) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(OBJDIR)/$@
 
-$(OBJDIR)/trackc++: $(OBJECTS)
+$(OBJDIR)/trackcpp: $(OBJECTS)
 	$(CXX) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 
 $(OBJECTS): | $(OBJDIR)
@@ -77,13 +77,13 @@ $(OBJDIR):
 	mkdir $(OBJDIR)
 
 install: all | $(prefix)/bin
-	cp $(OBJDIR)/trackc++ $(prefix)/bin
+	cp $(OBJDIR)/trackcpp $(prefix)/bin
 
 $(prefix)/bin:
 	mkdir $(prefix)/bin
 
 clean:
-	rm -rf $(OBJDIR) trackc++ trackc++-debug .depend *.out *.dat *~
+	rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~
 
 cleanall: clean
 	cd tracking_mp; make clean;
