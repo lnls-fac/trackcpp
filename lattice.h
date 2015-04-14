@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 
-// TRACKC++
+// TRACKCPP
 // ========
 // Author: 		Ximenes R. Resende
 // email:  		xresende@gmail.com, ximenes.resende@lnls.br

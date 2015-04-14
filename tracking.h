@@ -1,7 +1,7 @@
 #ifndef _TRACKING_H
 #define _TRACKING_H
 
-// TRACKC++
+// TRACKCPP
 // ========
 // Author: 		Ximenes R. Resende
 // email:  		xresende@gmail.com, ximenes.resende@lnls.br

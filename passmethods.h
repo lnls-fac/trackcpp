@@ -1,7 +1,7 @@
 #ifndef _PASS_METHODS_H
 #define _PASS_METHODS_H
 
-// TRACKC++
+// TRACKCPP
 // ========
 // Author: 		Ximenes R. Resende
 // email:  		xresende@gmail.com, ximenes.resende@lnls.br

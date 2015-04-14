@@ -1,11 +1,11 @@
-// TRACKC++
+// TRACKCPP
 // ========
 // Author: 		Ximenes R. Resende
 // email:  		xresende@gmail.com, ximenes.resende@lnls.br
 // affiliation:	LNLS - Laboratorio Nacional de Luz Sincrotron
 // Date: 		Tue Dec 10 17:57:20 BRST 2013
 
-#include "trackc++.h"
+#include "trackcpp.h"
 #include <ctime>
 
 int test_printlattice(const Accelerator& accelerator) {
@@ -29,7 +29,7 @@ int test_linepass(const Accelerator& accelerator) {
 
 
 	FILE *fp;
-	fp = fopen("orbit_trackc++.txt", "w");
+	fp = fopen("orbit_trackcpp.txt", "w");
 	for(unsigned int i=1-1; i<new_pos.size(); ++i) {
 	//for(unsigned int i=2000; i<292; ++i) {
 		const Pos<>& c = new_pos[i];
@@ -154,7 +154,7 @@ int test_dynap_xy(const Accelerator& accelerator) {
 int test_cmd_track_linepass() {
 
 	std::vector<std::string> args = {
-			"trackc++",
+			"trackcpp",
 			"track_linepass",
 			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in_TRACY.txt",
 			"3e9",
@@ -178,7 +178,7 @@ int test_cmd_track_linepass() {
 int test_cmd_dynap_xy() {
 
 	std::vector<std::string> args = {
-			"trackc++",
+			"trackcpp",
 			"dynap_xy",
 			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_with_ids_in.txt",
 			"3e9",
@@ -203,7 +203,7 @@ int test_cmd_dynap_xy() {
 int test_cmd_dynap_ex() {
 
 	std::vector<std::string> args = {
-			"trackc++",
+			"trackcpp",
 			"dynap_ex",
 			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt",
 			"3e9",
@@ -228,7 +228,7 @@ int test_cmd_dynap_ex() {
 int test_cmd_dynap_ma() {
 
 	std::vector<std::string> args = {
-			"trackc++",
+			"trackcpp",
 			"dynap_ma",
 			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt",
 			"3e9",
@@ -253,8 +253,8 @@ int test_kicktable(Accelerator& accelerator) {
 
 	Kicktable t;
 	const Kicktable *ptrKicktable = nullptr;
-	add_kicktable("/home/fac_files/code/python/trackc++/pytrack/id_kicktable.txt", accelerator.kicktables, ptrKicktable);
-	add_kicktable("/home/fac_files/code/python/trackc++/pytrack/id_kicktable2.txt", accelerator.kicktables, ptrKicktable);
+	add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable.txt", accelerator.kicktables, ptrKicktable);
+	add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable2.txt", accelerator.kicktables, ptrKicktable);
 	return 0;
 
 }
@@ -327,7 +327,7 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//Accelerator accelerator;
 	//sirius_v500(accelerator.lattice);
 	//latt_read_flat_file("/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt", accelerator);
-	//Status::type status = latt_read_flat_file("/home/fac_files/code/python/trackc++/pytrack/flat_file_ff.txt", accelerator);
+	//Status::type status = latt_read_flat_file("/home/fac_files/code/python/trackcpp/pytrack/flat_file_ff.txt", accelerator);
 	//if (status != Status::success) {
 	//	return EXIT_FAILURE;
 	//}

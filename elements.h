@@ -1,7 +1,7 @@
 #ifndef _ELEMENT_H
 #define _ELEMENT_H
 
-// TRACKC++
+// TRACKCPP
 // ========
 // Author:     Ximenes R. Resende
 // email:      xresende@gmail.com, ximenes.resende@lnls.br

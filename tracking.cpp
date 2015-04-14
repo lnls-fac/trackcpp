@@ -1,4 +1,4 @@
-#include "trackc++.h"
+#include "trackcpp.h"
 #include "auxiliary.h"
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_permutation.h>

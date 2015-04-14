@@ -1,4 +1,4 @@
-#include "trackc++.h"
+#include "trackcpp.h"
 
 
 int main(int argc, char *argv[]) {
@@ -16,6 +16,6 @@ int main(int argc, char *argv[]) {
     if (cmd == "dynap_ex") return cmd_dynap_ex(args);
     if (cmd == "dynap_ma") return cmd_dynap_ma(args);
     if (cmd == "track_linepass") return cmd_track_linepass(args);
-    std::cerr << "trackc++: invalid command!" << std::endl;
+    std::cerr << "trackcpp: invalid command!" << std::endl;
     return EXIT_FAILURE;
 }

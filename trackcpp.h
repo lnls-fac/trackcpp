@@ -1,7 +1,7 @@
 #ifndef _TRACKCPP_H
 #define _TRACKCPP_H
 
-// TRACKC++
+// TRACKCPP
 // ========
 // Author: 		Ximenes R. Resende
 // email:  		xresende@gmail.com, ximenes.resende@lnls.br

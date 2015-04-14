@@ -1,7 +1,7 @@
 #ifndef _AUXILIARY_H
 #define _AUXILIARY_H
 
-// TRACKC++
+// TRACKCPP
 // ========
 // Author: 		Ximenes R. Resende
 // email:  		xresende@gmail.com, ximenes.resende@lnls.br
@@ -76,7 +76,7 @@ const std::vector<std::string> string_error_messages = {
         "flat_file_error"
 };
 
-const std::string string_version = "TRACKC++ version(" + std::string(__DATE__) + " " + std::string(__TIME__) + ")";
+const std::string string_version = "TRACKCPP version(" + std::string(__DATE__) + " " + std::string(__TIME__) + ")";
 
 struct Plane {
 	enum type {
