@@ -321,6 +321,44 @@ int test_simple_quadrupole() {
 
 }
 
+int test_linepass2() {
+	Accelerator accelerator;
+	sirius_v500(accelerator.lattice);
+	accelerator.energy = 3e9; // [ev]
+	accelerator.harmonic_number = 864;
+	accelerator.radiation_on = false;
+	accelerator.cavity_on = false;
+	accelerator.vchamber_on = false;
+
+	Pos<double> orig_pos;
+	std::vector<Pos<double>> pos;
+	unsigned int element_offset = 0;
+	Plane::type lost_plane;
+	bool trajectory = true;
+
+	orig_pos.rx = 0.0001;
+	orig_pos.px = 0.0001;
+
+	Status::type status = track_linepass (accelerator,
+			orig_pos,              // initial electron coordinates
+			pos,     // vector with electron coordinates from tracking at every element.
+			element_offset,  // index of starting element for tracking
+			lost_plane,       // return plane in which particle was lost, if the case.
+			trajectory);
+
+			for(unsigned int i=0; i<10; ++i) {
+				std::cout << std::endl;
+				fprintf(stdout, "rx: %+.16f\n", pos[i].rx);
+				fprintf(stdout, "px: %+.16f\n", pos[i].px);
+				fprintf(stdout, "ry: %+.16f\n", pos[i].ry);
+				fprintf(stdout, "py: %+.16f\n", pos[i].py);
+				fprintf(stdout, "de: %+.16f\n", pos[i].de);
+				fprintf(stdout, "dl: %+.16f\n", pos[i].dl);
+			}
+
+
+}
+
 int cmd_tests(const std::vector<std::string>& args) {
 
 
@@ -363,8 +401,9 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_cmd_dynap_ma();
 	//test_cmd_track_linepass();
 	//test_kicktable(accelerator);
-	test_simple_drift();
-	test_simple_quadrupole();
+	//test_simple_drift();
+	//test_simple_quadrupole();
+	test_linepass2();
 
 	return 0;
 

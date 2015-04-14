@@ -20,6 +20,7 @@ public:
 	T de;
 	T dl;
 	typedef T type;
+	Pos(const Pos<T>& v_);
 	Pos(const T& rx_, const T& px_, const T& ry_, const T& py_, const T& de_, const T& dl_);
 	Pos(const T& v_ = 0);
 	Pos& operator+=(const Pos<T>& v) {
@@ -36,6 +37,15 @@ Pos<T>::Pos(const T& rx_, const T& px_, const T& ry_, const T& py_, const T& de_
 rx(rx_), px(px_),
 ry(ry_), py(py_),
 de(de_), dl(dl_)
+{
+
+}
+
+template <typename T>
+Pos<T>::Pos(const Pos<T>& v_):
+rx(v_.rx), px(v_.px),
+ry(v_.ry), py(v_.py),
+de(v_.de), dl(v_.dl)
 {
 
 }

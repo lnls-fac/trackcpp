@@ -95,6 +95,7 @@ Status::type track_linepass (
 	const Pos<T> nan_pos(nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
 	int nr_elements  = line.size();
 
+	pos.clear();
 	if (trajectory) {
 		for(int i=0; i<nr_elements; ++i) {
 			pos.push_back(nan_pos);
@@ -106,9 +107,13 @@ Status::type track_linepass (
 		const Element& element = line[element_offset];  // syntactic-sugar for read-only access to element object parameters
 
 		// stores trajectory at entrance of each element
-		if (trajectory) pos[i] = orig_pos;
+		if (trajectory) {
+			pos[i] = orig_pos;
+		}
 
 		Status::type status = track_elementpass (element, orig_pos, accelerator);
+		//std::cout << element_offset << " " << i << std::endl;
+
 		//if (status != Status::success) return status;
 
 		// checks if particle is lost
@@ -137,6 +142,8 @@ Status::type track_linepass (
 	}
 
 	lost_plane = Plane::no_plane;
+	//std::cout << "ok" << std::endl;
+
 
 	// stores final particle position at the end of the line
 	pos.push_back(orig_pos);
