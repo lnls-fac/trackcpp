@@ -5,7 +5,7 @@
 # affiliation:		LNLS - Laboratorio Nacional de Luz Sincrotron
 # Date: 		Tue Dec 10 17:57:20 BRST 2013
 
-#### READS LIB V ERSION ####
+#### READS LIB VERSION ####
 
 FILE=VERSION
 VERSION=$(shell cat ${FILE})
