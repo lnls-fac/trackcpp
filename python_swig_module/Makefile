@@ -37,7 +37,7 @@ trackcpp_wrap.cxx: trackcpp.i
 	swig -c++ -python trackcpp.i
 
 install: all | $(prefix)/lib/python/trackcpp
-	cp _trackcpp.so trackcpp.py __init__.py $(prefix)/lib/python/trackcpp
+	cp _trackcpp.so trackcpp.py __init__.py VERSION $(prefix)/lib/python/trackcpp
 
 $(prefix)/lib/python/trackcpp:
 	mkdir -p $(prefix)/lib/python/trackcpp
