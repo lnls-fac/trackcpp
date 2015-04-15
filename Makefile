@@ -5,15 +5,19 @@
 # affiliation:		LNLS - Laboratorio Nacional de Luz Sincrotron
 # Date: 		Tue Dec 10 17:57:20 BRST 2013
 
+#### READS LIB V ERSION ####
+
+FILE=VERSION
+VERSION=$(shell cat ${FILE})
 
 #### COMPILATION OPTIONS ####
-CC		= gcc
-CXX		= g++
+CC		    = gcc
+CXX		    = g++
 MACHINE		= -m64
 OPT_FLAG	= -O3 -std=c++11
-DBG_FLAG	= -O0 -g3 -std=c++11 
-DFLAGS          =
-SOURCES_C       = 
+DBG_FLAG	= -O0 -g3 -std=c++11
+DFLAGS      = -DVERSION=$(VERSION)
+SOURCES_C   =
 SOURCES_CPP	= 	lattice.cpp \
 			elements.cpp \
 			passmethods.cpp \
@@ -28,7 +32,7 @@ SOURCES_CPP	= 	lattice.cpp \
 			exec.cpp
 
 LIBS            = tracking_mp/build/tracking_mp.a -lpthread -lgsl -lgslcblas
-INC             = 
+INC             =
 prefix = ../..
 OBJDIR = build
 
@@ -39,7 +43,7 @@ else
 endif
 
 OBJECTS		= $(addprefix $(OBJDIR)/, $(SOURCES_CPP:.cpp=.o) $(SOURCES_C:.c=.o))
-LDFLAGS		= $(MACHINE) 
+LDFLAGS		= $(MACHINE)
 
 #### DERIVED CONDITIONALS AND VARIABLES ####
 ifeq ($(shell hostname), uv100)

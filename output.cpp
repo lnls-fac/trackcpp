@@ -2,6 +2,12 @@
 #include <vector>
 #include <cstdlib>
 
+void print_header (FILE* fp) {
+	fprintf(fp, "# %s\n", string_version.c_str());
+	fprintf(fp, "# Accelerator Physics Group - LNLS\n");
+	fprintf(fp, "# Campinas BRAZIL\n");
+	fprintf(fp, "# contact: xresende@gmail.com\n");
+}
 
 Status::type print_closed_orbit(const Accelerator& accelerator, const std::vector<Pos<double>>& cod, const std::string& filename) {
 
@@ -126,11 +132,4 @@ Status::type print_dynapgrid(const Accelerator& accelerator, const std::vector<D
 	}
 	fclose(fp);
 	return Status::success;
-}
-
-void print_header (FILE* fp) {
-	fprintf(fp, "# %s\n", string_version.c_str());
-	fprintf(fp, "# Accelerator Physics Group - LNLS\n");
-	fprintf(fp, "# Campinas BRAZIL\n");
-	fprintf(fp, "# contact: xresende@gmail.com\n");
 }

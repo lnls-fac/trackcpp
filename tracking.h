@@ -20,7 +20,6 @@ Status::type track_findm66     (const Accelerator& accelerator, std::vector<Pos<
 Status::type track_findorbit6  (const Accelerator& accelerator, std::vector<Pos<double> >& close_orbit);
 Pos<double>  linalg_solve      (const std::vector<Pos<double> >& M, const Pos<double>& b);
 
-
 template <typename T>
 Status::type track_elementpass (
 		     const Element& el,                 // element through which to track particle
@@ -95,7 +94,7 @@ Status::type track_linepass (
 	const Pos<T> nan_pos(nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
 	int nr_elements  = line.size();
 
-	//pos.clear();
+	//pos.clear(); other functions assume pos is not clearedin linepass!
 	if (trajectory) {
 		for(int i=0; i<nr_elements; ++i) {
 			pos.push_back(nan_pos);

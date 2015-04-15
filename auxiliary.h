@@ -76,7 +76,11 @@ const std::vector<std::string> string_error_messages = {
         "flat_file_error"
 };
 
-const std::string string_version = "TRACKCPP version(" + std::string(__DATE__) + " " + std::string(__TIME__) + ")";
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#define VER_STR STR(VERSION)
+
+const std::string string_version = "TRACKCPP version " + std::string(VER_STR) + " (" + std::string(__DATE__) + " " + std::string(__TIME__) + ")";
 
 struct Plane {
 	enum type {
