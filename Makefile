@@ -2,7 +2,7 @@
 # ========
 # Author: 		Ximenes R. Resende
 # email:  		xresende@gmail.com, ximenes.resende@lnls.br
-# affiliation:		LNLS - Laboratorio Nacional de Luz Sincrotron
+# affiliation:	LNLS - Laboratorio Nacional de Luz Sincrotron
 # Date: 		Tue Dec 10 17:57:20 BRST 2013
 
 #### READS LIB VERSION ####
@@ -30,6 +30,7 @@ SOURCES_CPP	= 	lattice.cpp \
 			output.cpp \
 			kicktable.cpp \
 			exec.cpp
+AUXFILES  = VERSION
 
 LIBS            = tracking_mp/build/tracking_mp.a -lpthread -lgsl -lgslcblas
 INC             =
@@ -94,6 +95,13 @@ cleanall: clean
 
 
 #### RULES ####
+
+*.cpp: VERSION
+	touch *.cpp
+*.cc: VERSION
+		touch *.cc
+*.c: VERSION
+		touch *.c
 
 $(OBJDIR)/%.o: %.c
 	$(CC) -c $(CFLAGS) $(INC) $< -o $@
