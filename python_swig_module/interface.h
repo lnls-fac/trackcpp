@@ -2,10 +2,10 @@
 #define INTERFACE_H
 
 #include <vector>
-#include "accelerator.h"
-#include "auxiliary.h"
-#include "tracking.h"
-#include "pos.h"
+#include "../accelerator.h"
+#include "../auxiliary.h"
+#include "../tracking.h"
+#include "../pos.h"
 
 struct LinePassArgs {
     unsigned int element_offset;
