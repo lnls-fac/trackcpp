@@ -362,9 +362,14 @@ int test_linepass2() {
 int cmd_tests(const std::vector<std::string>& args) {
 
 
-	//Accelerator accelerator;
+	Accelerator accelerator;
+	accelerator.energy = 0.0;
+	accelerator.harmonic_number = 0;
+	accelerator.cavity_on = false;
+	accelerator.radiation_on = false;
+	accelerator.vchamber_on = false;
 	//sirius_v500(accelerator.lattice);
-	//latt_read_flat_file("/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt", accelerator);
+	//latt_read_flat_file("/home/afonso/flatfile.txt", accelerator);
 	//Status::type status = latt_read_flat_file("/home/fac_files/code/python/trackcpp/pytrack/flat_file_ff.txt", accelerator);
 	//if (status != Status::success) {
 	//	return EXIT_FAILURE;
@@ -403,7 +408,15 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_kicktable(accelerator);
 	//test_simple_drift();
 	//test_simple_quadrupole();
-	test_linepass2();
+	//test_linepass2();
+
+	latt_read_flat_file("/home/afonso/flatfile.txt", accelerator);
+	std::cout << accelerator.lattice[329].fam_name << '\n';
+	std::cout << accelerator.energy << '\n';
+	std::cout << accelerator.harmonic_number << '\n';
+	std::cout << accelerator.cavity_on << '\n';
+	std::cout << accelerator.radiation_on << '\n';
+	std::cout << accelerator.vchamber_on << '\n';
 
 	return 0;
 

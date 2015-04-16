@@ -5,6 +5,8 @@
 #include <string>
 #include <sstream>
 
+static bool read_boolean_string(std::istringstream& ss);
+
 Status::type read_flat_file(const std::string& filename, Accelerator& accelerator) {
 	return read_flat_file_trackcpp(filename, accelerator);
 }
@@ -28,6 +30,15 @@ Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& a
 		std::string cmd;
 		ss >> cmd;
 		if (cmd[0] == '#') continue;
+		if (cmd[0] == '%') {
+			ss >> cmd;
+			if (cmd.compare("energy") == 0) { ss >> accelerator.energy; continue; }
+			if (cmd.compare("harmonic_number") == 0) { ss >> accelerator.harmonic_number; continue; }
+			if (cmd.compare("cavity_on") == 0) { accelerator.cavity_on = read_boolean_string(ss); continue; }
+			if (cmd.compare("radiation_on") == 0) { accelerator.radiation_on = read_boolean_string(ss); continue; }
+			if (cmd.compare("vchamber_on") == 0) { accelerator.vchamber_on = read_boolean_string(ss); continue; }
+			continue;
+		}
 		if (cmd.compare("fam_name") == 0) {
 			if (e.fam_name.compare("") != 0) {
 				accelerator.lattice.push_back(e);
@@ -127,117 +138,6 @@ Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& a
 	if (e.fam_name.compare("") != 0) {
 		accelerator.lattice.push_back(e);
 	}
-	return Status::success;
-
-}
-
-Status::type read_flat_file_trackcpp2(const std::string& filename, Accelerator& accelerator) {
-
-	std::ifstream fp(filename);
-	if (fp.fail()) return Status::file_not_found;
-
-	accelerator.lattice.clear();
-
-	Element e;
-	while (not fp.eof()) {
-		std::string cmd, line;
-		unsigned int index = 0;
-		fp >> cmd;
-		//std::cout << cmd << std::endl;
-		if (cmd[0] == '#') {
-			std::getline(fp, line);
-			continue;
-		}
-		if (cmd.compare("fam_name") == 0) {
-			if (e.fam_name.compare("") != 0) {
-				accelerator.lattice.push_back(e);
-				e = Element();
-			} 
-			fp >> e.fam_name;
-			continue;
-		}
-		if (cmd.compare("index")       == 0) { fp >> index;       continue; }
-		if (cmd.compare("length")      == 0) { fp >> e.length;    continue; }
-		if (cmd.compare("hmax")        == 0) { fp >> e.hmax;      continue; }
-		if (cmd.compare("vmax")        == 0) { fp >> e.vmax;      continue; }
-		if (cmd.compare("hkick")       == 0) { fp >> e.hkick;     continue; }
-		if (cmd.compare("vkick")       == 0) { fp >> e.vkick;     continue; }
-		if (cmd.compare("nr_steps")    == 0) { fp >> e.nr_steps;  continue; }
-		if (cmd.compare("angle")       == 0) { fp >> e.angle;     continue; }
-		if (cmd.compare("gap")         == 0) { fp >> e.gap;       continue; }
-		if (cmd.compare("fint_in")     == 0) { fp >> e.fint_in;   continue; }
-		if (cmd.compare("fint_out")    == 0) { fp >> e.fint_out;  continue; }
-		if (cmd.compare("angle_in")    == 0) { fp >> e.angle_in;  continue; }
-		if (cmd.compare("angle_out")   == 0) { fp >> e.angle_out; continue; }
-		if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) fp >> e.t_in[i];  continue; }
-		if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) fp >> e.t_out[i]; continue; }
-		if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) fp >> e.r_in[0*6+i]; continue; }
-		if (cmd.compare("px|r_in")   == 0) { for(auto i=0; i<6; ++i) fp >> e.r_in[1*6+i]; continue; }
-		if (cmd.compare("ry|r_in")   == 0) { for(auto i=0; i<6; ++i) fp >> e.r_in[2*6+i]; continue; }
-		if (cmd.compare("py|r_in")   == 0) { for(auto i=0; i<6; ++i) fp >> e.r_in[3*6+i]; continue; }
-		if (cmd.compare("de|r_in")   == 0) { for(auto i=0; i<6; ++i) fp >> e.r_in[4*6+i]; continue; }
-		if (cmd.compare("dl|r_in")   == 0) { for(auto i=0; i<6; ++i) fp >> e.r_in[5*6+i]; continue; }
-		if (cmd.compare("rx|r_out")  == 0) { for(auto i=0; i<6; ++i) fp >> e.r_out[0*6+i]; continue; }
-		if (cmd.compare("px|r_out")  == 0) { for(auto i=0; i<6; ++i) fp >> e.r_out[1*6+i]; continue; }
-		if (cmd.compare("ry|r_out")  == 0) { for(auto i=0; i<6; ++i) fp >> e.r_out[2*6+i]; continue; }
-		if (cmd.compare("py|r_out")  == 0) { for(auto i=0; i<6; ++i) fp >> e.r_out[3*6+i]; continue; }
-		if (cmd.compare("de|r_out")  == 0) { for(auto i=0; i<6; ++i) fp >> e.r_out[4*6+i]; continue; }
-		if (cmd.compare("dl|r_out")  == 0) { for(auto i=0; i<6; ++i) fp >> e.r_out[5*6+i]; continue; }
-		if (cmd.compare("pass_method") == 0) {
-			std::string pass_method; fp >> pass_method;
-			bool found_pm = false;
-			for(unsigned int i = 0; i<((unsigned int)PassMethod::pm_nr_pms); ++i) {
-				if (pass_method.compare(pm_dict[i]) == 0) {
-					e.pass_method = i;
-					found_pm = true;
-					break;
-				}
-			}
-			if (found_pm) continue;
-			return Status::passmethod_not_defined;
-		}
-		if (cmd.compare("polynom_a") == 0) {
-			std::getline(fp, line);
-			std::istringstream ss(line);
-			std::vector<unsigned int> order;
-			std::vector<double> multipole;
-			unsigned int size = 0;
-			while (not ss.eof()) {
-				unsigned int o; double m; ss >> o >> m;
-				if (ss.eof()) break;
-				order.push_back(o); multipole.push_back(m);
-				if (o+1 > size) size = o+1;
-			}
-			if (size > 0) {
-				e.polynom_a.resize(size, 0);
-				for(unsigned int i=0; i<order.size(); ++i) e.polynom_a[order[i]] = multipole[i];
-			}
-			synchronize_polynomials(e);
-			continue;
-		}
-		if (cmd.compare("polynom_b") == 0) {
-			std::getline(fp, line);
-			std::istringstream ss(line);
-			std::vector<unsigned int> order;
-			std::vector<double> multipole;
-			unsigned int size = 0;
-			while (not ss.eof()) {
-				unsigned int o; double m; ss >> o >> m;
-				if (ss.eof()) break;
-				order.push_back(o); multipole.push_back(m);
-				if (o+1 > size) size = o+1;
-			}
-			if (size > 0) {
-				e.polynom_b.resize(size, 0);
-				for(unsigned int i=0; i<order.size(); ++i) e.polynom_b[order[i]] = multipole[i];
-			}
-			synchronize_polynomials(e);
-			continue;
-		}
-	}
-	accelerator.lattice.push_back(e);
-	fp.close();
-	
 	return Status::success;
 
 }
@@ -367,4 +267,13 @@ static void read_polynomials(std::ifstream& fp, Element& e) {
 		}
 		fp >> e.polynom_b[order-1] >> e.polynom_a[order-1];
 	}
+}
+
+static bool read_boolean_string(std::istringstream& ss) {
+	std::string s;
+	ss >> s;
+	if (s.compare("true") == 0)
+		return true;
+	else
+		return false;
 }
