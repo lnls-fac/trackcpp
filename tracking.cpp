@@ -88,7 +88,8 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
 
 Status::type track_findorbit6(
     const Accelerator& accelerator,
-    std::vector<Pos<double> >& cod) {
+    std::vector<Pos<double> >& closed_orbit,
+    const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
 
@@ -104,7 +105,8 @@ Status::type track_findorbit6(
   double fixedpoint = light_speed*((1.0*accelerator.harmonic_number)/frf - T0);
 
   // temporary vectors and matrices
-  std::vector<Pos<double> > co(7,0);
+  // std::vector<Pos<double> > co(7,0); // no initial guess
+  std::vector<Pos<double> > co(7,fixed_point_guess);
   std::vector<Pos<double> > co2(7,0);
   std::vector<Pos<double> > D(7,0);
   std::vector<Pos<double> > M(6,0);
@@ -171,11 +173,11 @@ Status::type track_findorbit6(
   }
 
   // propagates fixed point throught the_ring
-  cod.clear();
+  closed_orbit.clear();
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, co[6], cod, element_offset, lost_plane, true);
-  cod.pop_back(); // eliminates last element which is the same as first
+  track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
+  closed_orbit.pop_back(); // eliminates last element which is the same as first
   return Status::success;
 
 }
