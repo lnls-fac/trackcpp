@@ -409,6 +409,11 @@ static void write_6d_vector(std::ofstream& fp, const std::string& label, const d
 static void write_polynom(std::ofstream& fp, const std::string& label, const std::vector<double>& p) {
 	fp << std::setw(pw) << label;
 	for (int i=0; i<p.size(); ++i)
-		fp << i+1 << ' ' << p[i] << ' ';
+		if (p[i] != 0) {
+			fp.unsetf(std::ios_base::showpos);
+			fp << i << ' ';
+			fp.setf(std::ios_base::showpos);
+			fp << p[i] << ' ';
+		}
 	fp << '\n';
 }
