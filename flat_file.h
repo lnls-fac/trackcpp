@@ -6,6 +6,7 @@
 #include "auxiliary.h"
 #include <string>
 #include <vector>
+#include <iomanip>
 
 struct FlatFileType {
 		enum type_ {
@@ -23,5 +24,6 @@ struct FlatFileType {
 Status::type read_flat_file_tracy(const std::string& filename, Accelerator& accelerator);
 Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& accelerator);
 Status::type read_flat_file(const std::string& filename, Accelerator& accelerator);
+Status::type write_flat_file(const std::string& filename, Accelerator& accelerator);
 
 #endif

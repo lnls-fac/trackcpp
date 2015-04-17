@@ -5,10 +5,91 @@
 #include <string>
 #include <sstream>
 
+static const int hw = 18; // header field width
+static const int pw = 16; // parameter field width
+static const int np = 17; // number precision
+
 static bool read_boolean_string(std::istringstream& ss);
+static std::string get_boolean_string(bool value);
+static bool has_t_vector(const double* t);
+static bool has_r_matrix(const double* r);
+static bool has_polynom(const std::vector<double>& p);
+static void write_6d_vector(std::ofstream& fp, const std::string& label, const double* t);
+static void write_polynom(std::ofstream& fp, const std::string& label, const std::vector<double>& p);
 
 Status::type read_flat_file(const std::string& filename, Accelerator& accelerator) {
 	return read_flat_file_trackcpp(filename, accelerator);
+}
+
+Status::type write_flat_file(const std::string& filename, Accelerator& accelerator) {
+
+	std::ofstream fp(filename.c_str());
+	if (fp.fail()) return Status::file_not_found;
+
+	fp.setf(std::ios_base::left | std::ios_base::scientific | std::ios_base::uppercase);
+	fp.precision(np);
+
+	fp << std::setw(hw) << "% energy" << accelerator.energy << " eV\n";
+	fp << std::setw(hw) << "% harmonic_number" << accelerator.harmonic_number << "\n";
+	fp << std::setw(hw) << "% cavity_on" << get_boolean_string(accelerator.cavity_on) << "\n";
+	fp << std::setw(hw) << "% radiation_on" << get_boolean_string(accelerator.radiation_on) << "\n";
+	fp << std::setw(hw) << "% vchamber_on" << get_boolean_string(accelerator.vchamber_on) << "\n";
+	fp << '\n';
+
+	fp.setf(std::ios_base::showpos);
+
+	for (auto i=0; i<accelerator.lattice.size(); ++i) {
+		const Element& e = accelerator.lattice[i];
+		fp.unsetf(std::ios_base::showpos);
+		fp << "### " << std::setw(4) << std::setfill('0') << std::right << i << std::setfill(' ') << std::left << " ###\n";
+		fp.setf(std::ios_base::showpos);
+		fp << std::setw(pw) << "fam_name" << e.fam_name << '\n';
+		fp << std::setw(pw) << "length" << e.length << '\n';
+		fp << std::setw(pw) << "pass_method" << pm_dict[e.pass_method] << '\n';
+		if (e.nr_steps != 1) {
+			fp.unsetf(std::ios_base::showpos);
+			fp << std::setw(pw) << "nr_steps" << e.nr_steps << '\n';
+			fp.setf(std::ios_base::showpos);
+		}
+		if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a", e.polynom_a);
+		if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b", e.polynom_b);
+		if (e.hmax != 0) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
+		if (e.vmax != 0) { fp << std::setw(pw) << "vmax" << e.vmax << '\n'; }
+		if (e.hkick != 0) { fp << std::setw(pw) << "hkick" << e.hkick << '\n'; }
+		if (e.vkick != 0) { fp << std::setw(pw) << "vkick" << e.vkick << '\n'; }
+		if (e.angle != 0) { fp << std::setw(pw) << "angle" << e.angle << '\n'; }
+		if (e.gap != 0) { fp << std::setw(pw) << "gap" << e.gap << '\n'; }
+		if (e.fint_in != 0) { fp << std::setw(pw) << "fint_in" << e.fint_in << '\n'; }
+		if (e.fint_out != 0) { fp << std::setw(pw) << "fint_out" << e.fint_out << '\n'; }
+		if (e.voltage != 0) { fp << std::setw(pw) << "voltage" << e.voltage << '\n'; }
+		if (e.frequency != 0) { fp << std::setw(pw) << "frequency" << e.frequency << '\n'; }
+		if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
+		if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
+		if (has_t_vector(e.t_in)) write_6d_vector(fp, "t_in", e.t_in);
+		if (has_t_vector(e.t_out)) write_6d_vector(fp, "t_out", e.t_out);
+		if (has_r_matrix(e.r_in)) {
+			write_6d_vector(fp, "rx|r_in", &e.r_in[6*0]);
+			write_6d_vector(fp, "px|r_in", &e.r_in[6*1]);
+			write_6d_vector(fp, "ry|r_in", &e.r_in[6*2]);
+			write_6d_vector(fp, "py|r_in", &e.r_in[6*3]);
+			write_6d_vector(fp, "de|r_in", &e.r_in[6*4]);
+			write_6d_vector(fp, "dl|r_in", &e.r_in[6*5]);
+		}
+		if (has_r_matrix(e.r_out)) {
+			write_6d_vector(fp, "rx|r_out", &e.r_out[6*0]);
+			write_6d_vector(fp, "px|r_out", &e.r_out[6*1]);
+			write_6d_vector(fp, "ry|r_out", &e.r_out[6*2]);
+			write_6d_vector(fp, "py|r_out", &e.r_out[6*3]);
+			write_6d_vector(fp, "de|r_out", &e.r_out[6*4]);
+			write_6d_vector(fp, "dl|r_out", &e.r_out[6*5]);
+		}
+
+		fp << '\n';
+	}
+
+	fp.close();
+
+	return Status::success;
 }
 
 static void synchronize_polynomials(Element& e);
@@ -276,4 +357,58 @@ static bool read_boolean_string(std::istringstream& ss) {
 		return true;
 	else
 		return false;
+}
+
+static std::string get_boolean_string(bool value) {
+	if (value)
+		return "true";
+	else
+		return "false";
+}
+
+static bool has_t_vector(const double* t) {
+	for (int i=0; i<6; ++i)
+		if (t[i] != 0)
+			return true;
+
+	return false;
+}
+
+static bool has_r_matrix(const double* r) {
+	const double id[36] = {
+		1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0, 1.0
+	};
+
+	for (int i=0; i<36; ++i)
+		if (r[i] != id[i])
+			return true;
+
+	return false;
+}
+
+static bool has_polynom(const std::vector<double>& p) {
+	for (int i=0; i<p.size(); ++i)
+		if (p[i] != 0)
+			return true;
+
+	return false;
+}
+
+static void write_6d_vector(std::ofstream& fp, const std::string& label, const double* t) {
+	fp << std::setw(pw) << label;
+	for (int i=0; i<6; ++i)
+		fp << t[i] << "  ";
+	fp << '\n';
+}
+
+static void write_polynom(std::ofstream& fp, const std::string& label, const std::vector<double>& p) {
+	fp << std::setw(pw) << label;
+	for (int i=0; i<p.size(); ++i)
+		fp << i+1 << ' ' << p[i] << ' ';
+	fp << '\n';
 }

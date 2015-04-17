@@ -410,13 +410,14 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_simple_quadrupole();
 	//test_linepass2();
 
-	latt_read_flat_file("/home/afonso/flatfile.txt", accelerator);
-	std::cout << accelerator.lattice[329].fam_name << '\n';
-	std::cout << accelerator.energy << '\n';
-	std::cout << accelerator.harmonic_number << '\n';
-	std::cout << accelerator.cavity_on << '\n';
-	std::cout << accelerator.radiation_on << '\n';
-	std::cout << accelerator.vchamber_on << '\n';
+	read_flat_file("/home/afonso/flatfile.txt", accelerator);
+	std::cout << "Energy: " << accelerator.energy << " eV" << '\n';
+	std::cout << "Harmonic number: " << accelerator.harmonic_number << '\n';
+	std::cout << "Cavity on: " << accelerator.cavity_on << '\n';
+	std::cout << "Radiation on: " << accelerator.radiation_on << '\n';
+	std::cout << "Vacuum chamber on: " << accelerator.vchamber_on << '\n';
+	accelerator.vchamber_on = false;
+	write_flat_file("/home/afonso/newflatfile.txt", accelerator);
 
 	return 0;
 
