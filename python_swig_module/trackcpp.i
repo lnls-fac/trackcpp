@@ -7,6 +7,7 @@
 #include "../accelerator.h"
 #include "../pos.h"
 #include "../tracking.h"
+#include "../flat_file.h"
 #include "interface.h"
 #include "elementswrapper.h"
 %}
@@ -44,6 +45,7 @@ double get_double_max() {
 %include "../accelerator.h"
 %include "../pos.h"
 %include "../tracking.h"
+%include "../flat_file.h"
 %include "interface.h"
 %include "elementswrapper.h"
 
