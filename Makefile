@@ -10,6 +10,8 @@
 FILE=VERSION
 VERSION=$(shell cat ${FILE})
 
+$(shell touch output.cpp) # this is so that last compilation time always goes into executable
+
 #### COMPILATION OPTIONS ####
 CC		    = gcc
 CXX		    = g++

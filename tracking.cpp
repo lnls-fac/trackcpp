@@ -115,13 +115,6 @@ Status::type track_findorbit6(
   theta.dl = fixedpoint;
   matrix6_set_identity(D, delta);
 
-  //printf("l0: %f\n", L0);
-  //printf("t0: %e\n", T0);
-  //printf("frf: %f\n", frf);
-  //printf("cavity: %i\n", accelerator.cavity_on);
-  //printf("radiation: %i\n", accelerator.radiation_on);
-  //printf("fixed: %e\n", fixedpoint);
-
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
     co = co + D;
@@ -136,31 +129,26 @@ Status::type track_findorbit6(
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false));
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", co[6].rx, co[6].px, co[6].ry, co[6].py, co[6].de, co[6].dl);
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false));
+
     if (status != Status::success) {
-      //printf("nr_iter: %i\n", nr_iter);
-      //printf("element: %i\n", element_offset);
-      //printf("plane: %i\n", lost_plane);
       return Status::findorbit_one_turn_matrix_problem;
     }
-    //print(co2);
+
     Pos<double> Rf = co2[6];
+
     M[0] = (co2[0] - Rf) / delta;
     M[1] = (co2[1] - Rf) / delta;
     M[2] = (co2[2] - Rf) / delta;
     M[3] = (co2[3] - Rf) / delta;
     M[4] = (co2[4] - Rf) / delta;
     M[5] = (co2[5] - Rf) / delta;
-    //print(M);
+
     Pos<double> b = Rf - Ri - theta;
     std::vector<Pos<double> > M_1(6,0);
     matrix6_set_identity(M_1);
     M_1 = M_1 - M;
-    dco = linalg_solve(M_1, b);
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", Rf.rx, Rf.px, Rf.ry, Rf.py, Rf.de, Rf.dl);
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", b.rx, b.px, b.ry, b.py, b.de, b.dl);
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", dco.rx, dco.px, dco.ry, dco.py, dco.de, dco.dl);
+    dco = linalg_solve6(M_1, b);
     co[6] = dco + Ri;
     co[0] = co[6]; co[1] = co[6];
     co[2] = co[6]; co[3] = co[6];
@@ -184,7 +172,6 @@ Status::type track_findorbit6(
 
 Status::type track_findorbit4(
     const Accelerator& accelerator,
-    const double& de,
     std::vector<Pos<double> >& closed_orbit,
     const Pos<double>& fixed_point_guess) {
 
@@ -202,7 +189,6 @@ Status::type track_findorbit4(
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,0.0,0.0);
   Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
-  theta.dl = fixedpoint;
   matrix6_set_identity(D, delta);
 
   int nr_iter = 0;
@@ -217,9 +203,8 @@ Status::type track_findorbit4(
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false));
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", co[6].rx, co[6].px, co[6].ry, co[6].py, co[6].de, co[6].dl);
+    //status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false));
+    //status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false));
     if (status != Status::success) {
       //printf("nr_iter: %i\n", nr_iter);
@@ -228,19 +213,19 @@ Status::type track_findorbit4(
       return Status::findorbit_one_turn_matrix_problem;
     }
     //print(co2);
-    Pos<double> Rf = co2[6];
+    Pos<double> Rf = co2[4];
     M[0] = (co2[0] - Rf) / delta;
     M[1] = (co2[1] - Rf) / delta;
     M[2] = (co2[2] - Rf) / delta;
     M[3] = (co2[3] - Rf) / delta;
-    M[4] = (co2[4] - Rf) / delta;
-    M[5] = (co2[5] - Rf) / delta;
+    //M[4] = (co2[4] - Rf) / delta;
+    //M[5] = (co2[5] - Rf) / delta;
     //print(M);
-    Pos<double> b = Rf - Ri - theta;
+    Pos<double> b = Rf - Ri;
     std::vector<Pos<double> > M_1(6,0);
     matrix6_set_identity(M_1);
     M_1 = M_1 - M;
-    dco = linalg_solve(M_1, b);
+    dco = linalg_solve4(M_1, b);
     //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", Rf.rx, Rf.px, Rf.ry, Rf.py, Rf.de, Rf.dl);
     //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", b.rx, b.px, b.ry, b.py, b.de, b.dl);
     //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", dco.rx, dco.px, dco.ry, dco.py, dco.de, dco.dl);
@@ -265,7 +250,34 @@ Status::type track_findorbit4(
 
 }
 
-Pos<double> linalg_solve(const std::vector<Pos<double> >& M, const Pos<double>& B) {
+
+Pos<double> linalg_solve4(const std::vector<Pos<double> >& M, const Pos<double>& B) {
+
+  gsl_matrix* m = gsl_matrix_alloc(4,4);
+  gsl_vector* b = gsl_vector_alloc(4);
+  gsl_vector* x = gsl_vector_alloc(4);
+  gsl_permutation* p = gsl_permutation_alloc(4);
+
+  gsl_vector_set(b,0,B.rx); gsl_vector_set(b,1,B.px);
+  gsl_vector_set(b,2,B.ry); gsl_vector_set(b,3,B.py);
+  for(unsigned int i=0; i<4; ++i) {
+    gsl_matrix_set(m,0,i,M[i].rx); gsl_matrix_set(m,1,i,M[i].px);
+    gsl_matrix_set(m,2,i,M[i].ry); gsl_matrix_set(m,3,i,M[i].py);
+  }
+
+  int s; gsl_linalg_LU_decomp(m, p, &s);
+  gsl_linalg_LU_solve(m, p, b, x);
+  Pos<double> X(gsl_vector_get(x,0),gsl_vector_get(x,1),gsl_vector_get(x,2),gsl_vector_get(x,3),0,0);
+
+  gsl_matrix_free(m);
+  gsl_vector_free(b);
+  gsl_vector_free(x);
+  gsl_permutation_free(p);
+  return X;
+}
+
+
+Pos<double> linalg_solve6(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 
   gsl_matrix* m = gsl_matrix_alloc(6,6);
   gsl_vector* b = gsl_vector_alloc(6);

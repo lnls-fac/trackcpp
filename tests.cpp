@@ -100,17 +100,46 @@ int test_ringpass(const Accelerator& accelerator) {
 
 }
 
-int test_findorbit6(const Accelerator& accelerator) {
+int test_findorbit4() {
+
+	Accelerator accelerator;
+	read_flat_file("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt", accelerator);
+	accelerator.cavity_on = false;
+	accelerator.radiation_on = false;
+	accelerator.vchamber_on = false;
+
+	accelerator.lattice[10].polynom_b[0] = 1e-3;
 
 	std::vector<Pos<double> > orbit;
-	Status::type status = track_findorbit6(accelerator, orbit);
-	if (status == Status::findorbit_not_converged) {
-		std::cerr << "findorbit not converged!" << std::endl;
+	Status::type status = track_findorbit4(accelerator, orbit);
+	if (status != Status::success) {
+		std::cerr << string_error_messages[status] << std::endl;
 	} else {
 		const Pos<>& c = orbit[0];
 		fprintf(stdout, "closed_orbit: %+23.16E %+23.16E %+23.16E %+23.16E %+23.16E\n", c.rx, c.px, c.ry, c.py, c.de);
 	}
 	return 0;
+
+}
+
+int test_findorbit6() {
+
+	Accelerator accelerator;
+	read_flat_file("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt", accelerator);
+	accelerator.cavity_on = true;
+	accelerator.radiation_on = true;
+	accelerator.vchamber_on = false;
+
+	std::vector<Pos<double> > orbit;
+	Status::type status = track_findorbit6(accelerator, orbit);
+	if (status != Status::success) {
+		std::cerr << string_error_messages[status] << std::endl;
+	} else {
+		const Pos<>& c = orbit[0];
+		fprintf(stdout, "closed_orbit: %+23.16E %+23.16E %+23.16E %+23.16E %+23.16E\n", c.rx, c.px, c.ry, c.py, c.de);
+	}
+	return 0;
+
 }
 
 // #include <cstdio>
@@ -355,12 +384,10 @@ int test_linepass2() {
 				fprintf(stdout, "de: %+.16f\n", pos[i].de);
 				fprintf(stdout, "dl: %+.16f\n", pos[i].dl);
 			}
-
-
 }
 
-int cmd_tests(const std::vector<std::string>& args) {
 
+int test_flatfile() {
 
 	Accelerator accelerator;
 	accelerator.energy = 0.0;
@@ -368,6 +395,23 @@ int cmd_tests(const std::vector<std::string>& args) {
 	accelerator.cavity_on = false;
 	accelerator.radiation_on = false;
 	accelerator.vchamber_on = false;
+
+	read_flat_file("/home/afonso/flatfile.txt", accelerator);
+	std::cout << "Energy: " << accelerator.energy << " eV" << '\n';
+	std::cout << "Harmonic number: " << accelerator.harmonic_number << '\n';
+	std::cout << "Cavity on: " << accelerator.cavity_on << '\n';
+	std::cout << "Radiation on: " << accelerator.radiation_on << '\n';
+	std::cout << "Vacuum chamber on: " << accelerator.vchamber_on << '\n';
+	accelerator.vchamber_on = false;
+	write_flat_file("/home/afonso/newflatfile.txt", accelerator);
+
+}
+
+
+int cmd_tests(const std::vector<std::string>& args) {
+
+
+
 	//sirius_v500(accelerator.lattice);
 	//latt_read_flat_file("/home/afonso/flatfile.txt", accelerator);
 	//Status::type status = latt_read_flat_file("/home/fac_files/code/python/trackcpp/pytrack/flat_file_ff.txt", accelerator);
@@ -397,7 +441,8 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_linepass(accelerator);
 	//test_ringpass(accelerator);
 	//test_linepass_tpsa(the_ring);
-	//test_findorbit6(accelerator);
+	test_findorbit4();
+	//test_findorbit6();
 	//test_dynap_xy(the_ring);
 	//test_read_flat_file(accelerator);
 
@@ -410,14 +455,7 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_simple_quadrupole();
 	//test_linepass2();
 
-	read_flat_file("/home/afonso/flatfile.txt", accelerator);
-	std::cout << "Energy: " << accelerator.energy << " eV" << '\n';
-	std::cout << "Harmonic number: " << accelerator.harmonic_number << '\n';
-	std::cout << "Cavity on: " << accelerator.cavity_on << '\n';
-	std::cout << "Radiation on: " << accelerator.radiation_on << '\n';
-	std::cout << "Vacuum chamber on: " << accelerator.vchamber_on << '\n';
-	accelerator.vchamber_on = false;
-	write_flat_file("/home/afonso/newflatfile.txt", accelerator);
+
 
 	return 0;
 
