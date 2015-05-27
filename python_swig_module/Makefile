@@ -22,7 +22,7 @@ OBJECTS = $(WRAPPEROBJS) $(TRACKCPPOBJS) $(INTERFACEOBJS)
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas
 INC = -I/usr/include/python3.4 -I../
-prefix = ../../..
+PYTHON = python3
 
 TRACKCPPSRCS = $(addprefix ../, $(TRACKCPPOBJS:.o=.cpp))
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
@@ -34,19 +34,16 @@ $(shell $(CXX) -MM $(TRACKCPPSRCS) $(INTERFACESRCS) > .depend)
 -include .depend
 
 _trackcpp.so: $(OBJECTS)
-	$(CXX) -shared $(OBJECTS) $(LIBS) -o _trackcpp.so
+	$(CXX) -shared $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(TRACKCPPSRCS) $(INTERFACESRCS) $(INTERFACEHDRS)
-	swig -c++ -python trackcpp.i
+	swig -c++ -python trackcpp.i && mv trackcpp.py trackcpp && cp VERSION trackcpp
 
-install: all | $(prefix)/lib/python/trackcpp
-	cp _trackcpp.so trackcpp.py __init__.py VERSION $(prefix)/lib/python/trackcpp
-
-$(prefix)/lib/python/trackcpp:
-	mkdir -p $(prefix)/lib/python/trackcpp
+install: all
+	$(PYTHON) setup.py install
 
 clean:
-	-rm -rf *.o *.so *_wrap.cxx __pycache__ trackcpp.py
+	-rm -rf *.o *.so *_wrap.cxx __pycache__ trackcpp/trackcpp.py build dist trackcpp.egg-info
 
 $(INTERFACESRCS): $(INTERFACEHDRS)
 
