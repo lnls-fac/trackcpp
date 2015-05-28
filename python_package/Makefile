@@ -23,6 +23,7 @@ CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas
 INC = -I/usr/include/python3.4 -I../
 PYTHON = python3
+SETUPARGS =
 
 TRACKCPPSRCS = $(addprefix ../, $(TRACKCPPOBJS:.o=.cpp))
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
@@ -37,13 +38,16 @@ _trackcpp.so: $(OBJECTS)
 	$(CXX) -shared $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(TRACKCPPSRCS) $(INTERFACESRCS) $(INTERFACEHDRS)
-	swig -c++ -python trackcpp.i && mv trackcpp.py trackcpp && cp VERSION trackcpp
+	swig -c++ -python trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: all
-	$(PYTHON) setup.py install
+	$(PYTHON) setup.py install $(SETUPARGS)
+
+develop: all
+	$(PYTHON) setup.py develop $(SETUPARGS)
 
 clean:
-	-rm -rf *.o *.so *_wrap.cxx __pycache__ trackcpp/trackcpp.py build dist trackcpp.egg-info
+	-rm -rf *.o trackcpp/*.so *_wrap.cxx trackcpp/__pycache__ trackcpp/trackcpp.py build dist trackcpp.egg-info
 
 $(INTERFACESRCS): $(INTERFACEHDRS)
 
