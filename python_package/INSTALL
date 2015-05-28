@@ -5,6 +5,7 @@ trackcpp Python package
 REQUIREMENTS
 
 - a C++ compiler with C++11 support (tested with GCC 4.8)
+- blas
 - gsl (GNU Scientific Library)
 - SWIG 2 (tested with SWIG 2.0.11)
 - Python 3 (tested with Python 3.4) with header files
