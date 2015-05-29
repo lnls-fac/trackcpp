@@ -36,7 +36,7 @@ AUXFILES  = VERSION
 
 LIBS            = tracking_mp/build/tracking_mp.a -lpthread -lgsl -lgslcblas
 INC             =
-prefix = ../..
+prefix = /usr/local
 OBJDIR = build
 
 ifeq ($(MAKECMDGOALS),trackcpp-debug)
