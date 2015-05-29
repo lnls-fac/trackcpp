@@ -86,11 +86,17 @@ $(OBJDIR):
 install: all | $(prefix)/bin
 	cp $(OBJDIR)/trackcpp $(prefix)/bin
 
+develop: uninstall
+	ln -srf $(OBJDIR)/trackcpp $(prefix)/bin
+
 $(prefix)/bin:
 	mkdir $(prefix)/bin
 
 clean:
 	rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~
+
+uninstall:
+		rm -rf $(prefix)/bin/trackcpp
 
 cleanall: clean
 	cd tracking_mp; make clean;
