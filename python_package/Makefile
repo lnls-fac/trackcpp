@@ -29,12 +29,12 @@ TRACKCPPSRCS = $(addprefix ../, $(TRACKCPPOBJS:.o=.cpp))
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
 
-all: _trackcpp.so
+all: trackcpp/_trackcpp.so
 
 $(shell $(CXX) -MM $(TRACKCPPSRCS) $(INTERFACESRCS) > .depend)
 -include .depend
 
-_trackcpp.so: $(OBJECTS)
+trackcpp/_trackcpp.so: $(OBJECTS)
 	$(CXX) -shared $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(TRACKCPPSRCS) $(INTERFACESRCS) $(INTERFACEHDRS)
