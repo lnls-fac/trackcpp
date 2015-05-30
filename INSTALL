@@ -1,0 +1,19 @@
+trackcpp
+========
+
+
+REQUIREMENTS
+
+- a C++ compiler with C++11 support (tested with GCC 4.8)
+- pthread
+- blas
+- gsl (GNU Scientific Library)
+
+
+INSTRUCTIONS
+
+1. Compile with 'make all'.
+
+2. Install trackcpp with 'make install'. The installation directory is
+$(prefix)/bin, with prefix=/usr/local by default. Alternatively, install a
+symbolic link to the local compiled version with 'make develop'.
