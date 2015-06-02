@@ -36,7 +36,7 @@ AUXFILES  = VERSION
 
 LIBS            = tracking_mp/build/tracking_mp.a -lpthread -lgsl -lgslcblas
 INC             =
-prefix = /usr/local
+DEST_DIR = /usr/local/bin
 OBJDIR = build
 
 ifeq ($(MAKECMDGOALS),trackcpp-debug)
@@ -83,20 +83,20 @@ $(OBJECTS): | $(OBJDIR)
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
-install: all | $(prefix)/bin
-	cp $(OBJDIR)/trackcpp $(prefix)/bin
+install: uninstall all | $(DEST_DIR)
+	cp $(OBJDIR)/trackcpp $(DEST_DIR)
 
 develop: uninstall
-	ln -srf $(OBJDIR)/trackcpp $(prefix)/bin
+	ln -srf $(OBJDIR)/trackcpp $(DEST_DIR)
 
-$(prefix)/bin:
-	mkdir $(prefix)/bin
+$(DEST_DIR):
+	mkdir $(DEST_DIR)
 
 clean:
-	rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~
+	-rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~
 
 uninstall:
-		rm -rf $(prefix)/bin/trackcpp
+	-rm -rf $(DEST_DIR)/trackcpp
 
 cleanall: clean
 	cd tracking_mp; make clean;

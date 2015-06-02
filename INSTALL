@@ -15,5 +15,5 @@ INSTRUCTIONS
 1. Compile with 'make all'.
 
 2. Install trackcpp with 'make install'. The installation directory is
-$(prefix)/bin, with prefix=/usr/local by default. Alternatively, install a
+$(DEST_DIR), with DEST_DIR=/usr/local/bin by default. Alternatively, install a
 symbolic link to the local compiled version with 'make develop'.
