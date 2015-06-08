@@ -26,6 +26,7 @@ public:
     double r_in[36], r_out[36];
 
     Element(const std::string& fam_name_, const double& length_);
+    Element(const Element&);
 
     const std::string& get_pass_method();
     void set_pass_method(const std::string& pass_method_);
