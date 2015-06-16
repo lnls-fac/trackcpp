@@ -86,7 +86,7 @@ $(OBJDIR):
 install: uninstall all | $(DEST_DIR)
 	cp $(OBJDIR)/trackcpp $(DEST_DIR)
 
-develop: uninstall
+develop: uninstall all
 	ln -srf $(OBJDIR)/trackcpp $(DEST_DIR)
 
 $(DEST_DIR):
