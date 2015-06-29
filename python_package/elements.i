@@ -20,7 +20,9 @@ public:
     std::vector<double> polynom_a;
     std::vector<double> polynom_b;
     const Kicktable* kicktable;
+    double hmin;
     double hmax;
+    double vmin;
     double vmax;
     double t_in[6], t_out[6];
     double r_in[36], r_out[36];

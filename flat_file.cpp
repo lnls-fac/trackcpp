@@ -53,7 +53,9 @@ Status::type write_flat_file(const std::string& filename, Accelerator& accelerat
 		}
 		if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a", e.polynom_a);
 		if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b", e.polynom_b);
+		if (e.hmin != 0) { fp << std::setw(pw) << "hmin" << e.hmin << '\n'; }
 		if (e.hmax != 0) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
+		if (e.vmin != 0) { fp << std::setw(pw) << "vmin" << e.vmin << '\n'; }
 		if (e.vmax != 0) { fp << std::setw(pw) << "vmax" << e.vmax << '\n'; }
 		if (e.hkick != 0) { fp << std::setw(pw) << "hkick" << e.hkick << '\n'; }
 		if (e.vkick != 0) { fp << std::setw(pw) << "vkick" << e.vkick << '\n'; }
@@ -104,6 +106,8 @@ Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& a
 
 	Element e;
 	std::string line;
+	bool found_hmin = false;
+	bool found_vmin = false;
 	unsigned int line_count = 0;
 	while (std::getline(fp, line)) {
 		line_count++;
@@ -129,8 +133,20 @@ Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& a
 			continue;
 		}
 		if (cmd.compare("length")      == 0) { ss >> e.length;    continue; }
-		if (cmd.compare("hmax")        == 0) { ss >> e.hmax;      continue; }
-		if (cmd.compare("vmax")        == 0) { ss >> e.vmax;      continue; }
+		if (cmd.compare("hmin")        == 0) { ss >> e.hmin; found_hmin = true; continue; }
+		if (cmd.compare("hmax")        == 0) {
+			ss >> e.hmax;
+			if (not found_hmin){ e.hmin = -e.hmax;}
+			found_hmin = false;
+			continue;
+			}
+		if (cmd.compare("vmin")        == 0) { ss >> e.vmin; found_vmin = true; continue; }
+		if (cmd.compare("vmax")        == 0) {
+			ss >> e.vmax;
+			if (not found_vmin){ e.vmin = -e.vmax;}
+			found_vmin = false;
+			continue;
+			}
 		if (cmd.compare("hkick")       == 0) { ss >> e.hkick;     continue; }
 		if (cmd.compare("vkick")       == 0) { ss >> e.vkick;     continue; }
 		if (cmd.compare("nr_steps")    == 0) { ss >> e.nr_steps;  continue; }
@@ -249,7 +265,8 @@ Status::type read_flat_file_tracy(const std::string& filename, Accelerator& acce
 		if (e.fam_name == "prtmfile:") return Status::flat_file_error;
 		fp >> type >> method >> e.nr_steps;
 		if (e.nr_steps < 1) e.nr_steps = 1;
-		fp >> e.hmax >> e.hmax >> e.vmax >> e.vmax;
+		fp >> e.hmin >> e.hmax >> e.vmin >> e.vmax;
+
 
 		// tracy starts with "begin" zero-length drift element...
 		if (e.fam_name == "begin") {

@@ -47,8 +47,10 @@ public:
   std::vector<double> polynom_a   = default_polynom;
   std::vector<double> polynom_b   = default_polynom;
   const Kicktable*    kicktable   = nullptr;
-  double              hmax        = DBL_MAX;  // [m]
-  double              vmax        = DBL_MAX;  // [m]
+  double              hmin        = -DBL_MAX;  // [m]
+  double              hmax        =  DBL_MAX;  // [m]
+  double              vmin        = -DBL_MAX;  // [m]
+  double              vmax        =  DBL_MAX;  // [m]
   double              t_in[6],  t_out[6];
   double              r_in[36], r_out[36];
 

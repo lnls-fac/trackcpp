@@ -119,7 +119,7 @@ Status::type track_linepass (
 		// checks if particle is lost
 		if ((not isfinite(orig_pos.rx)) or
 			((accelerator.vchamber_on) and
-			 ((orig_pos.rx < -element.hmax) or
+			 ((orig_pos.rx < element.hmin) or
 			 (orig_pos.rx >  element.hmax)))) {
 			pos.push_back(nan_pos);
 			lost_plane   = Plane::x;
@@ -127,7 +127,7 @@ Status::type track_linepass (
 		}
 		if ((not isfinite(orig_pos.ry)) or
 			((accelerator.vchamber_on) and
-			 ((orig_pos.ry < -element.vmax) or
+			 ((orig_pos.ry < element.vmin) or
 			 (orig_pos.ry >  element.vmax)))) {
 			pos.push_back(nan_pos);
 			lost_plane = Plane::y;
