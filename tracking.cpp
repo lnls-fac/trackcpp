@@ -20,6 +20,7 @@
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
 
+
 Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& m66) {
 
   Status::type status  = Status::success;
@@ -86,12 +87,48 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
 
 }
 
+
+// void print_pos(Pos<double> pos) {
+//   fprintf(stdout, "%+.16e %+.16e %+.16e %+.16e %+.16e %+.16e", pos.rx, pos.px, pos.ry, pos.py, pos.de, pos.dl);
+// }
+
 Status::type track_findorbit6(
     const Accelerator& accelerator,
     std::vector<Pos<double> >& closed_orbit,
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
+
+// {
+//   unsigned int element_offset = 0;
+//   Plane::type lost_plane;
+//   Status::type status = Status::success;
+//   std::vector<Pos<double> > co(7,0);
+//   std::vector<Pos<double> > co2(7,0);
+//   co[0] = Pos<double>(
+//  -0.000026697070504,
+//  -0.000017935022515,
+//   0.000072244732652,
+//  -0.000012882828755,
+//  -0.000235042623689,
+//  -0.017025865545599);
+//
+//  std::cout << std::endl << std::endl;
+//
+//   std::cout << "init pos:" << std::endl;
+//   print_pos(co[0]);
+//   std::cout << std::endl; std::cout << std::endl;
+//
+//   status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, true));
+//   for(unsigned int i=0; i<co2.size(); ++i) {
+//     fprintf(stdout, "%04i %15s ", i+1, the_ring[i].fam_name.c_str());
+//     //std::cout << the_ring[i].hmax << " " << the_ring[i].hmin << " " << the_ring[i].vmax << " " << the_ring[i].vmin << " | ";
+//     print_pos(co2[i]);
+//     std::cout << std::endl;
+//   }
+//   std::cout << element_offset << std::endl;
+//   return Status::findorbit_one_turn_matrix_problem;
+// }
 
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
@@ -123,6 +160,7 @@ Status::type track_findorbit6(
     unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
+
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false));

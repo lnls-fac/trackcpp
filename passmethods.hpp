@@ -89,12 +89,12 @@ T b2_perp(const T& bx, const T& by, const T& rx, const T& px, const T& ry, const
 
 template <typename T>
 Status::type kicktablethinkick(Pos<T>& pos, const Kicktable* kicktable,
-                               const double& brho)
+                               const double& brho, const int nr_steps)
 {
   T hkick, vkick;
   Status::type status = kicktable_getkicks(kicktable, pos.rx, pos.ry, hkick, vkick);
-  pos.px += hkick / (brho * brho);
-  pos.py += vkick / (brho * brho);
+  pos.px += hkick / (brho * brho) / nr_steps;
+  pos.py += vkick / (brho * brho) / nr_steps;
   if (status == Status::kicktable_out_of_range) {
     if (not isfinite(pos.px)) {
       pos.rx = nan("");
@@ -385,7 +385,7 @@ Status::type pm_kicktable_pass(Pos<T> &pos, const Element &elem,
   } else {
     for(unsigned int i=0; i<elem.nr_steps; ++i) {
       drift<T>(pos, sl / 2);
-      Status::type status = kicktablethinkick(pos, elem.kicktable, brho);
+      Status::type status = kicktablethinkick(pos, elem.kicktable, brho, elem.nr_steps);
       if (status != Status::success) return status;
       drift<T>(pos, sl / 2);
     }
