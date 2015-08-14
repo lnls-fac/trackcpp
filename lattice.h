@@ -45,4 +45,3 @@ std::vector<T> latt_getcellstruct(const std::vector<Element>& lattice, const std
 	return r;
 }
 #endif
-

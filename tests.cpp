@@ -142,29 +142,6 @@ int test_findorbit6() {
 
 }
 
-// #include <cstdio>
-// int test_findm66(const Accelerator& accelerator) {
-//
-// 	const std::vector<Element>& the_ring = accelerator.lattice;
-//
-// 	std::vector<Matrix> m66;
-//
-// 	track_findm66 (accelerator, cod, m66);
-//
-// 	for(unsigned int i=0; i<the_ring.size(); ++i) {
-// 		std::cout << "element#     : " << i+1 << std::endl;
-// 		std::cout << the_ring[i];
-// 		for(unsigned int r=0; r<6; ++r) {
-// 			for(unsigned int c=0; c<6; ++c) {
-// 				printf("%+10.4E ", m66[i][r][c]);
-// 			}
-// 			std::cout << std::endl;
-// 		}
-// 		std::cout << std::endl;
-// 	}
-// 	return 0;
-// }
-
 int test_dynap_xy(const Accelerator& accelerator) {
 
 	std::vector<Pos<double> > closed_orbit;
@@ -228,7 +205,6 @@ int test_cmd_dynap_xy() {
 
 }
 
-
 int test_cmd_dynap_ex() {
 
 	std::vector<std::string> args = {
@@ -253,7 +229,6 @@ int test_cmd_dynap_ex() {
 
 }
 
-
 int test_cmd_dynap_ma() {
 
 	std::vector<std::string> args = {
@@ -277,6 +252,32 @@ int test_cmd_dynap_ma() {
 	return cmd_dynap_ma(args);
 
 }
+
+int test_cmd_dynap_fmap() {
+
+	std::vector<std::string> args = {
+			"trackcpp",
+			"dynap_fmap",
+			"sirius-v10.txt", // flatfile
+			"3e9",      // ebeam energy [eV]
+			"864",      // harmonic_number
+			"on",       // radiation_state
+			"on",       // cavity_state
+			"on",       // chamber_state
+			"0.0",      // de
+			"5000",     // nr_turns
+			"4",        // nrpts_x
+			"-0.015",   // x_min
+			"+0.015",   // x_max
+			"4",        // nrpts_y
+			"0.0",      // y_min
+			"+0.0035"   // y_max
+	};
+	return cmd_dynap_fmap(args);
+
+}
+
+
 
 int test_kicktable(Accelerator& accelerator) {
 
@@ -386,7 +387,6 @@ int test_linepass2() {
 			}
 }
 
-
 int test_flatfile() {
 
 	Accelerator accelerator;
@@ -406,7 +406,6 @@ int test_flatfile() {
 	write_flat_file("/home/afonso/newflatfile.txt", accelerator);
 
 }
-
 
 int cmd_tests(const std::vector<std::string>& args) {
 
@@ -441,7 +440,7 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_linepass(accelerator);
 	//test_ringpass(accelerator);
 	//test_linepass_tpsa(the_ring);
-	test_findorbit4();
+	//test_findorbit4();
 	//test_findorbit6();
 	//test_dynap_xy(the_ring);
 	//test_read_flat_file(accelerator);
@@ -449,6 +448,7 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_cmd_dynap_xy();
 	//test_cmd_dynap_ex();
 	//test_cmd_dynap_ma();
+	test_cmd_dynap_fmap();
 	//test_cmd_track_linepass();
 	//test_kicktable(accelerator);
 	//test_simple_drift();

@@ -31,6 +31,7 @@ SOURCES_CPP	= 	lattice.cpp \
 			dynap.cpp commands.cpp \
 			output.cpp \
 			kicktable.cpp \
+			mptaskmgr.cpp \
 			exec.cpp
 AUXFILES  = VERSION
 

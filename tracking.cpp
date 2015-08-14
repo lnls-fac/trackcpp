@@ -19,8 +19,6 @@
 //            (drx_f/drx_i, drx_f/dpx_i, ..., dl_f/de_i, dl_f/dl_i)
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
-
-
 Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& m66) {
 
   Status::type status  = Status::success;
@@ -44,11 +42,6 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
   tpsa.de = Tpsa<6,1>(closed_orbit[0].de, 4); tpsa.dl = Tpsa<6,1>(closed_orbit[0].dl, 5);
 
   for(unsigned int i=0; i<lattice.size(); ++i) {
-
-    //Pos<Tpsa<6,1> > tpsa;
-    //tpsa.rx = Tpsa<6,1>(closed_orbit[i].rx, 0); tpsa.px = Tpsa<6,1>(closed_orbit[i].px, 1);
-    //tpsa.ry = Tpsa<6,1>(closed_orbit[i].ry, 2); tpsa.py = Tpsa<6,1>(closed_orbit[i].py, 3);
-    //tpsa.de = Tpsa<6,1>(closed_orbit[i].de, 4); tpsa.dl = Tpsa<6,1>(closed_orbit[i].dl, 5);
 
     // track through element
     if ((status = track_elementpass (lattice[i], tpsa, accelerator)) != Status::success) return status;
@@ -87,48 +80,12 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
 
 }
 
-
-// void print_pos(Pos<double> pos) {
-//   fprintf(stdout, "%+.16e %+.16e %+.16e %+.16e %+.16e %+.16e", pos.rx, pos.px, pos.ry, pos.py, pos.de, pos.dl);
-// }
-
 Status::type track_findorbit6(
     const Accelerator& accelerator,
     std::vector<Pos<double> >& closed_orbit,
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
-
-// {
-//   unsigned int element_offset = 0;
-//   Plane::type lost_plane;
-//   Status::type status = Status::success;
-//   std::vector<Pos<double> > co(7,0);
-//   std::vector<Pos<double> > co2(7,0);
-//   co[0] = Pos<double>(
-//  -0.000026697070504,
-//  -0.000017935022515,
-//   0.000072244732652,
-//  -0.000012882828755,
-//  -0.000235042623689,
-//  -0.017025865545599);
-//
-//  std::cout << std::endl << std::endl;
-//
-//   std::cout << "init pos:" << std::endl;
-//   print_pos(co[0]);
-//   std::cout << std::endl; std::cout << std::endl;
-//
-//   status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, true));
-//   for(unsigned int i=0; i<co2.size(); ++i) {
-//     fprintf(stdout, "%04i %15s ", i+1, the_ring[i].fam_name.c_str());
-//     //std::cout << the_ring[i].hmax << " " << the_ring[i].hmin << " " << the_ring[i].vmax << " " << the_ring[i].vmin << " | ";
-//     print_pos(co2[i]);
-//     std::cout << std::endl;
-//   }
-//   std::cout << element_offset << std::endl;
-//   return Status::findorbit_one_turn_matrix_problem;
-// }
 
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
@@ -288,7 +245,6 @@ Status::type track_findorbit4(
 
 }
 
-
 Pos<double> linalg_solve4(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 
   gsl_matrix* m = gsl_matrix_alloc(4,4);
@@ -313,7 +269,6 @@ Pos<double> linalg_solve4(const std::vector<Pos<double> >& M, const Pos<double>&
   gsl_permutation_free(p);
   return X;
 }
-
 
 Pos<double> linalg_solve6(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 

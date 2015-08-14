@@ -60,6 +60,23 @@ struct Status {
     };
 };
 
+// type-save alternative (to be tried)
+// enum class Status {
+//     success = 0,
+//     passmethod_not_defined = 1,
+//     passmethod_not_implemented = 2,
+//     particle_lost = 3,
+//     inconsistent_dimensions = 4,
+//     uninitialized_memory = 5,
+//     findorbit_not_converged = 6,
+//     findorbit_one_turn_matrix_problem = 7,
+//     file_not_found = 8,
+//     file_not_opened = 9,
+//     kicktable_not_defined = 10,
+//     kicktable_out_of_range = 11,
+//     flat_file_error = 12
+// };
+
 const std::vector<std::string> string_error_messages = {
         "success",
         "passmethod_not_defined",
