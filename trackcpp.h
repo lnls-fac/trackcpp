@@ -23,7 +23,8 @@
 #include "pos.h"
 #include "tpsa.h"
 #include "auxiliary.h"
-#include "mptaskmgr.h"
+#include "naff.h"
+#include "multithreads.h"
 
 extern bool verbose_on;
 

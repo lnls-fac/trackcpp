@@ -106,7 +106,7 @@ Status::type print_tracking_ringpass(const Accelerator& accelerator, const std::
 	return Status::success;
 }
 
-Status::type print_dynapgrid(const Accelerator& accelerator, const std::vector<DynApGridPoint>& grid, const std::string& label, const std::string& filename) {
+Status::type print_dynapgrid(const Accelerator& accelerator, const std::vector<DynApGridPoint>& grid, const std::string& label, const std::string& filename, bool print_tunes) {
 
 	FILE* fp;
 	fp = fopen(filename.c_str(), "w");
@@ -122,14 +122,27 @@ Status::type print_dynapgrid(const Accelerator& accelerator, const std::vector<D
 	fprintf(fp, "# radiation_state   : %s\n", accelerator.radiation_on ? "on" : "off");
 	fprintf(fp, "# chamber_state     : %s\n", accelerator.vchamber_on ? "on" : "off");
 	fprintf(fp, "\n");
-	fprintf(fp, "%-5s %-5s %-5s %-5s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n",  "# s_e", "l_t", "l_e", "l_p", "start_s[m]", "rx[m]", "ry[m]", "de", "px[rad]", "py[rad]", "dl[m]");
-	fprintf(fp, "%-5s %-5s %-5s %-5s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n",  "# ---", "-----", "-----", "-----", str, str, str, str, str, str, str);
+	if (print_tunes) {
+		fprintf(fp, "%-5s %-5s %-5s %-5s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n",  "# s_e", "l_t", "l_e", "l_p", "start_s[m]", "rx[m]", "ry[m]", "de", "px[rad]", "py[rad]", "dl[m]", "nux1", "nuy1", "nux2", "nuy2");
+		fprintf(fp, "%-5s %-5s %-5s %-5s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n",  "# ---", "-----", "-----", "-----", str, str, str, str, str, str, str, str, str, str, str);
+	} else {
+		fprintf(fp, "%-5s %-5s %-5s %-5s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n",  "# s_e", "l_t", "l_e", "l_p", "start_s[m]", "rx[m]", "ry[m]", "de", "px[rad]", "py[rad]", "dl[m]");
+		fprintf(fp, "%-5s %-5s %-5s %-5s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n",  "# ---", "-----", "-----", "-----", str, str, str, str, str, str, str);
+	}
 
 	std::vector<double> s = latt_findspos(accelerator.lattice, latt_range(accelerator.lattice));
-	for(unsigned int i=0; i<grid.size(); ++i) {
-		const Pos<double>& p = grid[i].p;
-		fprintf(fp, "%-5i %-5i %-5i %-5i %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E\n",  grid[i].start_element, grid[i].lost_turn, grid[i].lost_element, grid[i].lost_plane, s[grid[i].start_element], p.rx, p.ry, p.de, p.px, p.py, p.dl);
+	if (print_tunes) {
+		for(unsigned int i=0; i<grid.size(); ++i) {
+			const Pos<double>& p = grid[i].p;
+			fprintf(fp, "%-5i %-5i %-5i %-5i %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E\n",  grid[i].start_element, grid[i].lost_turn, grid[i].lost_element, grid[i].lost_plane, s[grid[i].start_element], p.rx, p.ry, p.de, p.px, p.py, p.dl, grid[i].nux1, grid[i].nuy1, grid[i].nux2, grid[i].nuy2);
+		}
+	} else {
+		for(unsigned int i=0; i<grid.size(); ++i) {
+			const Pos<double>& p = grid[i].p;
+			fprintf(fp, "%-5i %-5i %-5i %-5i %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E %+24.17E\n",  grid[i].start_element, grid[i].lost_turn, grid[i].lost_element, grid[i].lost_plane, s[grid[i].start_element], p.rx, p.ry, p.de, p.px, p.py, p.dl);
+		}
 	}
+
 	fclose(fp);
 	return Status::success;
 }

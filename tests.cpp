@@ -261,17 +261,18 @@ int test_cmd_dynap_fmap() {
 			"sirius-v10.txt", // flatfile
 			"3e9",      // ebeam energy [eV]
 			"864",      // harmonic_number
-			"on",       // radiation_state
-			"on",       // cavity_state
+			"off",      // radiation_state
+			"off",      // cavity_state
 			"on",       // chamber_state
 			"0.0",      // de
-			"5000",     // nr_turns
+			"5004",     // nr_turns
 			"4",        // nrpts_x
 			"-0.015",   // x_min
 			"+0.015",   // x_max
 			"4",        // nrpts_y
 			"0.0",      // y_min
-			"+0.0035"   // y_max
+			"+0.0035",  // y_max
+			"8"         // nr_threads  (0: let routine decide)
 	};
 	return cmd_dynap_fmap(args);
 

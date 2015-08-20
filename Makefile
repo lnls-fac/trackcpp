@@ -20,30 +20,34 @@ OPT_FLAG	= -O3 -std=c++11
 DBG_FLAG	= -O0 -g3 -std=c++11
 DFLAGS      = -DVERSION=$(VERSION)
 SOURCES_C   =
-SOURCES_CPP	= 	lattice.cpp \
-			elements.cpp \
-			passmethods.cpp \
-			tracking.cpp \
-			trackcpp.cpp \
-			tests.cpp \
-			sirius_v500.cpp \
-			flat_file.cpp optics.cpp \
-			dynap.cpp commands.cpp \
-			output.cpp \
-			kicktable.cpp \
-			mptaskmgr.cpp \
-			exec.cpp
+SOURCES_CPP	= lattice.cpp \
+							elements.cpp \
+							passmethods.cpp \
+							tracking.cpp \
+							trackcpp.cpp \
+							tests.cpp \
+							sirius_v500.cpp \
+							flat_file.cpp \
+							optics.cpp \
+							dynap.cpp \
+							commands.cpp \
+							output.cpp \
+							kicktable.cpp \
+							exec.cpp \
+							naff.cpp \
+							multithreads.cpp
+
 AUXFILES  = VERSION
 
-LIBS            = tracking_mp/build/tracking_mp.a -lpthread -lgsl -lgslcblas
-INC             =
+LIBS = tracking_mp/build/tracking_mp.a -lgsl -lgslcblas -lpthread
+INC  =
 DEST_DIR = /usr/local/bin
 OBJDIR = build
 
 ifeq ($(MAKECMDGOALS),trackcpp-debug)
-	CFLAGS		= $(MACHINE) $(DBG_FLAG) $(DFLAGS)
+	CFLAGS		= $(MACHINE) $(DBG_FLAG) $(DFLAGS) -pthread
 else
-	CFLAGS		= $(MACHINE) $(OPT_FLAG) $(DFLAGS)
+	CFLAGS		= $(MACHINE) $(OPT_FLAG) $(DFLAGS) -pthread
 endif
 
 OBJECTS		= $(addprefix $(OBJDIR)/, $(SOURCES_CPP:.cpp=.o) $(SOURCES_C:.c=.o))
@@ -53,7 +57,7 @@ LDFLAGS		= $(MACHINE)
 ifeq ($(shell hostname), uv100)
     CC          = /progs/users/gcc-4.7.3/bin/gcc
     CXX         = /progs/users/gcc-4.7.3/bin/g++
-    LIBS        = -Wl,-rpath,/progs/users/gcc-4.7.3/lib64 tracking_mp/build/tracking_mp.a -lpthread ~/bin/GSL/lib/libgsl.a ~/bin/GSL/lib/libgslcblas.a
+    LIBS        = -Wl,-rpath,/progs/users/gcc-4.7.3/lib64 tracking_mp/build/tracking_mp.a ~/bin/GSL/lib/libgsl.a ~/bin/GSL/lib/libgslcblas.a -lpthread
     INC         = -I../bin/GSL/include/
 endif
 
@@ -65,7 +69,7 @@ endif
 all:	alllibs trackcpp
 
 #### GENERATES DEPENDENCY FILE ####
-$(shell $(CXX) -MM $(SOURCES_CPP) $(SOURCES_C) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
+$(shell $(CXX) -MM $(CFLAGS) $(SOURCES_CPP) $(SOURCES_C) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
 -include .depend
 
 alllibs:
@@ -119,4 +123,4 @@ $(OBJDIR)/%.o: %.cc
 	$(CXX) -c $(CFLAGS) $(INC) $< -o $@
 
 $(OBJDIR)/%.o: %.cpp
-	$(CXX) -c $(CFLAGS) $(INC) $< -o $@
+	$(CXX) -c $(CFLAGS) $(INC) $< -o $@;

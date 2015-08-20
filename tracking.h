@@ -85,7 +85,7 @@ template <typename T>
 Status::type track_linepass (
 		const Accelerator& accelerator,
 		Pos<T>& orig_pos,              // initial electron coordinates
-		std::vector<Pos<T> >& pos,     // vector with electron coordinates from tracking at every element.
+		std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
 		unsigned int& element_offset,  // index of starting element for tracking
 		Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
 		bool trajectory) {             // whether function should return coordinates at all elements
