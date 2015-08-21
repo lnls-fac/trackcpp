@@ -53,17 +53,29 @@ Status::type dynap_ma(
 		std::vector<DynApGridPoint>& grid
 	);
 
-	Status::type dynap_fmap(
-			const Accelerator& accelerator,
-			std::vector<Pos<double> >& cod,
-			unsigned int nr_turns,
-			const Pos<double>& p0,
-			unsigned int nrpts_x, double x_min, double x_max,
-			unsigned int nrpts_y, double y_min, double y_max,
-			bool calculate_closed_orbit,
-			std::vector<DynApGridPoint>& grid,
-			unsigned int nr_threads
-		);
+Status::type dynap_xyfmap(
+		const Accelerator& accelerator,
+		std::vector<Pos<double> >& cod,
+		unsigned int nr_turns,
+		const Pos<double>& p0,
+		unsigned int nrpts_x, double x_min, double x_max,
+		unsigned int nrpts_y, double y_min, double y_max,
+		bool calculate_closed_orbit,
+		std::vector<DynApGridPoint>& grid,
+		unsigned int nr_threads
+	);
+
+Status::type dynap_exfmap(
+		const Accelerator& accelerator,
+		std::vector<Pos<double> >& cod,
+		unsigned int nr_turns,
+		const Pos<double>& p0,
+		unsigned int nrpts_e, double e_min, double e_max,
+		unsigned int nrpts_x, double x_min, double x_max,
+		bool calculate_closed_orbit,
+		std::vector<DynApGridPoint>& grid,
+		unsigned int nr_threads
+	);
 
 
 #endif

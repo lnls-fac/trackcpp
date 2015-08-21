@@ -253,15 +253,15 @@ int cmd_dynap_ma(const std::vector<std::string>& args) {
 
 }
 
-int cmd_dynap_fmap(const std::vector<std::string>& args) {
+int cmd_dynap_xyfmap(const std::vector<std::string>& args) {
 
   if (args.size() != 17) {
-    std::cerr << "dynap_fmap: invalid number of arguments!" << std::endl;
+    std::cerr << "dynap_xyfmap: invalid number of arguments!" << std::endl;
     return EXIT_FAILURE;
   }
 
   std::cout << std::endl;
-  std::cout << "[cmd_dynap_fmap]" << std::endl << std::endl;
+  std::cout << "[cmd_dynap_xyfmap]" << std::endl << std::endl;
 
   std::string  flat_filename(args[2]);
   double       ring_energy     = std::atof(args[3].c_str());
@@ -305,7 +305,7 @@ int cmd_dynap_fmap(const std::vector<std::string>& args) {
   // reads flat file
   Status::type status = read_flat_file(flat_filename, accelerator);
   if (status == Status::file_not_found) {
-    std::cerr << "dynap_fmap: flat file not found!" << std::endl;
+    std::cerr << "dynap_xyfmap: flat file not found!" << std::endl;
     return EXIT_FAILURE;
   }
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
@@ -321,14 +321,97 @@ int cmd_dynap_fmap(const std::vector<std::string>& args) {
   std::vector<Pos<double> > cod;
   Pos<double> p0(0,0,0,0,de,0);
   std::vector<DynApGridPoint> grid;
-  dynap_fmap(accelerator, cod, nr_turns, p0, x_nrpts, x_min, x_max, y_nrpts, y_min, y_max, true, grid, nr_threads);
+  dynap_xyfmap(accelerator, cod, nr_turns, p0, x_nrpts, x_min, x_max, y_nrpts, y_min, y_max, true, grid, nr_threads);
 
   // generates output files
   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
   status = print_closed_orbit(accelerator, cod);
   if (status == Status::file_not_opened) return status;
-  std::cout << get_timestamp() << " saving dynap_fmap grid to file" << std::endl;
-  status = print_dynapgrid (accelerator, grid, "[dynap_fmap]", "dynap_fmap_out.txt", true);
+  std::cout << get_timestamp() << " saving dynap_xyfmap grid to file" << std::endl;
+  status = print_dynapgrid (accelerator, grid, "[dynap_fmap]", "dynap_xyfmap_out.txt", true);
+  if (status == Status::file_not_opened) return status;
+
+  std::cout << get_timestamp() << " end timestamp" << std::endl;
+  return EXIT_SUCCESS;
+
+}
+
+int cmd_dynap_exfmap(const std::vector<std::string>& args) {
+
+  if (args.size() != 17) {
+    std::cerr << "dynap_exfmap: invalid number of arguments!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  std::cout << std::endl;
+  std::cout << "[cmd_dynap_exfmap]" << std::endl << std::endl;
+
+  std::string  flat_filename(args[2]);
+  double       ring_energy     = std::atof(args[3].c_str());
+  unsigned int harmonic_number = std::atoi(args[4].c_str());
+  std::string  cavity_state(args[5]);
+  std::string  radiation_state(args[6]);
+  std::string  vchamber_state(args[7]);
+  double       y = std::atof(args[8].c_str());
+  unsigned int nr_turns = std::atoi(args[9].c_str());
+  unsigned int e_nrpts = std::atoi(args[10].c_str());
+  double       e_min = std::atof(args[11].c_str());
+  double       e_max = std::atof(args[12].c_str());
+  unsigned int x_nrpts = std::atoi(args[13].c_str());
+  double       x_min = std::atof(args[14].c_str());
+  double       x_max = std::atof(args[15].c_str());
+  unsigned int nr_threads = std::atoi(args[16].c_str());
+
+  print_header(stdout);
+  std::cout << std::endl;
+  std::cout << "flat_filename   : " << flat_filename << std::endl;
+  std::cout << "energy[eV]      : " << ring_energy << std::endl;
+  std::cout << "harmonic_number : " << harmonic_number << std::endl;
+  std::cout << "cavity_state    : " << cavity_state << std::endl;
+  std::cout << "radiation_state : " << radiation_state << std::endl;
+  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+  std::cout << "y               : " << y << std::endl;
+  std::cout << "nr_turns        : " << nr_turns << std::endl;
+  std::cout << "e_nrpts         : " << e_nrpts << std::endl;
+  std::cout << "e_min[m]        : " << e_min << std::endl;
+  std::cout << "e_max[m]        : " << e_max << std::endl;
+  std::cout << "x_nrpts         : " << x_nrpts << std::endl;
+  std::cout << "x_min[m]        : " << x_min << std::endl;
+  std::cout << "x_max[m]        : " << x_max << std::endl;
+  std::cout << "nr_threads      : " << nr_threads << std::endl;
+
+  std::cout << std::endl;
+  std::cout << get_timestamp() << " begin timestamp" << std::endl;
+
+  Accelerator accelerator;
+
+  // reads flat file
+  Status::type status = read_flat_file(flat_filename, accelerator);
+  if (status == Status::file_not_found) {
+    std::cerr << "dynap_exfmap: flat file not found!" << std::endl;
+    return EXIT_FAILURE;
+  }
+  std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
+
+  // builds accelerator
+  accelerator.energy = ring_energy;
+  accelerator.harmonic_number = harmonic_number;
+  accelerator.cavity_on = (cavity_state == "on");
+  accelerator.radiation_on = (radiation_state == "on");
+  accelerator.vchamber_on = (vchamber_state == "on");
+
+  // calcs dynamical aperture
+  std::vector<Pos<double> > cod;
+  Pos<double> p0(0,0,y,0,0,0);
+  std::vector<DynApGridPoint> grid;
+  dynap_exfmap(accelerator, cod, nr_turns, p0, e_nrpts, e_min, e_max, x_nrpts, x_min, x_max, true, grid, nr_threads);
+
+  // generates output files
+  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+  status = print_closed_orbit(accelerator, cod);
+  if (status == Status::file_not_opened) return status;
+  std::cout << get_timestamp() << " saving dynap_exfmap grid to file" << std::endl;
+  status = print_dynapgrid (accelerator, grid, "[dynap_fmap]", "dynap_exfmap_out.txt", true);
   if (status == Status::file_not_opened) return status;
 
   std::cout << get_timestamp() << " end timestamp" << std::endl;

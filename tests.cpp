@@ -253,11 +253,11 @@ int test_cmd_dynap_ma() {
 
 }
 
-int test_cmd_dynap_fmap() {
+int test_cmd_dynap_xyfmap() {
 
 	std::vector<std::string> args = {
 			"trackcpp",
-			"dynap_fmap",
+			"dynap_xyfmap",
 			"sirius-v10.txt", // flatfile
 			"3e9",      // ebeam energy [eV]
 			"864",      // harmonic_number
@@ -274,7 +274,33 @@ int test_cmd_dynap_fmap() {
 			"+0.0035",  // y_max
 			"8"         // nr_threads  (0: let routine decide)
 	};
-	return cmd_dynap_fmap(args);
+	return cmd_dynap_xyfmap(args);
+
+}
+
+
+int test_cmd_dynap_exfmap() {
+
+	std::vector<std::string> args = {
+			"trackcpp",
+			"dynap_exfmap",
+			"sirius-v10.txt", // flatfile
+			"3e9",      // ebeam energy [eV]
+			"864",      // harmonic_number
+			"off",      // radiation_state
+			"off",      // cavity_state
+			"on",       // chamber_state
+			"0.001",    // y [m]
+			"5004",     // nr_turns
+			"4",        // nrpts_e
+			"0.0",      // e_min
+			"0.05",     // e_max
+			"4",        // nrpts_x
+			"-0.015",   // x_min [m]
+			"+0.015",   // x_max [m]
+			"8"         // nr_threads  (0: let routine decide)
+	};
+	return cmd_dynap_exfmap(args);
 
 }
 
@@ -449,7 +475,8 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_cmd_dynap_xy();
 	//test_cmd_dynap_ex();
 	//test_cmd_dynap_ma();
-	test_cmd_dynap_fmap();
+	//test_cmd_dynap_xyfmap();
+	test_cmd_dynap_exfmap();
 	//test_cmd_track_linepass();
 	//test_kicktable(accelerator);
 	//test_simple_drift();
