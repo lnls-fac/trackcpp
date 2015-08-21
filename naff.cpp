@@ -19,6 +19,7 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 // * -- Functions below this line have been created by Laskar/L.Nadolski/etc -- *
 // ******************************************************************************
 
+
 /****************************************************************************/
 /* void Get_NAFF(int nterm, long ndata, double T[DIM][NTURN],
               double *fx, double *fz, int nb_freq[2])
@@ -101,6 +102,8 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   /*             end of interl use in naf             */
   /****************************************************/
 
+  g_NAFVariable.TWIN = NULL; /* XRR */
+
   /* NAFF initialization */
   naf_initnaf(g_NAFVariable);
 
@@ -118,7 +121,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   naf_smoy(g_NAFVariable, g_NAFVariable.ZTABS);
 
   naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, 20);
-//  trace=on;
+
   naf_mftnaf(g_NAFVariable, nterm,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
 
   /* fill up H-frequency vector */
@@ -175,7 +178,6 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   naf_cleannaf(g_NAFVariable);
 }
 
-
 /***************************************************************************
                           modnaff.c  -  description
                              -------------------
@@ -215,11 +217,9 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
 
 #define FUNCINLINEEXTERN_MUSTBEINLIB
 
-/*variable globale de naf */
-//t_naf g_NAFVariable;
-
 /*legere difference entre NAF_USE_OPTIMIZE=0 et NAF_USE_OPTIMIZE=1*/
 /* car division differente dans naf_gramsc */
+
 #define NAF_USE_OPTIMIZE 1
 
 /*
@@ -358,8 +358,8 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
 !  ZALP(NBTERM,NBTERM) : TABLEAU DE CHANGEMENT DE BASE
 !
 !-----------------------------------------------------------------------*/
-static double AF,BF;
-static double *TWIN=NULL;
+//static double AF,BF;
+//static double *TWIN=NULL;
 
 /*!-----------------------------------------------------------------------
 ! VARIABLES A INITIALISER PAR L'UTILISATEUR AVANT DE LANCER INITNAF
@@ -388,9 +388,7 @@ BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS);
 void naf_prtabs(t_naf& g_NAFVariable, int KTABS, t_complexe *ZTABS, int IPAS);
 void naf_smoy(t_naf& g_NAFVariable, t_complexe *ZM);
 BOOL naf_tessol(double EPS, double *TFSR, t_complexe *ZAMPR);
-//void naf_correction(double *FREQ);
-void naf_four1(double *DATA /*tableau commencant a l'indice 1 */,
-               int NN, int ISIGN);
+void naf_four1(double *DATA /*tableau commencant a l'indice 1 */, int NN, int ISIGN);
 void naf_puiss2(int NT, int *N2);
 /*v0.96 M. GASTINEAU 18/12/98 : modification du prototype */
 //void naf_iniwin();*//*remplacee par: */
@@ -399,9 +397,7 @@ void naf_iniwin(t_naf& g_NAFVariable, double *p_pardTWIN);
 void delete_list_fenetre_naf(t_list_fenetre_naf *p_pListFenNaf);
 t_list_fenetre_naf *concat_list_fenetre_naf(t_list_fenetre_naf *p_pListFenHead,
                                             t_list_fenetre_naf *p_pListFenEnd);
-t_list_fenetre_naf *cree_list_fenetre_naf(const double p_dFreqMin,
-                                          const double p_dFreqMax,
-                                          const int p_iNbTerm);
+t_list_fenetre_naf *cree_list_fenetre_naf(const double p_dFreqMin, const double p_dFreqMax, const int p_iNbTerm);
 
 /*!-----------------------------------------------------------------------
 ! VARIABLES PRIVEES
@@ -440,12 +436,6 @@ static BOOL naf_proscaa(t_naf& g_NAFVariable, double F1, double F2, t_complexe *
 static BOOL naf_zardyd(t_complexe *ZT, int N, double H, t_complexe *ZOM);
 static void naf_ztpow2a(int N, int N1, t_complexe *ZTF, double *TW, t_complexe ZA, t_complexe ZAST);
 
-/*!------------------------------------------------------------------------
-          CONTAINS*/
-
-
-/*!*/
-
 /*!-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 !           ROUTINES DE NAFF
@@ -468,10 +458,10 @@ void naf_initnaf(t_naf& g_NAFVariable) {
       SYSCHECKMALLOCSIZE(g_NAFVariable.ZAMP, t_complexe, g_NAFVariable.NTERM+1); /*allocate(ZAMP(1:NTERM),stat = NERROR)*/
       DIM2(g_NAFVariable.ZALP, (g_NAFVariable.NTERM+1), (g_NAFVariable.NTERM+1), t_complexe,"ZALP"); /*allocate(ZALP(1:NTERM,1:NTERM),stat = NERROR)*/
       SYSCHECKMALLOCSIZE(g_NAFVariable.ZTABS, t_complexe, g_NAFVariable.KTABS+1);/* allocate(ZTABS(0:KTABS),stat = NERROR)*/
-      SYSCHECKMALLOCSIZE(TWIN, double, g_NAFVariable.KTABS+1); /*allocate(TWIN(0:KTABS),stat = NERROR)*/
+      SYSCHECKMALLOCSIZE(g_NAFVariable.TWIN, double, g_NAFVariable.KTABS+1); /*allocate(TWIN(0:KTABS),stat = NERROR)*/
       /*v0.96 M. GASTINEAU 18/12/98 : modification du prototype */
       /*naf_iniwin();  */
-      naf_iniwin(g_NAFVariable, TWIN);
+      naf_iniwin(g_NAFVariable, g_NAFVariable.TWIN);
 }/*      end SUBROUTINE INITNAF*/
 
 /*!-----------------------------------------------------------------------
@@ -487,7 +477,7 @@ void naf_cleannaf(t_naf& g_NAFVariable)
       SYSFREE(g_NAFVariable.ZAMP);
       HFREE2(g_NAFVariable.ZALP);
       SYSFREE(g_NAFVariable.ZTABS);
-      SYSFREE(TWIN);
+      SYSFREE(g_NAFVariable.TWIN);
       /* v0.96 M. GASTINEAU 06/01/99 : ajout */
       delete_list_fenetre_naf(g_NAFVariable.m_pListFen);
       g_NAFVariable.m_pListFen =NULL;
@@ -506,9 +496,9 @@ void naf_initnaf_notab(t_naf& g_NAFVariable)
       g_NAFVariable.UNIANG = g_NAFVariable.DTOUR/(2*M_PI) ;
       g_NAFVariable.FREFON = g_NAFVariable.DTOUR/(g_NAFVariable.KTABS*g_NAFVariable.XH)	;
       DIM2(g_NAFVariable.ZALP, (g_NAFVariable.NTERM+1), (g_NAFVariable.NTERM+1), t_complexe,"ZALP"); /*allocate(ZALP(1:NTERM,1:NTERM),stat = NERROR)*/
-      SYSCHECKMALLOCSIZE(TWIN, double, g_NAFVariable.KTABS+1); /*allocate(TWIN(0:KTABS),stat = NERROR)*/
+      SYSCHECKMALLOCSIZE(g_NAFVariable.TWIN, double, g_NAFVariable.KTABS+1); /*allocate(TWIN(0:KTABS),stat = NERROR)*/
       /*v0.96 M. GASTINEAU 18/12/98 : modification du prototype */
-      /*naf_iniwin();*/ naf_iniwin(g_NAFVariable, TWIN);
+      /*naf_iniwin();*/ naf_iniwin(g_NAFVariable, g_NAFVariable.TWIN);
 }/*      end SUBROUTINE naf_initnaf_notab*/
 
 /*-----------------------------------------------------------------------*/
@@ -525,7 +515,7 @@ void naf_cleannaf_notab(t_naf& g_NAFVariable)
 !-----------------------------------------------------------------------*/
 
       HFREE2(g_NAFVariable.ZALP);
-      SYSFREE(TWIN);
+      SYSFREE(g_NAFVariable.TWIN);
       /* v0.96 M. GASTINEAU 06/01/99 : ajout */
       delete_list_fenetre_naf(g_NAFVariable.m_pListFen);
       g_NAFVariable.m_pListFen =NULL;
@@ -1158,8 +1148,8 @@ void naf_fftmax(t_naf& g_NAFVariable, double *FR)
       IPAS=1;
       for(I=0;I<=KTABS2-1; I++)
       {
-         pdTAB[2*I+1]=g_NAFVariable.ZTABS[I].reel*TWIN[I];/*pdTAB(2*I+1)=DREAL(g_NAFVariable.ZTABS(I))*TWIN(I)*/
-         pdTAB[2*I+2]=g_NAFVariable.ZTABS[I].imag*TWIN[I]; /*pdTAB(2*I+2)=DIMAG(g_NAFVariable.ZTABS(I))*TWIN(I)*/
+         pdTAB[2*I+1]=g_NAFVariable.ZTABS[I].reel*g_NAFVariable.TWIN[I];/*pdTAB(2*I+1)=DREAL(g_NAFVariable.ZTABS(I))*TWIN(I)*/
+         pdTAB[2*I+2]=g_NAFVariable.ZTABS[I].imag*g_NAFVariable.TWIN[I]; /*pdTAB(2*I+2)=DIMAG(g_NAFVariable.ZTABS(I))*TWIN(I)*/
       }
       naf_four1(pdTAB,KTABS2,ISG);
       for(I=0;I<=KTABS2-1; I++)
@@ -1221,8 +1211,8 @@ double naf_fftmax(t_naf& g_NAFVariable, int p_iFrMin, int p_iFrMax, double FREFO
           I<=iKTABS2m1;
           I++)
       {
-         *pdTABTemp1++ = (*pdTABTemp2++) * TWIN[I];/*pdTAB(2*I+1)=DREAL(g_NAFVariable.ZTABS(I))*TWIN(I)*/
-         *pdTABTemp1++ = (*pdTABTemp2++) * TWIN[I]; /*pdTAB(2*I+2)=DIMAG(g_NAFVariable.ZTABS(I))*TWIN(I)*/
+         *pdTABTemp1++ = (*pdTABTemp2++) * g_NAFVariable.TWIN[I];/*pdTAB(2*I+1)=DREAL(g_NAFVariable.ZTABS(I))*TWIN(I)*/
+         *pdTABTemp1++ = (*pdTABTemp2++) * g_NAFVariable.TWIN[I]; /*pdTAB(2*I+2)=DIMAG(g_NAFVariable.ZTABS(I))*TWIN(I)*/
       }
       naf_four1(pdTAB-1,iKTABS2,ISG);
       for(I=0, pdTABTemp1=pdTAB, pdTABTemp2=pdTABTemp1+1;
@@ -1986,7 +1976,7 @@ double naf_func(t_naf& g_NAFVariable, double X)
       REAL (8) ::RMD
 !            */
       double RMD = 0.0;
-      naf_profre(g_NAFVariable, X,&AF,&BF,&RMD);
+      naf_profre(g_NAFVariable, X,&g_NAFVariable.AF,&g_NAFVariable.BF,&RMD);
       return RMD;
 }/*      END FUNCTION FUNC*/
 
@@ -2000,7 +1990,7 @@ double naf_funcp(t_naf& g_NAFVariable, double X)
       REAL (8) :: DER, RMF
 ! */
       double DER, RMF;
-      naf_proder(g_NAFVariable, X,&DER,&AF,&BF,&RMF);
+      naf_proder(g_NAFVariable, X,&DER,&g_NAFVariable.AF,&g_NAFVariable.BF,&RMF);
       return DER;
 }/*      END FUNCTION FUNCP*/
 
@@ -2048,14 +2038,14 @@ void naf_proder(t_naf& g_NAFVariable, double FS, double *DER, double *A, double 
       ZAC = expcomplexe (muldoublcomplexe(-ANG0,ZI));
       ZINC=  expcomplexe (muldoublcomplexe(-ANGI,ZI));
       ZEX = divcomplexe(ZAC,ZINC); /*ZEX = ZAC/ZINC*/
-      naf_ztpow2(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX); /*CALL  ZTPOW2(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX)*/
+      naf_ztpow2(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,g_NAFVariable.TWIN,ZINC,ZEX); /*CALL  ZTPOW2(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX)*/
 /*!------------------ TAILLE DU PAS*/
       H=1.E0/((double)LTF);
       naf_zardyd(ZTF,LTF,H,&ZA);
       *A = ZA.reel;
       *B = ZA.imag;
       *RM=module(ZA);
-      naf_ztder(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH); /*CALL ZTDER(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH)*/
+      naf_ztder(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,g_NAFVariable.TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH); /*CALL ZTDER(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH)*/
       naf_zardyd(ZTF,LTF,H,&ZB);
       *DER=(mulcomplexe(conjcomplexe(ZA),ZB)).imag*2.E0;
 #else /*remplacee par: */
@@ -2071,14 +2061,14 @@ void naf_proder(t_naf& g_NAFVariable, double FS, double *DER, double *A, double 
       ZAC = i_compl_exp (i_compl_muldoubl(-ANG0,ZI));
       ZINC=  i_compl_exp (i_compl_muldoubl(-ANGI,ZI));
       ZEX = i_compl_div(ZAC,ZINC); /*ZEX = ZAC/ZINC*/
-      naf_ztpow2(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX); /*CALL  ZTPOW2(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX)*/
+      naf_ztpow2(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,g_NAFVariable.TWIN,ZINC,ZEX); /*CALL  ZTPOW2(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX)*/
 /*!------------------ TAILLE DU PAS*/
       H=1.E0/((double)LTF);
       naf_zardyd(ZTF,LTF,H,&ZA);
       *A = ZA.reel;
       *B = ZA.imag;
       *RM=i_compl_module(ZA);
-      naf_ztder(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH); /*CALL ZTDER(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH)*/
+      naf_ztder(g_NAFVariable.KTABS,NVECT,ZTF,g_NAFVariable.ZTABS,g_NAFVariable.TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH); /*CALL ZTDER(g_NAFVariable.KTABS+1,NVECT,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX,g_NAFVariable.T0,g_NAFVariable.XH)*/
       naf_zardyd(ZTF,LTF,H,&ZB);
       *DER=(i_compl_mul(i_compl_conj(&ZA),ZB)).imag*2.E0;
 #endif /*NAF_USE_OPTIMIZE==0*/
@@ -2629,14 +2619,14 @@ void naf_frefin(t_naf& g_NAFVariable, double *FR, double *A, double *B, double *
       }
       *FR=XM;
       *RM=YM;
-      *A=AF;
-      *B=BF;
+      *A=g_NAFVariable.AF;
+      *B=g_NAFVariable.BF;
       if (g_NAFVariable.IPRT==1)
       {
        /*v0.96 M. GASTINEAU 19/11/98 : modification*/
        /*fprintf(g_NAFVariable.NFPRT,"\n%10.6E %19.9E %19.9E %19.9E\n", FR,RM,AF,BF);*/
        /*remplacee par:*/
-       fprintf(g_NAFVariable.NFPRT,"\n%10.6E %19.9E %19.9E %19.9E\n", *FR,*RM,AF,BF);
+       fprintf(g_NAFVariable.NFPRT,"\n%10.6E %19.9E %19.9E %19.9E\n", *FR,*RM,g_NAFVariable.AF,g_NAFVariable.BF);
        /*v0.96 M. GASTINEAU 19/11/98 : fin modification*/
       }
 /*1000  FORMAT (1X,F10.6,3D19.9)*/
@@ -2697,7 +2687,7 @@ BOOL naf_profre(t_naf& g_NAFVariable, double FS, double *A, double *B, double *R
 #endif /*NAF_USE_OPTIMIZE==0*/
 
 /* v0.96 M. GASTINEAU 01/12/98 : fin optimisation */
-      naf_ztpow2(g_NAFVariable.KTABS,64,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX); /*CALL  ZTPOW2(g_NAFVariable.KTABS+1,64,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX)*/
+      naf_ztpow2(g_NAFVariable.KTABS,64,ZTF,g_NAFVariable.ZTABS,g_NAFVariable.TWIN,ZINC,ZEX); /*CALL  ZTPOW2(g_NAFVariable.KTABS+1,64,ZTF,g_NAFVariable.ZTABS,TWIN,ZINC,ZEX)*/
 /*!------------------ TAILLE DU PAS*/
       H=1.E0/((double)LTF);
       if (naf_zardyd(ZTF,LTF,H,&ZA)==FALSE)
@@ -3094,7 +3084,7 @@ BOOL naf_proscaa(t_naf& g_NAFVariable, double F1, double F2, t_complexe *ZP)
       ZAC= expcomplexe(muldoublcomplexe(-ANG0, ZI)); /*ZAC = EXP (-ZI*ANG0)*/
       ZINC=expcomplexe(muldoublcomplexe(-ANGI, ZI)); /*ZINC= EXP (-ZI*ANGI)*/
       ZEX= divcomplexe(ZAC, ZINC); /*ZEX = ZAC/ZINC*/
-      naf_ztpow2a(g_NAFVariable.KTABS,64,ZTF,TWIN,ZINC,ZEX);/*CALL  ZTPOW2A(g_NAFVariable.KTABS+1,64,ZTF,TWIN,ZINC,ZEX)*/
+      naf_ztpow2a(g_NAFVariable.KTABS,64,ZTF,g_NAFVariable.TWIN,ZINC,ZEX);/*CALL  ZTPOW2A(g_NAFVariable.KTABS+1,64,ZTF,TWIN,ZINC,ZEX)*/
 #else/*remplacee par:*/
       i_compl_cmplx(&ZI,0.E0,1.E0);
 /*!----------! FREQUENCES EN UNITE D'ANGLE PAR UNITE DE TEMPS*/
@@ -3105,7 +3095,7 @@ BOOL naf_proscaa(t_naf& g_NAFVariable, double F1, double F2, t_complexe *ZP)
       ZAC= i_compl_exp(i_compl_muldoubl(-ANG0, ZI)); /*ZAC = EXP (-ZI*ANG0)*/
       ZINC=i_compl_exp(i_compl_muldoubl(-ANGI, ZI)); /*ZINC= EXP (-ZI*ANGI)*/
       ZEX= i_compl_div(ZAC, ZINC); /*ZEX = ZAC/ZINC*/
-      naf_ztpow2a(g_NAFVariable.KTABS,64,ZTF,TWIN,ZINC,ZEX);/*CALL  ZTPOW2A(g_NAFVariable.KTABS+1,64,ZTF,TWIN,ZINC,ZEX)*/
+      naf_ztpow2a(g_NAFVariable.KTABS,64,ZTF,g_NAFVariable.TWIN,ZINC,ZEX);/*CALL  ZTPOW2A(g_NAFVariable.KTABS+1,64,ZTF,TWIN,ZINC,ZEX)*/
 #endif /*NAF_USE_OPTIMIZE==0*/
 /* v0.96 M. GASTINEAU 01/12/98 : fin optimisation */
 

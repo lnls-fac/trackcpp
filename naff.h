@@ -52,11 +52,9 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 #define SYSCHECKMALLOCSIZE(variable, type, size) \
   if ((variable=(type*)malloc(sizeof(type)*(size)))==NULL)\
   { printf("error : malloc failed!\n"); exit(1);}
-
 #define SYSCHECKMALLOC(variable, type) \
   if ((variable=(type*)malloc(sizeof(type)))==NULL)\
   { printf("error : malloc failed!\n"); exit(1);}
-
 #define DIM2(prow,row,col,type,l) \
   {\
   register type *pdata;\
@@ -69,33 +67,28 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
      pdata += col;\
      }\
   }
-
 #define SYSFREE(variable) free(variable)
 #define HFREE2(variable) {SYSFREE(*variable); SYSFREE(variable);}
 
-struct complexe
-{
+struct complexe {
   double reel,imag;
 };
 typedef struct complexe t_complexe;
 
 /* v0.96 M. GASTINEAU 18/12/98 : ajout */
 /*liste des frequences pour NAF */
-struct list_fenetre_naf
-{
+struct list_fenetre_naf {
  double                   dFreqMin; /* frequence minimale */
  double                   dFreqMax; /* frequence maximale */
  int                      iNbTerme; /* nombre de termes a rechercher */
  struct list_fenetre_naf *suivant; /*fenetre suivante */
 };
 /* v0.96 M. GASTINEAU 18/12/98 : fin ajout */
-
 typedef struct list_fenetre_naf t_list_fenetre_naf; /* v0.96 M. GASTINEAU 18/12/98 : ajout */
 
 /*v0.96 M. GASTINEAU 04/09/98 : ajout pour la gestion de naf */
 /* pour le role de ces champs, cf. modnaff.c */
-struct stnaf
-{
+struct stnaf {
  /*champ utilise par modnaff.c */
  FILE *NFPRT;
  double EPSM;
@@ -118,13 +111,14 @@ struct stnaf
  /* v0.96 M. GASTINEAU 06/01/99 : ajout */
  t_list_fenetre_naf *m_pListFen; /*liste des fenetres */
  /* v0.96 M. GASTINEAU 06/01/99 : fin ajout */
-};
 
+ /* Ximenes XRR 2015-08-20, trying to get rid of all variables */
+ double* TWIN;
+ double  AF,BF;
+ 
+};
 typedef struct stnaf t_naf;
 /*v0.96 M. GASTINEAU 04/09/98 : fin ajout */
-
-
-//const double pi = M_PI;
 
 
 /*-----------------*/

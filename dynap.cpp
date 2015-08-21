@@ -282,7 +282,7 @@ void dynap_fmap_run(ThreadSharedData* thread_data, int thread_id, long task_id) 
   }
 
   pthread_mutex_lock(thread_data->mutex);
-  printf("thread:%02i|task:%06lu/%06lu -> rx:%+.4e|ry:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
+  printf("thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
   pthread_mutex_unlock(thread_data->mutex);
 
 }
