@@ -4,12 +4,16 @@ static void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab,
 
 void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney) {
 
-  int nterm = 4;
+  //int nterm = 4;
+  int nterm = 2;
   int nb_freq[2] = {0,0};
   double nux[4], nuy[4];
   Get_NAFF(nterm, data.size(), data, nux, nuy, nb_freq);
-  tunex = fabs(nux[0]);
-  tuney = fabs(nuy[0]);
+  // tunex = fabs(nux[0]);
+  // tuney = fabs(nuy[0]);
+  if (fabs(nux[0])<1e-4) tunex = fabs(nux[1]); else tunex = fabs(nux[0]);
+  if (fabs(nuy[0])<1e-4) tuney = fabs(nuy[1]); else tuney = fabs(nuy[0]);
+
 
 }
 
@@ -73,8 +77,38 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
 
   t_naf g_NAFVariable;
 
+  // g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
+  // g_NAFVariable.XH         = M_2_PI;    /* step */
+  // g_NAFVariable.T0         = 0.0;       /* time t0 */
+  // g_NAFVariable.NTERM      = nterm;     /* max term to find */
+  // g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */
+  // g_NAFVariable.m_pListFen = NULL;      /* no window */
+  // g_NAFVariable.TFS        = NULL;      /* will contain frequency */
+  // g_NAFVariable.ZAMP       = NULL;      /* will contain amplitude */
+  // g_NAFVariable.ZTABS      = NULL;      /* will contain data to analyze */
+  //
+  // /****************************************************/
+  // /*               internal use in naf                */
+  // g_NAFVariable.NERROR            = 0;
+  // g_NAFVariable.ICPLX             = 1;
+  // g_NAFVariable.IPRT              = 0;     /* 1 for diagnostics */
+  // g_NAFVariable.NFPRT             = stdout; /* NULL   */
+  // g_NAFVariable.NFS               = 0;
+  // g_NAFVariable.IW                = 1;
+  // g_NAFVariable.ISEC              = 1;
+  // g_NAFVariable.EPSM              = 0;
+  // g_NAFVariable.UNIANG            = 0;
+  // g_NAFVariable.FREFON            = 0;
+  // g_NAFVariable.ZALP              = NULL;
+  // g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
+  // g_NAFVariable.m_dneps           = 1.e10;
+  // g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
+  // /*             end of interl use in naf             */
+  // /****************************************************/
+
+
   g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
-  g_NAFVariable.XH         = M_2_PI;    /* step */
+  g_NAFVariable.XH         = 1;         /* step */
   g_NAFVariable.T0         = 0.0;       /* time t0 */
   g_NAFVariable.NTERM      = nterm;     /* max term to find */
   g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */
@@ -92,12 +126,12 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   g_NAFVariable.NFS               = 0;
   g_NAFVariable.IW                = 1;
   g_NAFVariable.ISEC              = 1;
-  g_NAFVariable.EPSM              = 0;
+  g_NAFVariable.EPSM              = 2.2204e-16;
   g_NAFVariable.UNIANG            = 0;
   g_NAFVariable.FREFON            = 0;
   g_NAFVariable.ZALP              = NULL;
   g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
-  g_NAFVariable.m_dneps           = 1.e10;
+  g_NAFVariable.m_dneps           = 1.E100;
   g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
   /*             end of interl use in naf             */
   /****************************************************/
