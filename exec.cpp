@@ -14,9 +14,6 @@ int main(int argc, char *argv[]) {
     if (cmd == "tests")    return cmd_tests(args);
     if (cmd == "dynap_xy") return cmd_dynap_xy(args);
     if (cmd == "dynap_ex") return cmd_dynap_ex(args);
-    //if (cmd == "dynap_ma_threads") return cmd_dynap_ma_threads(args);
-    //if (cmd == "dynap_xy") return cmd_dynap_xy(args);
-    //if (cmd == "dynap_ex") return cmd_dynap_ex(args);
     if (cmd == "dynap_ma") return cmd_dynap_ma(args);
     if (cmd == "dynap_xyfmap") return cmd_dynap_xyfmap(args);
     if (cmd == "dynap_exfmap") return cmd_dynap_exfmap(args);

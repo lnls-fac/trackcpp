@@ -309,20 +309,21 @@ int test_cmd_dynap_ma() {
 	std::vector<std::string> args = {
 			"trackcpp",
 			"dynap_ma",
-			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt",
+			"sirius-v10.txt",
 			"3e9",
 			"864",
 			"on",
 			"on",
 			"off",
-			"5000",
+			"50",
 			"30e-6",   // y0
 			"0.01",    // e0
-			"0.0005",  // tol_e
+			"0.005",   // tol_e
 			"0",       // s_min [m]
-			"30",      // s_max [m]
-			"qaf",
-			"qad"};
+			"200",     // s_max [m]
+			"4",       // nr_threads
+			"qf2", "qfa", "sda"
+		   };
 
 	return cmd_dynap_ma(args);
 
@@ -541,15 +542,10 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_linepass_tpsa(the_ring);
 	//test_findorbit4();
 	//test_findorbit6();
-	//test_dynap_xy(the_ring);
 	//test_read_flat_file(accelerator);
-
-	//test_cmd_dynap_xy_threads();
-	test_cmd_dynap_ex();
-	//test_cmd_dynap_ma_threads();
 	//test_cmd_dynap_xy();
 	//test_cmd_dynap_ex();
-	//test_cmd_dynap_ma();
+	test_cmd_dynap_ma();
 	//test_cmd_dynap_xyfmap();
 	//test_cmd_dynap_exfmap();
 	//test_cmd_track_linepass();
