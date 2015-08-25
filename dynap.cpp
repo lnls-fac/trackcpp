@@ -16,6 +16,7 @@ static int                   thread_nr_turns    = 0;
 static const Accelerator*    thread_accelerator = NULL;
 std::vector<Pos<double>>*    thread_cod = NULL;
 std::vector<DynApGridPoint>* thread_grid = NULL;
+std::vector<unsigned int>*   thread_elements = NULL;
 
 static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vector<Pos<double> >& cod, const char* function_name) {
   if (verbose_on) {
@@ -41,6 +42,144 @@ static DynApGridPoint find_momentum_acceptance(const Accelerator& accelerator, s
 
 static DynApGridPoint find_fine_momentum_acceptance(const Accelerator& accelerator, std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, const double& e_init, const double& e_tol, unsigned int element_idx);
 
+
+void dynap_xyfmap_run(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+
+  // pthread_mutex_lock(thread_data->mutex);
+  // printf("thread:%02i|task:%06lu/%06lu -> rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry);
+  // pthread_mutex_unlock(thread_data->mutex);
+
+  Pos<double> p = grid[task_id].p + (*thread_cod)[0]; // adds closed-orbit
+  if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+
+  std::vector<Pos<double>> new_pos;
+  Status::type lstatus = Status::success;
+  lstatus = track_ringpass (*thread_accelerator,
+                            p,
+                            new_pos,
+                            thread_nr_turns/2,
+                            grid[task_id].lost_turn,
+                            grid[task_id].lost_element,
+                            grid[task_id].lost_plane,
+                            true);
+  if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
+  if (lstatus == Status::success) {
+    p = new_pos.back();
+    lstatus = track_ringpass (*thread_accelerator,
+                              p,
+                              new_pos,
+                              thread_nr_turns/2,
+                              grid[task_id].lost_turn,
+                              grid[task_id].lost_element,
+                              grid[task_id].lost_plane,
+                              true);
+    if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
+  }
+
+  pthread_mutex_lock(thread_data->mutex);
+  printf("thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
+  pthread_mutex_unlock(thread_data->mutex);
+
+}
+
+void dynap_exfmap_run(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+
+  // pthread_mutex_lock(thread_data->mutex);
+  // printf("thread:%02i|task:%06lu/%06lu -> rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry);
+  // pthread_mutex_unlock(thread_data->mutex);
+
+  Pos<double> p = grid[task_id].p + (*thread_cod)[0]; // adds closed-orbit
+  if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+
+  std::vector<Pos<double>> new_pos;
+  Status::type lstatus = Status::success;
+  lstatus = track_ringpass (*thread_accelerator,
+                            p,
+                            new_pos,
+                            thread_nr_turns/2,
+                            grid[task_id].lost_turn,
+                            grid[task_id].lost_element,
+                            grid[task_id].lost_plane,
+                            true);
+  if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
+  if (lstatus == Status::success) {
+    p = new_pos.back();
+    lstatus = track_ringpass (*thread_accelerator,
+                              p,
+                              new_pos,
+                              thread_nr_turns/2,
+                              grid[task_id].lost_turn,
+                              grid[task_id].lost_element,
+                              grid[task_id].lost_plane,
+                              true);
+    if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
+  }
+
+  pthread_mutex_lock(thread_data->mutex);
+  printf("thread:%02i|task:%06lu/%06lu  de:%+.4e|rx:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.de, grid[task_id].p.rx, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
+  pthread_mutex_unlock(thread_data->mutex);
+
+}
+
+void dynap_xy_threads_run(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+
+  // pthread_mutex_lock(thread_data->mutex);
+  // printf("thread:%02i|task:%06lu/%06lu -> rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry);
+  // pthread_mutex_unlock(thread_data->mutex);
+
+  Pos<double> p = grid[task_id].p + (*thread_cod)[0]; // adds closed-orbit
+  if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+
+  std::vector<Pos<double>> new_pos;
+  Status::type lstatus = Status::success;
+  lstatus = track_ringpass (*thread_accelerator,
+                            p,
+                            new_pos,
+                            thread_nr_turns,
+                            grid[task_id].lost_turn,
+                            grid[task_id].lost_element,
+                            grid[task_id].lost_plane,
+                            true);
+
+  pthread_mutex_lock(thread_data->mutex);
+  printf("thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e  turn:%05i|element:%05i  status:%s\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry, grid[task_id].lost_turn, grid[task_id].lost_element, string_error_messages[lstatus].c_str());
+  pthread_mutex_unlock(thread_data->mutex);
+
+
+}
+
+void dynap_ex_threads_run(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+
+  Pos<double> p = grid[task_id].p + (*thread_cod)[0]; // adds closed-orbit
+  if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+
+  std::vector<Pos<double>> new_pos;
+  Status::type lstatus = Status::success;
+  lstatus = track_ringpass (*thread_accelerator,
+                            p,
+                            new_pos,
+                            thread_nr_turns,
+                            grid[task_id].lost_turn,
+                            grid[task_id].lost_element,
+                            grid[task_id].lost_plane,
+                            true);
+
+  pthread_mutex_lock(thread_data->mutex);
+  printf("thread:%02i|task:%06lu/%06lu  de:%+.4e|dx:%+.4e  turn:%05i|element:%05i  status:%s\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.de, grid[task_id].p.rx, grid[task_id].lost_turn, grid[task_id].lost_element, string_error_messages[lstatus].c_str());
+  pthread_mutex_unlock(thread_data->mutex);
+
+
+}
+
+
 Status::type dynap_xy(
     const Accelerator& accelerator,
     std::vector<Pos<double> >& cod,
@@ -49,7 +188,8 @@ Status::type dynap_xy(
     unsigned int nrpts_x, double x_min, double x_max,
     unsigned int nrpts_y, double y_min, double y_max,
     bool calculate_closed_orbit,
-    std::vector<DynApGridPoint>& grid
+    std::vector<DynApGridPoint>& grid,
+    unsigned int nr_threads
   ) {
 
   Status::type status = Status::success;
@@ -63,43 +203,34 @@ Status::type dynap_xy(
     }
   }
 
-  char buffer[1024];
 
-  // main loop
-  if (verbose_on) std::cout << get_timestamp() << " looping over dynap_xy points" << std::endl;
+  // creates grid with tracking points
   grid.resize(nrpts_x * nrpts_y);
   int idx = 0;
   for(unsigned int i=0; i<nrpts_x; ++i) {
     double x = x_min + i * (x_max - x_min) / (nrpts_x - 1.0);
     for(unsigned int j=0; j<nrpts_y; ++j) {
       double y = y_max + j * (y_min - y_max) / (nrpts_y - 1.0);
-
-      if (verbose_on) {
-        sprintf(buffer, "(%03i,%03i): x=%+11.4E [m], y=%+11.4E [m] -> ", i+1, j+1, x, y);
-        std::cout << buffer; std::cout.flush();
-      }
-
       // prepares initial position
       grid[idx].p = p0;     // offset
       grid[idx].p.rx += x;  // dynapt around closed-orbit
       grid[idx].p.ry += y;  // dynapt around closed-orbit
       grid[idx].start_element = 0; grid[idx].lost_turn = 0; grid[idx].lost_element = 0; grid[idx].lost_plane = Plane::no_plane;
-
-      std::vector<Pos<double> > new_pos;
-      Pos<double> p = grid[idx].p + cod[0]; // adds closed-orbit
-      if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-      Status::type lstatus = status;
-      if (status == Status::success) lstatus = track_ringpass (accelerator, p, new_pos, nr_turns, grid[idx].lost_turn, grid[idx].lost_element, grid[idx].lost_plane, false);
-
-      if (verbose_on) {
-        sprintf(buffer, "turn=%05i element=%05i  %20s", grid[idx].lost_turn, grid[idx].lost_element, string_error_messages[lstatus].c_str());
-        std::cout << buffer << std::endl;
-      }
       idx++;
     }
   }
 
-  if (verbose_on) std::cout << get_timestamp() << " end of dynap_xy loop" << std::endl;
+  if (status == Status::success) {
+    //std::vector<double> output;
+    ThreadSharedData thread_data;
+    thread_data.nr_tasks = grid.size();
+    thread_data.func =  dynap_xy_threads_run;
+    thread_nr_turns = nr_turns;
+    thread_accelerator = &accelerator;
+    thread_cod = &cod;
+    thread_grid = &grid;
+    start_all_threads(thread_data, nr_threads);
+  }
 
   return Status::success;
 
@@ -113,7 +244,8 @@ Status::type dynap_ex(
     unsigned int nrpts_e, double e_min, double e_max,
     unsigned int nrpts_x, double x_min, double x_max,
     bool calculate_closed_orbit,
-    std::vector<DynApGridPoint>& grid
+    std::vector<DynApGridPoint>& grid,
+    unsigned int nr_threads
   ) {
 
   Status::type status = Status::success;
@@ -127,48 +259,168 @@ Status::type dynap_ex(
     }
   }
 
-  char buffer[1024];
 
-  // main loop
-  if (verbose_on) std::cout << get_timestamp() << " looping over dynap_ex points" << std::endl;
+  // creates grid with tracking points
   grid.resize(nrpts_e * nrpts_x);
   int idx = 0;
   for(unsigned int i=0; i<nrpts_e; ++i) {
     double e = e_min + i * (e_max - e_min) / (nrpts_e - 1.0);
     for(unsigned int j=0; j<nrpts_x; ++j) {
       double x = x_max + j * (x_min - x_max) / (nrpts_x - 1.0);
-
-      if (verbose_on) {
-        sprintf(buffer, "(%03i,%03i): e=%+11.4E, x=%+11.4E [m] -> ", i+1, j+1, e, x);
-        std::cout << buffer; std::cout.flush();
-      }
-
       // prepares initial position
       grid[idx].p = p0;     // offset
       grid[idx].p.de += e;  // dynapt around closed-orbit
       grid[idx].p.rx += x;  // dynapt around closed-orbit
       grid[idx].start_element = 0; grid[idx].lost_turn = 0; grid[idx].lost_element = 0; grid[idx].lost_plane = Plane::no_plane;
-
-      std::vector<Pos<double> > new_pos;
-      Pos<double> p = grid[idx].p + cod[0]; // adds closed-orbit
-      if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-      Status::type lstatus = status;
-      if (status == Status::success) lstatus = track_ringpass (accelerator, p, new_pos, nr_turns, grid[idx].lost_turn, grid[idx].lost_element, grid[idx].lost_plane, false);
-
-      if (verbose_on) {
-        sprintf(buffer, "turn=%05i element=%05i  %20s", grid[idx].lost_turn, grid[idx].lost_element, string_error_messages[lstatus].c_str());
-        std::cout << buffer << std::endl;
-      }
-
       idx++;
     }
   }
 
-  if (verbose_on) std::cout << get_timestamp() << " end of dynap_ex loop" << std::endl;
+  if (status == Status::success) {
+    //std::vector<double> output;
+    ThreadSharedData thread_data;
+    thread_data.nr_tasks = grid.size();
+    thread_data.func =  dynap_ex_threads_run;
+    thread_nr_turns = nr_turns;
+    thread_accelerator = &accelerator;
+    thread_cod = &cod;
+    thread_grid = &grid;
+    start_all_threads(thread_data, nr_threads);
+  }
 
   return Status::success;
 
 }
+
+
+// Status::type dynap_xy(
+//     const Accelerator& accelerator,
+//     std::vector<Pos<double> >& cod,
+//     unsigned int nr_turns,
+//     const Pos<double>& p0,
+//     unsigned int nrpts_x, double x_min, double x_max,
+//     unsigned int nrpts_y, double y_min, double y_max,
+//     bool calculate_closed_orbit,
+//     std::vector<DynApGridPoint>& grid
+//   ) {
+//
+//   Status::type status = Status::success;
+//
+//   // finds 6D closed-orbit
+//   if (calculate_closed_orbit) {
+//     status = calc_closed_orbit(accelerator, cod, __FUNCTION__);
+//     if (status != Status::success) {
+//       cod.clear();
+//       for(unsigned int i=0; i<1+accelerator.lattice.size(); ++i) cod.push_back(Pos<double>(nan("")));
+//     }
+//   }
+//
+//   char buffer[1024];
+//
+//   // main loop
+//   if (verbose_on) std::cout << get_timestamp() << " looping over dynap_xy points" << std::endl;
+//   grid.resize(nrpts_x * nrpts_y);
+//   int idx = 0;
+//   for(unsigned int i=0; i<nrpts_x; ++i) {
+//     double x = x_min + i * (x_max - x_min) / (nrpts_x - 1.0);
+//     for(unsigned int j=0; j<nrpts_y; ++j) {
+//       double y = y_max + j * (y_min - y_max) / (nrpts_y - 1.0);
+//
+//       if (verbose_on) {
+//         sprintf(buffer, "(%03i,%03i): x=%+11.4E [m], y=%+11.4E [m] -> ", i+1, j+1, x, y);
+//         std::cout << buffer; std::cout.flush();
+//       }
+//
+//       // prepares initial position
+//       grid[idx].p = p0;     // offset
+//       grid[idx].p.rx += x;  // dynapt around closed-orbit
+//       grid[idx].p.ry += y;  // dynapt around closed-orbit
+//       grid[idx].start_element = 0; grid[idx].lost_turn = 0; grid[idx].lost_element = 0; grid[idx].lost_plane = Plane::no_plane;
+//
+//       std::vector<Pos<double> > new_pos;
+//       Pos<double> p = grid[idx].p + cod[0]; // adds closed-orbit
+//       if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+//       Status::type lstatus = status;
+//       if (status == Status::success) lstatus = track_ringpass (accelerator, p, new_pos, nr_turns, grid[idx].lost_turn, grid[idx].lost_element, grid[idx].lost_plane, false);
+//
+//       if (verbose_on) {
+//         sprintf(buffer, "turn=%05i element=%05i  %20s", grid[idx].lost_turn, grid[idx].lost_element, string_error_messages[lstatus].c_str());
+//         std::cout << buffer << std::endl;
+//       }
+//       idx++;
+//     }
+//   }
+//
+//   if (verbose_on) std::cout << get_timestamp() << " end of dynap_xy loop" << std::endl;
+//
+//   return Status::success;
+//
+// }
+
+// Status::type dynap_ex(
+//     const Accelerator& accelerator,
+//     std::vector<Pos<double> >& cod,
+//     unsigned int nr_turns,
+//     const Pos<double>& p0,
+//     unsigned int nrpts_e, double e_min, double e_max,
+//     unsigned int nrpts_x, double x_min, double x_max,
+//     bool calculate_closed_orbit,
+//     std::vector<DynApGridPoint>& grid
+//   ) {
+//
+//   Status::type status = Status::success;
+//
+//   // finds 6D closed-orbit
+//   if (calculate_closed_orbit) {
+//     status = calc_closed_orbit(accelerator, cod, __FUNCTION__);
+//     if (status != Status::success) {
+//       cod.clear();
+//       for(unsigned int i=0; i<1+accelerator.lattice.size(); ++i) cod.push_back(Pos<double>(nan("")));
+//     }
+//   }
+//
+//   char buffer[1024];
+//
+//   // main loop
+//   if (verbose_on) std::cout << get_timestamp() << " looping over dynap_ex points" << std::endl;
+//   grid.resize(nrpts_e * nrpts_x);
+//   int idx = 0;
+//   for(unsigned int i=0; i<nrpts_e; ++i) {
+//     double e = e_min + i * (e_max - e_min) / (nrpts_e - 1.0);
+//     for(unsigned int j=0; j<nrpts_x; ++j) {
+//       double x = x_max + j * (x_min - x_max) / (nrpts_x - 1.0);
+//
+//       if (verbose_on) {
+//         sprintf(buffer, "(%03i,%03i): e=%+11.4E, x=%+11.4E [m] -> ", i+1, j+1, e, x);
+//         std::cout << buffer; std::cout.flush();
+//       }
+//
+//       // prepares initial position
+//       grid[idx].p = p0;     // offset
+//       grid[idx].p.de += e;  // dynapt around closed-orbit
+//       grid[idx].p.rx += x;  // dynapt around closed-orbit
+//       grid[idx].start_element = 0; grid[idx].lost_turn = 0; grid[idx].lost_element = 0; grid[idx].lost_plane = Plane::no_plane;
+//
+//       std::vector<Pos<double> > new_pos;
+//       Pos<double> p = grid[idx].p + cod[0]; // adds closed-orbit
+//       if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+//       Status::type lstatus = status;
+//       if (status == Status::success) lstatus = track_ringpass (accelerator, p, new_pos, nr_turns, grid[idx].lost_turn, grid[idx].lost_element, grid[idx].lost_plane, false);
+//
+//       if (verbose_on) {
+//         sprintf(buffer, "turn=%05i element=%05i  %20s", grid[idx].lost_turn, grid[idx].lost_element, string_error_messages[lstatus].c_str());
+//         std::cout << buffer << std::endl;
+//       }
+//
+//       idx++;
+//     }
+//   }
+//
+//   if (verbose_on) std::cout << get_timestamp() << " end of dynap_ex loop" << std::endl;
+//
+//   return Status::success;
+//
+// }
 
 Status::type dynap_ma(
     const Accelerator& accelerator,
@@ -244,88 +496,6 @@ Status::type dynap_ma(
 
 }
 
-void dynap_xyfmap_run(ThreadSharedData* thread_data, int thread_id, long task_id) {
-
-  std::vector<DynApGridPoint>& grid = *thread_grid;
-
-  // pthread_mutex_lock(thread_data->mutex);
-  // printf("thread:%02i|task:%06lu/%06lu -> rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry);
-  // pthread_mutex_unlock(thread_data->mutex);
-
-  Pos<double> p = grid[task_id].p + (*thread_cod)[0]; // adds closed-orbit
-  if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-
-  std::vector<Pos<double>> new_pos;
-  Status::type lstatus = Status::success;
-  lstatus = track_ringpass (*thread_accelerator,
-                            p,
-                            new_pos,
-                            thread_nr_turns/2,
-                            grid[task_id].lost_turn,
-                            grid[task_id].lost_element,
-                            grid[task_id].lost_plane,
-                            true);
-  if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
-  if (lstatus == Status::success) {
-    p = new_pos.back();
-    lstatus = track_ringpass (*thread_accelerator,
-                              p,
-                              new_pos,
-                              thread_nr_turns/2,
-                              grid[task_id].lost_turn,
-                              grid[task_id].lost_element,
-                              grid[task_id].lost_plane,
-                              true);
-    if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
-  }
-
-  pthread_mutex_lock(thread_data->mutex);
-  printf("thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
-  pthread_mutex_unlock(thread_data->mutex);
-
-}
-
-
-void dynap_exfmap_run(ThreadSharedData* thread_data, int thread_id, long task_id) {
-
-  std::vector<DynApGridPoint>& grid = *thread_grid;
-
-  // pthread_mutex_lock(thread_data->mutex);
-  // printf("thread:%02i|task:%06lu/%06lu -> rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry);
-  // pthread_mutex_unlock(thread_data->mutex);
-
-  Pos<double> p = grid[task_id].p + (*thread_cod)[0]; // adds closed-orbit
-  if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-
-  std::vector<Pos<double>> new_pos;
-  Status::type lstatus = Status::success;
-  lstatus = track_ringpass (*thread_accelerator,
-                            p,
-                            new_pos,
-                            thread_nr_turns/2,
-                            grid[task_id].lost_turn,
-                            grid[task_id].lost_element,
-                            grid[task_id].lost_plane,
-                            true);
-  if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
-  if (lstatus == Status::success) {
-    p = new_pos.back();
-    lstatus = track_ringpass (*thread_accelerator,
-                              p,
-                              new_pos,
-                              thread_nr_turns/2,
-                              grid[task_id].lost_turn,
-                              grid[task_id].lost_element,
-                              grid[task_id].lost_plane,
-                              true);
-    if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
-  }
-
-  pthread_mutex_lock(thread_data->mutex);
-  printf("thread:%02i|task:%06lu/%06lu  de:%+.4e|rx:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.de, grid[task_id].p.rx, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
-  pthread_mutex_unlock(thread_data->mutex);
-
-}
 
 Status::type dynap_xyfmap(
     const Accelerator& accelerator,
@@ -442,6 +612,7 @@ Status::type dynap_exfmap(
   return Status::success;
 
 }
+
 
 static DynApGridPoint find_momentum_acceptance(
     const Accelerator& accelerator,

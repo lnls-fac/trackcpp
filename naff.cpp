@@ -108,7 +108,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
 
 
   g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
-  g_NAFVariable.XH         = 1;         /* step */
+  g_NAFVariable.XH         = M_2_PI;    /* step */  /* value = 1 */
   g_NAFVariable.T0         = 0.0;       /* time t0 */
   g_NAFVariable.NTERM      = nterm;     /* max term to find */
   g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */

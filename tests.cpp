@@ -142,20 +142,20 @@ int test_findorbit6() {
 
 }
 
-int test_dynap_xy(const Accelerator& accelerator) {
-
-	std::vector<Pos<double> > closed_orbit;
-	unsigned int nr_turns = 5000;
-	Pos<double> p0(0,0,0,0,0,0);
-	unsigned int nrpts_x = 10;
-	double x_min = -0.015, x_max = +0.015;
-	unsigned int nrpts_y = 10;
-	double y_min = 0, y_max = +0.0035;
-	std::vector<DynApGridPoint> points;
-	dynap_xy(accelerator, closed_orbit, nr_turns, p0, nrpts_x, x_min, x_max, nrpts_y, y_min, y_max, true, points);
-
-	return 0;
-}
+// int test_dynap_xy(const Accelerator& accelerator) {
+//
+// 	std::vector<Pos<double> > closed_orbit;
+// 	unsigned int nr_turns = 5000;
+// 	Pos<double> p0(0,0,0,0,0,0);
+// 	unsigned int nrpts_x = 10;
+// 	double x_min = -0.015, x_max = +0.015;
+// 	unsigned int nrpts_y = 10;
+// 	double y_min = 0, y_max = +0.0035;
+// 	std::vector<DynApGridPoint> points;
+// 	dynap_xy(accelerator, closed_orbit, nr_turns, p0, nrpts_x, x_min, x_max, nrpts_y, y_min, y_max, true, points);
+//
+// 	return 0;
+// }
 
 int test_cmd_track_linepass() {
 
@@ -185,8 +185,8 @@ int test_cmd_dynap_xy() {
 
 	std::vector<std::string> args = {
 			"trackcpp",
-			"dynap_xy",
-			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_with_ids_in.txt",
+			"dynap_xy_threads",
+			"sirius-v10.txt",
 			"3e9",
 			"864",
 			"on",
@@ -199,7 +199,8 @@ int test_cmd_dynap_xy() {
 			"+0.015",
 			"4",
 			"0.0",
-			"+0.0035"
+			"+0.0035",
+			"4"
 	};
 	return cmd_dynap_xy(args);
 
@@ -209,25 +210,99 @@ int test_cmd_dynap_ex() {
 
 	std::vector<std::string> args = {
 			"trackcpp",
-			"dynap_ex",
-			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt",
+			"dynap_ex_threads",
+			"sirius-v10.txt",
 			"3e9",
 			"864",
 			"on",
 			"on",
 			"on",
-			"1e-6",
+			"0.001",
 			"5000",
-			"2",
+			"4",
 			"-0.05",
 			"+0.05",
-			"2",
+			"4",
 			"-0.015",
-			"+0.015"
+			"0.0",
+			"4"
 	};
-	return cmd_dynap_xy(args);
+	return cmd_dynap_ex(args);
 
 }
+
+// int test_cmd_dynap_ma_threads() {
+//
+// 	std::vector<std::string> args = {
+// 			"trackcpp",
+// 			"dynap_ma_threads",
+// 			"sirius-v10.txt",
+// 			"3e9",
+// 			"864",
+// 			"on",
+// 			"on",
+// 			"off",
+// 			"5000",
+// 			"30e-6",   // y0
+// 			"0.01",    // e0
+// 			"0.0005",  // tol_e
+// 			"0",       // s_min [m]
+// 			"30",      // s_max [m]
+// 			"4",       // nr_threads
+// 			"qaf",
+// 			"qad"};
+//
+// 	return cmd_dynap_ma_threads(args);
+//
+// }
+
+// int test_cmd_dynap_xy() {
+//
+// 	std::vector<std::string> args = {
+// 			"trackcpp",
+// 			"dynap_xy",
+// 			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_with_ids_in.txt",
+// 			"3e9",
+// 			"864",
+// 			"on",
+// 			"on",
+// 			"on",
+// 			"0.0",
+// 			"5000",
+// 			"4",
+// 			"-0.015",
+// 			"+0.015",
+// 			"4",
+// 			"0.0",
+// 			"+0.0035"
+// 	};
+// 	return cmd_dynap_xy(args);
+//
+// }
+//
+// int test_cmd_dynap_ex() {
+//
+// 	std::vector<std::string> args = {
+// 			"trackcpp",
+// 			"dynap_ex",
+// 			"/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in.txt",
+// 			"3e9",
+// 			"864",
+// 			"on",
+// 			"on",
+// 			"on",
+// 			"1e-6",
+// 			"5000",
+// 			"2",
+// 			"-0.05",
+// 			"+0.05",
+// 			"2",
+// 			"-0.015",
+// 			"+0.015"
+// 	};
+// 	return cmd_dynap_xy(args);
+//
+// }
 
 int test_cmd_dynap_ma() {
 
@@ -278,7 +353,6 @@ int test_cmd_dynap_xyfmap() {
 
 }
 
-
 int test_cmd_dynap_exfmap() {
 
 	std::vector<std::string> args = {
@@ -303,8 +377,6 @@ int test_cmd_dynap_exfmap() {
 	return cmd_dynap_exfmap(args);
 
 }
-
-
 
 int test_kicktable(Accelerator& accelerator) {
 
@@ -472,11 +544,14 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_dynap_xy(the_ring);
 	//test_read_flat_file(accelerator);
 
+	//test_cmd_dynap_xy_threads();
+	test_cmd_dynap_ex();
+	//test_cmd_dynap_ma_threads();
 	//test_cmd_dynap_xy();
 	//test_cmd_dynap_ex();
 	//test_cmd_dynap_ma();
 	//test_cmd_dynap_xyfmap();
-	test_cmd_dynap_exfmap();
+	//test_cmd_dynap_exfmap();
 	//test_cmd_track_linepass();
 	//test_kicktable(accelerator);
 	//test_simple_drift();
