@@ -1,9 +1,7 @@
 #include "trackcpp.h"
 
 static int current_thread_id = 0;
-
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void* start_thread(void* args) {
 

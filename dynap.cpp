@@ -239,6 +239,7 @@ Status::type dynap_xyfmap(
 
   // creates grid with tracking points
   grid.resize(nrpts_x * nrpts_y);
+  //std::cout << "teste: " << nrpts_x << " " << nrpts_y << " " << grid.size() << std::endl;
   int idx = 0;
   for(unsigned int i=0; i<nrpts_x; ++i) {
     double x = x_min + i * (x_max - x_min) / (nrpts_x - 1.0);
@@ -295,7 +296,6 @@ Status::type dynap_exfmap(
     }
   }
 
-
   // creates grid with tracking points
   grid.resize(nrpts_e * nrpts_x);
   int idx = 0;
@@ -316,8 +316,8 @@ Status::type dynap_exfmap(
 
   if (status == Status::success) {
     std::vector<double> output;
-    ThreadSharedData thread_data;
     thread_type = "exfmap";
+    ThreadSharedData thread_data;
     thread_data.nr_tasks = grid.size();
     thread_data.func = thread_dynap_naff;
     thread_nr_turns = nr_turns;
@@ -326,6 +326,7 @@ Status::type dynap_exfmap(
     thread_grid = &grid;
     start_all_threads(thread_data, nr_threads);
   }
+
 
   return Status::success;
 
@@ -461,9 +462,17 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
                             grid[task_id].lost_element,
                             grid[task_id].lost_plane,
                             true);
+  //pthread_mutex_lock(thread_data->mutex);
   if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
+  //pthread_mutex_unlock(thread_data->mutex);
   if (lstatus == Status::success) {
     p = new_pos.back();
+
+    //pthread_mutex_lock(thread_data->mutex);
+    //printf("nan thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, p.rx, p.ry);
+    //pthread_mutex_unlock(thread_data->mutex);
+
+    std::vector<Pos<double>> new_pos;
     lstatus = track_ringpass (*thread_accelerator,
                               p,
                               new_pos,
@@ -472,7 +481,15 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
                               grid[task_id].lost_element,
                               grid[task_id].lost_plane,
                               true);
+
+    //p = new_pos.back();
+    //pthread_mutex_lock(thread_data->mutex);
+    //printf("nan2 thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, p.rx, p.ry);
+    //pthread_mutex_unlock(thread_data->mutex);
+
+    //pthread_mutex_lock(thread_data->mutex);
     if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
+    //pthread_mutex_unlock(thread_data->mutex);
   }
 
   if (thread_type.compare("xyfmap") == 0) {
@@ -484,7 +501,9 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
     printf("thread:%02i|task:%06lu/%06lu  de:%+.4e|rx:%+.4e  nu1:%.4e|%.4e  nu2:%.4e|%.4e  dnu:%.4e|%.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.de, grid[task_id].p.rx, grid[task_id].nux1, grid[task_id].nuy1, grid[task_id].nux2, grid[task_id].nuy2, fabs(grid[task_id].nux2-grid[task_id].nux1), fabs(grid[task_id].nuy2-grid[task_id].nuy1));
     pthread_mutex_unlock(thread_data->mutex);
   } else {
+    pthread_mutex_lock(thread_data->mutex);
     std::cerr << "undefined multithread dynap calculation type" << std::endl;
+    pthread_mutex_unlock(thread_data->mutex);
   }
 
 }
