@@ -185,7 +185,7 @@ int cmd_dynap_ex(const std::vector<std::string>& args) {
 int cmd_dynap_ma(const std::vector<std::string>& args) {
 
   if (args.size() < 15) {
-    std::cerr << "dynap_ex: invalid number of arguments!" << std::endl;
+    std::cerr << "dynap_ma: invalid number of arguments!" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -204,6 +204,7 @@ int cmd_dynap_ma(const std::vector<std::string>& args) {
   double       e_tol = std::atof(args[11].c_str());
   double       s_min = std::atof(args[12].c_str());
   double       s_max = std::atof(args[13].c_str());
+
   unsigned int nr_threads = 1;
   std::vector<std::string> fam_names;
   for(unsigned int i=14; i<args.size(); ++i) {
@@ -261,8 +262,184 @@ int cmd_dynap_ma(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
   status = print_closed_orbit(accelerator, cod);
   if (status == Status::file_not_opened) return status;
-  std::cout << get_timestamp() << " saving dynap_ex grid to file" << std::endl;
+  std::cout << get_timestamp() << " saving dynap_ma grid to file" << std::endl;
   status = print_dynapgrid (accelerator, grid, "[dynap_ma]", "dynap_ma_out.txt");
+  if (status == Status::file_not_opened) return status;
+
+  std::cout << get_timestamp() << " end timestamp" << std::endl;
+  return EXIT_SUCCESS;
+
+}
+
+int cmd_dynap_pxa(const std::vector<std::string>& args) {
+
+  if (args.size() < 15) {
+    std::cerr << "dynap_pxa: invalid number of arguments!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  std::cout << std::endl;
+  std::cout << "[cmd_dynap_pxa]" << std::endl << std::endl;
+
+  std::string  flat_filename(args[2]);
+  double       ring_energy      = std::atof(args[3].c_str());
+  unsigned int harmonic_number = std::atoi(args[4].c_str());
+  std::string  cavity_state(args[5].c_str());
+  std::string  radiation_state(args[6].c_str());
+  std::string  vchamber_state(args[7].c_str());
+  unsigned int nr_turns = std::atoi(args[8].c_str());
+  double       y0     = std::atof(args[9].c_str());
+  double       px0    = std::atof(args[10].c_str());
+  double       px_tol = std::atof(args[11].c_str());
+  double       s_min  = std::atof(args[12].c_str());
+  double       s_max  = std::atof(args[13].c_str());
+  unsigned int nr_threads = 1;
+  std::vector<std::string> fam_names;
+  for(unsigned int i=14; i<args.size(); ++i) {
+    unsigned int nr = std::atoi(args[i].c_str());
+    if (nr > 0) {
+      nr_threads = nr;
+    } else fam_names.push_back(args[i]);
+  }
+
+
+  print_header(stdout);
+  std::cout << std::endl;
+  std::cout << "flat_filename   : " << flat_filename << std::endl;
+  std::cout << "energy[eV]      : " << ring_energy << std::endl;
+  std::cout << "harmonic_number : " << harmonic_number << std::endl;
+  std::cout << "cavity_state    : " << cavity_state << std::endl;
+  std::cout << "radiation_state : " << radiation_state << std::endl;
+  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+  std::cout << "nr_turns        : " << nr_turns << std::endl;
+  std::cout << "y0[m]           : " << y0 << std::endl;
+  std::cout << "px0[rad]        : " << px0 << std::endl;
+  std::cout << "px_tol          : " << px_tol << std::endl;
+  std::cout << "s_min[m]        : " << s_min << std::endl;
+  std::cout << "s_max[m]        : " << s_max << std::endl;
+  std::cout << "nr_threads      : " << nr_threads << std::endl;
+  std::cout << "fam_names       : ";
+  for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+
+  std::cout << std::endl;
+  std::cout << get_timestamp() << " begin timestamp" << std::endl;
+
+  Accelerator accelerator;
+
+  // reads flat file
+  Status::type status = read_flat_file(flat_filename, accelerator);
+  if (status == Status::file_not_found) {
+    std::cerr << "dynap_pxa: flat file not found!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // builds accelerator
+  accelerator.energy = ring_energy;
+  accelerator.harmonic_number = harmonic_number;
+  accelerator.cavity_on = (cavity_state == "on");
+  accelerator.radiation_on = (radiation_state == "on");
+  accelerator.vchamber_on = (vchamber_state == "on");
+
+  // calcs dynamical aperture
+  std::vector<Pos<double> > cod;
+  Pos<double> p0(0,0,y0,0,0,0);
+  std::vector<DynApGridPoint> grid;
+  dynap_pxa(accelerator, cod, nr_turns, p0, px0, px_tol, s_min, s_max, fam_names, true, grid, nr_threads);
+
+  // generates output files
+  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+  status = print_closed_orbit(accelerator, cod);
+  if (status == Status::file_not_opened) return status;
+  std::cout << get_timestamp() << " saving dynap_pxa grid to file" << std::endl;
+  status = print_dynapgrid (accelerator, grid, "[dynap_pxa]", "dynap_pxa_out.txt");
+  if (status == Status::file_not_opened) return status;
+
+  std::cout << get_timestamp() << " end timestamp" << std::endl;
+  return EXIT_SUCCESS;
+
+}
+
+int cmd_dynap_pya(const std::vector<std::string>& args) {
+
+  if (args.size() < 15) {
+    std::cerr << "dynap_pya: invalid number of arguments!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  std::cout << std::endl;
+  std::cout << "[cmd_dynap_pya]" << std::endl << std::endl;
+
+  std::string  flat_filename(args[2]);
+  double       ring_energy      = std::atof(args[3].c_str());
+  unsigned int harmonic_number = std::atoi(args[4].c_str());
+  std::string  cavity_state(args[5].c_str());
+  std::string  radiation_state(args[6].c_str());
+  std::string  vchamber_state(args[7].c_str());
+  unsigned int nr_turns = std::atoi(args[8].c_str());
+  double       y0     = std::atof(args[9].c_str());
+  double       py0    = std::atof(args[10].c_str());
+  double       py_tol = std::atof(args[11].c_str());
+  double       s_min  = std::atof(args[12].c_str());
+  double       s_max  = std::atof(args[13].c_str());
+  unsigned int nr_threads = 1;
+  std::vector<std::string> fam_names;
+  for(unsigned int i=14; i<args.size(); ++i) {
+    unsigned int nr = std::atoi(args[i].c_str());
+    if (nr > 0) {
+      nr_threads = nr;
+    } else fam_names.push_back(args[i]);
+  }
+
+
+  print_header(stdout);
+  std::cout << std::endl;
+  std::cout << "flat_filename   : " << flat_filename << std::endl;
+  std::cout << "energy[eV]      : " << ring_energy << std::endl;
+  std::cout << "harmonic_number : " << harmonic_number << std::endl;
+  std::cout << "cavity_state    : " << cavity_state << std::endl;
+  std::cout << "radiation_state : " << radiation_state << std::endl;
+  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+  std::cout << "nr_turns        : " << nr_turns << std::endl;
+  std::cout << "y0[m]           : " << y0 << std::endl;
+  std::cout << "py0[rad]        : " << py0 << std::endl;
+  std::cout << "py_tol          : " << py_tol << std::endl;
+  std::cout << "s_min[m]        : " << s_min << std::endl;
+  std::cout << "s_max[m]        : " << s_max << std::endl;
+  std::cout << "nr_threads      : " << nr_threads << std::endl;
+  std::cout << "fam_names       : ";
+  for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+
+  std::cout << std::endl;
+  std::cout << get_timestamp() << " begin timestamp" << std::endl;
+
+  Accelerator accelerator;
+
+  // reads flat file
+  Status::type status = read_flat_file(flat_filename, accelerator);
+  if (status == Status::file_not_found) {
+    std::cerr << "dynap_pya: flat file not found!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // builds accelerator
+  accelerator.energy = ring_energy;
+  accelerator.harmonic_number = harmonic_number;
+  accelerator.cavity_on = (cavity_state == "on");
+  accelerator.radiation_on = (radiation_state == "on");
+  accelerator.vchamber_on = (vchamber_state == "on");
+
+  // calcs dynamical aperture
+  std::vector<Pos<double> > cod;
+  Pos<double> p0(0,0,y0,0,0,0);
+  std::vector<DynApGridPoint> grid;
+  dynap_pxa(accelerator, cod, nr_turns, p0, py0, py_tol, s_min, s_max, fam_names, true, grid, nr_threads);
+
+  // generates output files
+  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+  status = print_closed_orbit(accelerator, cod);
+  if (status == Status::file_not_opened) return status;
+  std::cout << get_timestamp() << " saving dynap_pya grid to file" << std::endl;
+  status = print_dynapgrid (accelerator, grid, "[dynap_pya]", "dynap_pya_out.txt");
   if (status == Status::file_not_opened) return status;
 
   std::cout << get_timestamp() << " end timestamp" << std::endl;

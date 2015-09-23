@@ -16,6 +16,10 @@ static const double tiny_y_amp = 1e-7; // [m]
 static Status::type   calc_closed_orbit(const Accelerator& accelerator, std::vector<Pos<double> >& cod, const char* function_name);
 static DynApGridPoint find_momentum_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double e0, double e_tol, unsigned int element_idx);
 static DynApGridPoint find_fine_momentum_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double e_init, double e_tol, unsigned int element_idx);
+static DynApGridPoint find_px_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double px0, double px_tol, unsigned int element_idx);
+static DynApGridPoint find_fine_px_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double px_init, double px_tol, unsigned int element_idx);
+static DynApGridPoint find_py_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double px0, double py_tol, unsigned int element_idx);
+static DynApGridPoint find_fine_py_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double py_init, double py_tol, unsigned int element_idx);
 
 // global thread variables and decl. of aux. thread functions
 static unsigned int                     thread_nr_turns = 0;
@@ -30,7 +34,8 @@ static const Pos<double>*               thread_ma_p0 = NULL;
 static void           thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long task_id);
 static void           thread_dynap(ThreadSharedData* thread_data, int thread_id, long task_id);
 static void           thread_dynap_ma(ThreadSharedData* thread_data, int thread_id, long task_id);
-
+static void           thread_dynap_pxa(ThreadSharedData* thread_data, int thread_id, long task_id);
+static void           thread_dynap_pya(ThreadSharedData* thread_data, int thread_id, long task_id);
 
 // main functions
 
@@ -212,6 +217,135 @@ Status::type dynap_ma(
   return Status::success;
 
 }
+
+Status::type dynap_pxa(
+    const Accelerator& accelerator,
+    std::vector<Pos<double> >& cod,
+    unsigned int nr_turns,
+    const Pos<double>& p0,
+    const double& px0,
+    const double& px_tol,
+    const double& s_min, const double& s_max,
+    const std::vector<std::string>& fam_names,
+    bool calculate_closed_orbit,
+    std::vector<DynApGridPoint>& grid,
+    unsigned int nr_threads
+  ) {
+
+  Status::type status = Status::success;
+
+  // finds 6D closed-orbit
+  if (calculate_closed_orbit) {
+    status = calc_closed_orbit(accelerator, cod, __FUNCTION__);
+    if (status != Status::success) {
+      cod.clear();
+      for(unsigned int i=0; i<1+accelerator.lattice.size(); ++i) cod.push_back(Pos<double>(nan("")));
+    }
+  }
+
+
+  // finds out which in which elements tracking is to be performed
+  grid.clear();
+  std::vector<unsigned int> elements;
+  double s = 0.0;
+  for(unsigned int i=0; i<accelerator.lattice.size(); ++i) {
+    if ((s >= s_min) and (s <= s_max)) {
+      if (std::find(fam_names.begin(), fam_names.end(), accelerator.lattice[i].fam_name) != fam_names.end()) {
+        elements.push_back(i);            // calcs at start of element
+        DynApGridPoint p;
+        p.start_element = 0; p.lost_turn = 0; p.lost_element = 0; p.lost_plane = Plane::no_plane;
+        grid.push_back(p);
+      }
+    }
+    s += accelerator.lattice[i].length;
+  }
+  if (verbose_on) std::cout << get_timestamp() << " number of elements within range is " << elements.size() << std::endl;
+
+  if (status == Status::success) {
+    //std::vector<double> output;
+    ThreadSharedData thread_data;
+    thread_type = "pxa";
+    thread_data.nr_tasks = grid.size();
+    thread_data.func =  thread_dynap_pxa;
+    thread_nr_turns = nr_turns;
+    thread_accelerator = &accelerator;
+    thread_cod = &cod;
+    thread_grid = &grid;
+    thread_ma_e0 = &px0;
+    thread_ma_e_tol = &px_tol;
+    thread_ma_p0 = &p0;
+    thread_elements = &elements;
+    start_all_threads(thread_data, nr_threads);
+  }
+
+  return Status::success;
+
+}
+
+Status::type dynap_pya(
+    const Accelerator& accelerator,
+    std::vector<Pos<double> >& cod,
+    unsigned int nr_turns,
+    const Pos<double>& p0,
+    const double& py0,
+    const double& py_tol,
+    const double& s_min, const double& s_max,
+    const std::vector<std::string>& fam_names,
+    bool calculate_closed_orbit,
+    std::vector<DynApGridPoint>& grid,
+    unsigned int nr_threads
+  ) {
+
+  Status::type status = Status::success;
+
+  // finds 6D closed-orbit
+  if (calculate_closed_orbit) {
+    status = calc_closed_orbit(accelerator, cod, __FUNCTION__);
+    if (status != Status::success) {
+      cod.clear();
+      for(unsigned int i=0; i<1+accelerator.lattice.size(); ++i) cod.push_back(Pos<double>(nan("")));
+    }
+  }
+
+
+  // finds out which in which elements tracking is to be performed
+  grid.clear();
+  std::vector<unsigned int> elements;
+  double s = 0.0;
+  for(unsigned int i=0; i<accelerator.lattice.size(); ++i) {
+    if ((s >= s_min) and (s <= s_max)) {
+      if (std::find(fam_names.begin(), fam_names.end(), accelerator.lattice[i].fam_name) != fam_names.end()) {
+        elements.push_back(i);            // calcs at start of element
+        DynApGridPoint p;
+        p.start_element = 0; p.lost_turn = 0; p.lost_element = 0; p.lost_plane = Plane::no_plane;
+        grid.push_back(p);
+      }
+    }
+    s += accelerator.lattice[i].length;
+  }
+  if (verbose_on) std::cout << get_timestamp() << " number of elements within range is " << elements.size() << std::endl;
+
+  if (status == Status::success) {
+    //std::vector<double> output;
+    ThreadSharedData thread_data;
+    thread_type = "pya";
+    thread_data.nr_tasks = grid.size();
+    thread_data.func =  thread_dynap_pya;
+    thread_nr_turns = nr_turns;
+    thread_accelerator = &accelerator;
+    thread_cod = &cod;
+    thread_grid = &grid;
+    thread_ma_e0 = &py0;
+    thread_ma_e_tol = &py_tol;
+    thread_ma_p0 = &p0;
+    thread_elements = &elements;
+    start_all_threads(thread_data, nr_threads);
+  }
+
+  return Status::success;
+
+}
+
 
 Status::type dynap_xyfmap(
     const Accelerator& accelerator,
@@ -417,6 +551,130 @@ static DynApGridPoint find_momentum_acceptance(
 
 }
 
+static DynApGridPoint find_px_acceptance(
+  const Accelerator& accelerator,
+  const std::vector<Pos<double> >& cod,
+  unsigned int nr_turns,
+  const Pos<double>& p0,
+  double px0,
+  double px_tol,
+  unsigned int element_idx) {
+
+  DynApGridPoint point;
+
+  double px_stable   = 0;
+  // search initial unstable energy offset
+  double px_unstable = px0;
+  while (true) {
+    point.p = p0;     // offset
+    point.p.px += px_unstable;
+    point.start_element = element_idx; point.lost_turn = 0; point.lost_element = element_idx; point.lost_plane = Plane::no_plane;
+    std::vector<Pos<double> > new_pos;
+    Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
+    if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+    Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+    if (status == Status::success) {
+      px_stable    = px_unstable;
+      px_unstable *= 2.0;
+    } else break;
+  }
+
+  unsigned int lost_element = point.lost_element;
+  unsigned int lost_turn    = point.lost_turn;
+  Plane::type  lost_plane   = point.lost_plane;
+  while (fabs(px_unstable - px_stable) > px_tol) {
+    double px = 0.5 * (px_unstable + px_stable);
+    point.p = p0;     // offset
+    point.p.px += px;
+    point.start_element = element_idx; point.lost_turn = 0; point.lost_element = element_idx; point.lost_plane = Plane::no_plane;
+    std::vector<Pos<double> > new_pos;
+    Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
+    if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+    Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+    if (status == Status::success) {
+      px_stable = px;
+    } else {
+      px_unstable = px;
+      lost_element = point.lost_element;
+      lost_turn    = point.lost_turn;
+      lost_plane   = point.lost_plane;
+    }
+  }
+
+  // records solution
+  point.start_element = element_idx;
+  point.p = p0;           // offset
+  point.p.px += px_stable; // conservative estimate within [e_stable, e_unstable] interval
+  point.lost_element = lost_element;
+  point.lost_plane   = lost_plane;
+  point.lost_turn    = lost_turn;
+
+  return point;
+
+}
+
+static DynApGridPoint find_py_acceptance(
+  const Accelerator& accelerator,
+  const std::vector<Pos<double> >& cod,
+  unsigned int nr_turns,
+  const Pos<double>& p0,
+  double py0,
+  double py_tol,
+  unsigned int element_idx) {
+
+  DynApGridPoint point;
+
+  double py_stable   = 0;
+  // search initial unstable energy offset
+  double py_unstable = py0;
+  while (true) {
+    point.p = p0;     // offset
+    point.p.py += py_unstable;
+    point.start_element = element_idx; point.lost_turn = 0; point.lost_element = element_idx; point.lost_plane = Plane::no_plane;
+    std::vector<Pos<double> > new_pos;
+    Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
+    if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+    Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+    if (status == Status::success) {
+      py_stable    = py_unstable;
+      py_unstable *= 2.0;
+    } else break;
+  }
+
+  unsigned int lost_element = point.lost_element;
+  unsigned int lost_turn    = point.lost_turn;
+  Plane::type  lost_plane   = point.lost_plane;
+  while (fabs(py_unstable - py_stable) > py_tol) {
+    double py = 0.5 * (py_unstable + py_stable);
+    point.p = p0;     // offset
+    point.p.py += py;
+    point.start_element = element_idx; point.lost_turn = 0; point.lost_element = element_idx; point.lost_plane = Plane::no_plane;
+    std::vector<Pos<double> > new_pos;
+    Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
+    if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+    Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+    if (status == Status::success) {
+      py_stable = py;
+    } else {
+      py_unstable = py;
+      lost_element = point.lost_element;
+      lost_turn    = point.lost_turn;
+      lost_plane   = point.lost_plane;
+    }
+  }
+
+  // records solution
+  point.start_element = element_idx;
+  point.p = p0;           // offset
+  point.p.py += py_stable; // conservative estimate within [e_stable, e_unstable] interval
+  point.lost_element = lost_element;
+  point.lost_plane   = lost_plane;
+  point.lost_turn    = lost_turn;
+
+  return point;
+
+}
+
 static DynApGridPoint find_fine_momentum_acceptance(
   const Accelerator& accelerator,
   const std::vector<Pos<double> >& cod,
@@ -442,6 +700,62 @@ static DynApGridPoint find_fine_momentum_acceptance(
     };
   }
   point.p.de = last_unstable + e_step;
+  return point;
+}
+
+static DynApGridPoint find_fine_px_acceptance(
+  const Accelerator& accelerator,
+  const std::vector<Pos<double> >& cod,
+  unsigned int nr_turns,
+  const Pos<double>& p0,
+  double px_init,
+  double px_tol,
+  unsigned int element_idx) {
+
+  double px_step = px_init > 0 ? -px_tol : px_tol;
+  DynApGridPoint point; point.p = p0;
+  double last_unstable = px_init-px_step;
+  for(unsigned int i=1; i<5; ++i) {
+    point.p.px = px_init + px_step * i;
+    point.start_element = element_idx; point.lost_turn = 0; point.lost_element = element_idx; point.lost_plane = Plane::no_plane;
+    std::vector<Pos<double> > new_pos;
+    Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
+    if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+    Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+    if (status != Status::success) {
+      //e_stable    = e_unstable;
+      last_unstable = point.p.px;
+    };
+  }
+  point.p.px = last_unstable + px_step;
+  return point;
+}
+
+static DynApGridPoint find_fine_py_acceptance(
+  const Accelerator& accelerator,
+  const std::vector<Pos<double> >& cod,
+  unsigned int nr_turns,
+  const Pos<double>& p0,
+  double py_init,
+  double py_tol,
+  unsigned int element_idx) {
+
+  double py_step = py_init > 0 ? -py_tol : py_tol;
+  DynApGridPoint point; point.p = p0;
+  double last_unstable = py_init-py_step;
+  for(unsigned int i=1; i<5; ++i) {
+    point.p.py = py_init + py_step * i;
+    point.start_element = element_idx; point.lost_turn = 0; point.lost_element = element_idx; point.lost_plane = Plane::no_plane;
+    std::vector<Pos<double> > new_pos;
+    Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
+    if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+    Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+    if (status != Status::success) {
+      //e_stable    = e_unstable;
+      last_unstable = point.p.py;
+    };
+  }
+  point.p.py = last_unstable + py_step;
   return point;
 }
 
@@ -572,6 +886,70 @@ static void thread_dynap_ma(ThreadSharedData* thread_data, int thread_id, long t
   pthread_mutex_lock(thread_data->mutex);
   //printf("thread:%02i|task:%06lu/%06lu  %+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, p.p.de);
   printf("thread:%02i|task:%06lu/%06lu  element:%04i|de:%+.4e  %s\n", thread_id, (1+task_id), thread_data->nr_tasks, element_nr, grid[task_id].p.de, thread_accelerator->lattice[(*thread_elements)[element_nr]].fam_name.c_str());
+  pthread_mutex_unlock(thread_data->mutex);
+
+}
+
+static void thread_dynap_pxa(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+  const std::vector<unsigned int>& elements = *thread_elements;
+
+  DynApGridPoint p = (*thread_grid)[task_id];
+
+  unsigned int element_nr = task_id / 2;
+  double px0 = (*thread_ma_e0);
+
+  p = find_px_acceptance(*thread_accelerator,
+                         *thread_cod,
+                         thread_nr_turns,
+                         *thread_ma_p0,
+                         px0,
+                         5 * (*thread_ma_e_tol),
+                         (*thread_elements)[element_nr]);
+  p = find_fine_px_acceptance(*thread_accelerator,
+                              *thread_cod,
+                              thread_nr_turns,
+                              *thread_ma_p0,
+                              p.p.px,
+                              *thread_ma_e_tol,
+                              (*thread_elements)[element_nr]);
+  grid[task_id] = p;
+
+  pthread_mutex_lock(thread_data->mutex);
+  printf("thread:%02i|task:%06lu/%06lu  element:%04i|px:%+.4e  %s\n", thread_id, (1+task_id), thread_data->nr_tasks, element_nr, grid[task_id].p.px, thread_accelerator->lattice[(*thread_elements)[element_nr]].fam_name.c_str());
+  pthread_mutex_unlock(thread_data->mutex);
+
+}
+
+static void thread_dynap_pya(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+  const std::vector<unsigned int>& elements = *thread_elements;
+
+  DynApGridPoint p = (*thread_grid)[task_id];
+
+  unsigned int element_nr = task_id / 2;
+  double py0 = (*thread_ma_e0);
+
+  p = find_py_acceptance(*thread_accelerator,
+                         *thread_cod,
+                         thread_nr_turns,
+                         *thread_ma_p0,
+                         py0,
+                         5 * (*thread_ma_e_tol),
+                         (*thread_elements)[element_nr]);
+  p = find_fine_py_acceptance(*thread_accelerator,
+                              *thread_cod,
+                              thread_nr_turns,
+                              *thread_ma_p0,
+                              p.p.py,
+                              *thread_ma_e_tol,
+                              (*thread_elements)[element_nr]);
+  grid[task_id] = p;
+
+  pthread_mutex_lock(thread_data->mutex);
+  printf("thread:%02i|task:%06lu/%06lu  element:%04i|py:%+.4e  %s\n", thread_id, (1+task_id), thread_data->nr_tasks, element_nr, grid[task_id].p.py, thread_accelerator->lattice[(*thread_elements)[element_nr]].fam_name.c_str());
   pthread_mutex_unlock(thread_data->mutex);
 
 }

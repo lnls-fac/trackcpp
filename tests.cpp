@@ -315,7 +315,7 @@ int test_cmd_dynap_ma() {
 			"on",
 			"on",
 			"off",
-			"50",
+			"50",      // nr_turns
 			"30e-6",   // y0
 			"0.01",    // e0
 			"0.005",   // tol_e
@@ -326,6 +326,31 @@ int test_cmd_dynap_ma() {
 		   };
 
 	return cmd_dynap_ma(args);
+
+}
+
+int test_cmd_dynap_pxa() {
+
+	std::vector<std::string> args = {
+			"trackcpp",
+			"dynap_pxa",
+			"sirius-v10.txt",
+			"3e9",
+			"864",
+			"on",
+			"on",
+			"off",
+			"50",      // nr_turns
+			"30e-6",   // y0
+			"1e-6",    // px
+			"1e-6",    // tol_e
+			"0",       // s_min [m]
+			"200",     // s_max [m]
+			"4",       // nr_threads
+			"qf2", "qfa", "sda"
+		   };
+
+	return cmd_dynap_pxa(args);
 
 }
 
@@ -545,7 +570,8 @@ int cmd_tests(const std::vector<std::string>& args) {
 	//test_read_flat_file(accelerator);
 	//test_cmd_dynap_xy();
 	//test_cmd_dynap_ex();
-	test_cmd_dynap_ma();
+	//test_cmd_dynap_ma();
+	test_cmd_dynap_pxa();
 	//test_cmd_dynap_xyfmap();
 	//test_cmd_dynap_exfmap();
 	//test_cmd_track_linepass();
