@@ -18,7 +18,7 @@ static DynApGridPoint find_momentum_acceptance(const Accelerator& accelerator, c
 static DynApGridPoint find_fine_momentum_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double e_init, double e_tol, unsigned int element_idx);
 static DynApGridPoint find_px_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double px0, double px_tol, unsigned int element_idx);
 static DynApGridPoint find_fine_px_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double px_init, double px_tol, unsigned int element_idx);
-static DynApGridPoint find_py_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double px0, double py_tol, unsigned int element_idx);
+static DynApGridPoint find_py_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double py0, double py_tol, unsigned int element_idx);
 static DynApGridPoint find_fine_py_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double py_init, double py_tol, unsigned int element_idx);
 
 // global thread variables and decl. of aux. thread functions
@@ -897,7 +897,7 @@ static void thread_dynap_pxa(ThreadSharedData* thread_data, int thread_id, long 
 
   DynApGridPoint p = (*thread_grid)[task_id];
 
-  unsigned int element_nr = task_id / 2;
+  unsigned int element_nr = task_id;
   double px0 = (*thread_ma_e0);
 
   p = find_px_acceptance(*thread_accelerator,
@@ -929,7 +929,7 @@ static void thread_dynap_pya(ThreadSharedData* thread_data, int thread_id, long 
 
   DynApGridPoint p = (*thread_grid)[task_id];
 
-  unsigned int element_nr = task_id / 2;
+  unsigned int element_nr = task_id;
   double py0 = (*thread_ma_e0);
 
   p = find_py_acceptance(*thread_accelerator,

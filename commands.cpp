@@ -432,7 +432,7 @@ int cmd_dynap_pya(const std::vector<std::string>& args) {
   std::vector<Pos<double> > cod;
   Pos<double> p0(0,0,y0,0,0,0);
   std::vector<DynApGridPoint> grid;
-  dynap_pxa(accelerator, cod, nr_turns, p0, py0, py_tol, s_min, s_max, fam_names, true, grid, nr_threads);
+  dynap_pya(accelerator, cod, nr_turns, p0, py0, py_tol, s_min, s_max, fam_names, true, grid, nr_threads);
 
   // generates output files
   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
