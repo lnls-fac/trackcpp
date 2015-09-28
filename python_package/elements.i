@@ -38,9 +38,9 @@ void initialize_marker(Element& element);
 void initialize_corrector(Element& element, const double& hkick, const double& vkick);
 void initialize_drift(Element& element);
 void initialize_rbend(Element& element, const double& angle, const double& angle_in, const double& angle_out,
-					  const double& gap, const double& fint_in, const double& fint_out,
-					  const std::vector<double>& polynom_a, const std::vector<double>& polynom_b,
-					  const double& K, const double& S, const int nr_steps);
+const double& gap, const double& fint_in, const double& fint_out,
+const std::vector<double>& polynom_a, const std::vector<double>& polynom_b,
+const double& K, const double& S, const int nr_steps);
 void initialize_quadrupole(Element& element, const double& K, const int& nr_steps);
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
 void initialize_rfcavity(Element& element, const double& frequency, const double& voltage);

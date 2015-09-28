@@ -1,13 +1,13 @@
 %module trackcpp
 
 %{
-#include "../elements.h"
-#include "../kicktable.h"
-#include "../auxiliary.h"
-#include "../accelerator.h"
-#include "../pos.h"
-#include "../tracking.h"
-#include "../flat_file.h"
+#include <trackcpp/elements.h>
+#include <trackcpp/kicktable.h>
+#include <trackcpp/auxiliary.h>
+#include <trackcpp/accelerator.h>
+#include <trackcpp/pos.h>
+#include <trackcpp/tracking.h>
+#include <trackcpp/flat_file.h>
 #include "interface.h"
 #include "elementswrapper.h"
 %}
@@ -39,13 +39,13 @@ double get_double_max() {
 %}
 
 %include "elements.i"
+%include "accelerator.i"
 
-%include "../kicktable.h"
-%include "../auxiliary.h"
-%include "../accelerator.h"
-%include "../pos.h"
-%include "../tracking.h"
-%include "../flat_file.h"
+%include "../include/trackcpp/kicktable.h"
+%include "../include/trackcpp/auxiliary.h"
+%include "../include/trackcpp/pos.h"
+%include "../include/trackcpp/tracking.h"
+%include "../include/trackcpp/flat_file.h"
 %include "interface.h"
 %include "elementswrapper.h"
 
