@@ -293,6 +293,101 @@ int cmd_dynap_ma(const std::vector<std::string>& args) {
 
 }
 
+int cmd_dynap_ma2(const std::vector<std::string>& args) {
+
+  if (args.size() < 17) {
+    std::cerr << args.size() << std::endl;
+    std::cerr << "dynap_ma2: invalid number of arguments!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  std::cout << std::endl;
+  std::cout << "[cmd_dynap_ma2]" << std::endl << std::endl;
+
+  std::string  flat_filename(args[2]);
+  double       ring_energy      = std::atof(args[3].c_str());
+  unsigned int harmonic_number = std::atoi(args[4].c_str());
+  std::string  cavity_state(args[5].c_str());
+  std::string  radiation_state(args[6].c_str());
+  std::string  vchamber_state(args[7].c_str());
+  unsigned int nr_turns = std::atoi(args[8].c_str());
+  double       y0      = std::atof(args[9].c_str());
+  double       e_init  = std::atof(args[10].c_str());
+  double       e_delta = std::atof(args[11].c_str());
+  unsigned int nr_steps_back = std::atoi(args[12].c_str());
+  double       rescale = std::atof(args[13].c_str());
+  unsigned int nr_iterations = std::atoi(args[14].c_str());
+  double       s_min = std::atof(args[15].c_str());
+  double       s_max = std::atof(args[16].c_str());
+  unsigned int nr_threads = 1;
+  std::vector<std::string> fam_names;
+  for(unsigned int i=17; i<args.size(); ++i) {
+    unsigned int nr = std::atoi(args[i].c_str());
+    if (nr > 0) {
+      nr_threads = nr;
+    } else fam_names.push_back(args[i]);
+  }
+
+
+  print_header(stdout);
+  std::cout << std::endl;
+  std::cout << "flat_filename   : " << flat_filename << std::endl;
+  std::cout << "energy[eV]      : " << ring_energy << std::endl;
+  std::cout << "harmonic_number : " << harmonic_number << std::endl;
+  std::cout << "cavity_state    : " << cavity_state << std::endl;
+  std::cout << "radiation_state : " << radiation_state << std::endl;
+  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+  std::cout << "nr_turns        : " << nr_turns << std::endl;
+  std::cout << "y0[m]           : " << y0 << std::endl;
+  std::cout << "e_init          : " << e_init << std::endl;
+  std::cout << "e_delta         : " << e_delta << std::endl;
+  std::cout << "nr_steps_back   : " << nr_steps_back << std::endl;
+  std::cout << "rescale         : " << rescale << std::endl;
+  std::cout << "nr_iterations   : " << nr_iterations << std::endl;
+  std::cout << "s_min[m]        : " << s_min << std::endl;
+  std::cout << "s_max[m]        : " << s_max << std::endl;
+  std::cout << "nr_threads      : " << nr_threads << std::endl;
+  std::cout << "fam_names       : ";
+  for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+
+  std::cout << std::endl;
+  std::cout << get_timestamp() << " begin timestamp" << std::endl;
+
+  Accelerator accelerator;
+
+  // reads flat file
+  Status::type status = read_flat_file(flat_filename, accelerator);
+  if (status == Status::file_not_found) {
+    std::cerr << "dynap_ma: flat file not found!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // builds accelerator
+  accelerator.energy = ring_energy;
+  accelerator.harmonic_number = harmonic_number;
+  accelerator.cavity_on = (cavity_state == "on");
+  accelerator.radiation_on = (radiation_state == "on");
+  accelerator.vchamber_on = (vchamber_state == "on");
+
+  // calcs dynamical aperture
+  std::vector<Pos<double> > cod;
+  Pos<double> p0(0,0,y0,0,0,0);
+  std::vector<DynApGridPoint> grid;
+  dynap_ma2(accelerator, cod, nr_turns, p0, e_init, e_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
+
+  // generates output files
+  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+  status = print_closed_orbit(accelerator, cod);
+  if (status == Status::file_not_opened) return status;
+  std::cout << get_timestamp() << " saving dynap_ma2 grid to file" << std::endl;
+  status = print_dynapgrid (accelerator, grid, "[dynap_ma2]", "dynap_ma2_out.txt");
+  if (status == Status::file_not_opened) return status;
+
+  std::cout << get_timestamp() << " end timestamp" << std::endl;
+  return EXIT_SUCCESS;
+
+}
+
 int cmd_dynap_pxa(const std::vector<std::string>& args) {
 
   if (args.size() < 15) {

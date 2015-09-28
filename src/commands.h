@@ -30,6 +30,7 @@ int cmd_tests          (const std::vector<std::string>& args);
 int cmd_dynap_xy       (const std::vector<std::string>& args);
 int cmd_dynap_ex       (const std::vector<std::string>& args);
 int cmd_dynap_ma       (const std::vector<std::string>& args);
+int cmd_dynap_ma2      (const std::vector<std::string>& args);
 int cmd_dynap_pxa      (const std::vector<std::string>& args);
 int cmd_dynap_pya      (const std::vector<std::string>& args);
 int cmd_dynap_xyfmap   (const std::vector<std::string>& args);

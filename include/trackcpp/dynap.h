@@ -78,6 +78,26 @@ Status::type dynap_ma(
     unsigned int nr_threads
   );
 
+Status::type dynap_ma2(
+    const Accelerator& accelerator,
+    std::vector<Pos<double> >& cod,
+    unsigned int nr_turns,
+    const Pos<double>& p0,
+    const double& e_init,
+    const double& e_delta,
+    unsigned int nr_steps_back,
+    double rescale,
+    unsigned int nr_iterations,
+    const double& s_min, const double& s_max,
+    const std::vector<std::string>& fam_names,
+    bool calculate_closed_orbit,
+    std::vector<DynApGridPoint>& grid,
+    unsigned int nr_threads
+  );
+
+
+
+
 Status::type dynap_pxa(
     const Accelerator& accelerator,
     std::vector<Pos<double> >& cod,

@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
     if (cmd == "dynap_xy") return cmd_dynap_xy(args);
     if (cmd == "dynap_ex") return cmd_dynap_ex(args);
     if (cmd == "dynap_ma") return cmd_dynap_ma(args);
+    if (cmd == "dynap_ma2") return cmd_dynap_ma2(args);
     if (cmd == "dynap_pxa") return cmd_dynap_pxa(args);
     if (cmd == "dynap_pya") return cmd_dynap_pya(args);
     if (cmd == "dynap_xyfmap") return cmd_dynap_xyfmap(args);

@@ -9,7 +9,7 @@
 
  ***************************************************************************/
 
-#include "pos.h"
+#include <trackcpp/pos.h>
 #include <vector>
 
 /* Frequency Map Analysis */

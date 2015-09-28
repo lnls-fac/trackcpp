@@ -50,12 +50,12 @@ LIBSOURCES_CPP  = lattice.cpp \
                   dynap.cpp \
                   output.cpp \
                   kicktable.cpp \
-                  naff.cpp \
                   multithreads.cpp \
                   accelerator.cpp
 BINSOURCES_CPP =  exec.cpp \
                   tests.cpp \
-                  commands.cpp
+                  commands.cpp \
+									naff.cpp
 
 AUXFILES  = VERSION
 

@@ -52,10 +52,17 @@ static std::vector<DynApGridPoint>*     thread_grid = NULL;
 static const std::vector<unsigned int>* thread_elements = NULL;
 static const double*                    thread_ma_e0    = NULL;
 static const double*                    thread_ma_e_tol = NULL;
+static const double*                    thread_ma_e_init  = NULL;
+static const double*                    thread_ma_e_delta = NULL;
+static const unsigned int*              thread_ma_nr_steps_back = NULL;
+static const double*                    thread_ma_rescale = NULL;
+static const unsigned int*              thread_ma_nr_iterations = NULL;
+
 static const Pos<double>*               thread_ma_p0 = NULL;
 static void           thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long task_id);
 static void           thread_dynap(ThreadSharedData* thread_data, int thread_id, long task_id);
 static void           thread_dynap_ma(ThreadSharedData* thread_data, int thread_id, long task_id);
+static void           thread_dynap_ma2(ThreadSharedData* thread_data, int thread_id, long task_id);
 static void           thread_dynap_pxa(ThreadSharedData* thread_data, int thread_id, long task_id);
 static void           thread_dynap_pya(ThreadSharedData* thread_data, int thread_id, long task_id);
 
@@ -240,6 +247,77 @@ Status::type dynap_ma(
 
 }
 
+Status::type dynap_ma2(
+    const Accelerator& accelerator,
+    std::vector<Pos<double> >& cod,
+    unsigned int nr_turns,
+    const Pos<double>& p0,
+    const double& e_init,
+    const double& e_delta,
+    unsigned int nr_steps_back,
+    double rescale,
+    unsigned int nr_iterations,
+    const double& s_min, const double& s_max,
+    const std::vector<std::string>& fam_names,
+    bool calculate_closed_orbit,
+    std::vector<DynApGridPoint>& grid,
+    unsigned int nr_threads
+  ) {
+
+  Status::type status = Status::success;
+
+  // finds 6D closed-orbit
+  if (calculate_closed_orbit) {
+    status = calc_closed_orbit(accelerator, cod, __FUNCTION__);
+    if (status != Status::success) {
+      cod.clear();
+      for(unsigned int i=0; i<1+accelerator.lattice.size(); ++i) cod.push_back(Pos<double>(nan("")));
+    }
+  }
+
+
+  // finds out which in which elements tracking is to be performed
+  grid.clear();
+  std::vector<unsigned int> elements;
+  double s = 0.0;
+  for(unsigned int i=0; i<accelerator.lattice.size(); ++i) {
+    if ((s >= s_min) and (s <= s_max)) {
+      if (std::find(fam_names.begin(), fam_names.end(), accelerator.lattice[i].fam_name) != fam_names.end()) {
+        elements.push_back(i);            // calcs at start of element
+        DynApGridPoint p;
+        p.start_element = 0; p.lost_turn = 0; p.lost_element = 0; p.lost_plane = Plane::no_plane;
+        grid.push_back(p); // for negative energy acceptance
+        grid.push_back(p); // for positive energy acceptance
+      }
+    }
+    s += accelerator.lattice[i].length;
+  }
+  if (verbose_on) std::cout << get_timestamp() << " number of elements within range is " << elements.size() << std::endl;
+
+  if (status == Status::success) {
+    //std::vector<double> output;
+    ThreadSharedData thread_data;
+    thread_type = "ma2";
+    thread_data.nr_tasks = grid.size();
+    thread_data.func =  thread_dynap_ma2;
+    thread_nr_turns = nr_turns;
+    thread_accelerator = &accelerator;
+    thread_cod = &cod;
+    thread_grid = &grid;
+    thread_ma_e_init = &e_init;
+    thread_ma_e_delta = &e_delta;
+    thread_ma_nr_steps_back = &nr_steps_back;
+    thread_ma_rescale = &rescale;
+    thread_ma_nr_iterations = &nr_iterations;
+    thread_ma_p0 = &p0;
+    thread_elements = &elements;
+    start_all_threads(thread_data, nr_threads);
+  }
+
+  return Status::success;
+
+}
+
 Status::type dynap_pxa(
     const Accelerator& accelerator,
     std::vector<Pos<double> >& cod,
@@ -367,7 +445,6 @@ Status::type dynap_pya(
   return Status::success;
 
 }
-
 
 Status::type dynap_xyfmap(
     const Accelerator& accelerator,
@@ -907,6 +984,50 @@ static void thread_dynap_ma(ThreadSharedData* thread_data, int thread_id, long t
 
   pthread_mutex_lock(thread_data->mutex);
   //printf("thread:%02i|task:%06lu/%06lu  %+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, p.p.de);
+  printf("thread:%02i|task:%06lu/%06lu  element:%04i|de:%+.4e  %s\n", thread_id, (1+task_id), thread_data->nr_tasks, element_nr, grid[task_id].p.de, thread_accelerator->lattice[(*thread_elements)[element_nr]].fam_name.c_str());
+  pthread_mutex_unlock(thread_data->mutex);
+
+}
+
+static void thread_dynap_ma2(ThreadSharedData* thread_data, int thread_id, long task_id) {
+
+  std::vector<DynApGridPoint>& grid = *thread_grid;
+  const std::vector<unsigned int>& elements = *thread_elements;
+
+  DynApGridPoint p = (*thread_grid)[task_id];
+  DynApGridPoint point;
+  unsigned int element_nr = task_id / 2;
+  unsigned int start_element = elements[element_nr];
+
+  double e_init = (*thread_ma_e_init) * ((task_id % 2) ? 1.0 : -1.0);
+  double e_delta = (*thread_ma_e_delta) * ((task_id % 2) ? 1.0 : -1.0);
+  double nr_iterations = (*thread_ma_nr_iterations);
+  double nr_steps_back = (*thread_ma_nr_steps_back);
+  double rescale = (*thread_ma_rescale);
+
+  double e = e_init;
+  while (true) {
+    while (true) {
+      //if (task_id == 0) std::cout << e << std::endl;
+      point.p = *thread_ma_p0;     // offset
+      point.p.de += e;             // sets trial energy deviation
+      point.start_element = start_element; point.lost_turn = 0; point.lost_element = start_element; point.lost_plane = Plane::no_plane;
+      std::vector<Pos<double> > new_pos;
+      Pos<double> p = point.p + (*thread_cod)[start_element];  // p initial condition for tracking
+      if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
+      Status::type status = track_ringpass (*thread_accelerator, p, new_pos, thread_nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+      if (status != Status::success) { e -= e_delta; point.p.de = e; break; }
+      e += e_delta;
+    }
+    if (nr_iterations < 1) break; else nr_iterations--;
+    e -= e_delta * nr_steps_back;
+    e_delta *= rescale;
+    e += e_delta;
+  }
+
+  grid[task_id] = point;
+
+  pthread_mutex_lock(thread_data->mutex);
   printf("thread:%02i|task:%06lu/%06lu  element:%04i|de:%+.4e  %s\n", thread_id, (1+task_id), thread_data->nr_tasks, element_nr, grid[task_id].p.de, thread_accelerator->lattice[(*thread_elements)[element_nr]].fam_name.c_str());
   pthread_mutex_unlock(thread_data->mutex);
 
