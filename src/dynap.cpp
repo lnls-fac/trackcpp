@@ -34,7 +34,7 @@
 static const double tiny_y_amp = 1e-7; // [m]
 
 
-// declaration of auxilliary functions
+// declaration of auxiliary functions
 static Status::type   calc_closed_orbit(const Accelerator& accelerator, std::vector<Pos<double> >& cod, const char* function_name);
 static DynApGridPoint find_momentum_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double e0, double e_tol, unsigned int element_idx);
 static DynApGridPoint find_fine_momentum_acceptance(const Accelerator& accelerator, const std::vector<Pos<double> >& cod, unsigned int nr_turns, const Pos<double>& p0, double e_init, double e_tol, unsigned int element_idx);
@@ -566,7 +566,7 @@ Status::type dynap_exfmap(
 }
 
 
-// implementation of auxilliary functions
+// implementation of auxiliary functions
 
 static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vector<Pos<double> >& cod, const char* function_name) {
   if (verbose_on) {

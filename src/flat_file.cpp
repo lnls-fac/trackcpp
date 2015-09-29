@@ -366,7 +366,7 @@ Status::type read_flat_file_tracy(const std::string& filename, Accelerator& acce
 }
 
 
-// -- static auxilliary functions --
+// -- static auxiliary functions --
 
 static void synchronize_polynomials(Element& e) {
 
