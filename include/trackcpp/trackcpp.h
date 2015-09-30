@@ -36,11 +36,9 @@
 #include "pos.h"
 #include "tpsa.h"
 #include "auxiliary.h"
-#include "naff.h"
+//#include "naff.h"
 #include "multithreads.h"
 
 extern bool verbose_on;
-
-void sirius_v500(std::vector<Element>& the_ring);
 
 #endif

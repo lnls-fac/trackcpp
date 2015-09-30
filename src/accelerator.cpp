@@ -60,4 +60,5 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "harmonic_number: " << a.harmonic_number;
   out << std::endl << "lattice        : " << a.lattice.size() << " elements";
   out << std::endl << "kicktables     : " << a.kicktables.size() << " elements";
+  return out;
 }

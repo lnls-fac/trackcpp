@@ -49,6 +49,7 @@ void* start_thread(void* args) {
 
   }
 
+  return NULL;
 }
 
 void start_all_threads(ThreadSharedData& thread_data, unsigned int nr_threads) {

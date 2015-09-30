@@ -204,105 +204,113 @@ int cmd_dynap_ex(const std::vector<std::string>& args) {
 
 }
 
-int cmd_dynap_ma(const std::vector<std::string>& args) {
+// int cmd_dynap_ma(const std::vector<std::string>& args) {
+//
+//   if (args.size() < 15) {
+//     std::cerr << "dynap_ma: invalid number of arguments!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   std::cout << std::endl;
+//   std::cout << "[cmd_dynap_ma]" << std::endl << std::endl;
+//
+//   std::string  flat_filename(args[2]);
+//   double       ring_energy      = std::atof(args[3].c_str());
+//   unsigned int harmonic_number = std::atoi(args[4].c_str());
+//   std::string  cavity_state(args[5].c_str());
+//   std::string  radiation_state(args[6].c_str());
+//   std::string  vchamber_state(args[7].c_str());
+//   unsigned int nr_turns = std::atoi(args[8].c_str());
+//   double       y0    = std::atof(args[9].c_str());
+//   double       e0    = std::atof(args[10].c_str());
+//   double       e_tol = std::atof(args[11].c_str());
+//   double       s_min = std::atof(args[12].c_str());
+//   double       s_max = std::atof(args[13].c_str());
+//
+//   unsigned int nr_threads = 1;
+//   std::vector<std::string> fam_names;
+//   for(unsigned int i=14; i<args.size(); ++i) {
+//     unsigned int nr = std::atoi(args[i].c_str());
+//     if (nr > 0) {
+//       nr_threads = nr;
+//     } else fam_names.push_back(args[i]);
+//   }
+//
+//
+//   print_header(stdout);
+//   std::cout << std::endl;
+//   std::cout << "flat_filename   : " << flat_filename << std::endl;
+//   std::cout << "energy[eV]      : " << ring_energy << std::endl;
+//   std::cout << "harmonic_number : " << harmonic_number << std::endl;
+//   std::cout << "cavity_state    : " << cavity_state << std::endl;
+//   std::cout << "radiation_state : " << radiation_state << std::endl;
+//   std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+//   std::cout << "nr_turns        : " << nr_turns << std::endl;
+//   std::cout << "y0[m]           : " << y0 << std::endl;
+//   std::cout << "e0              : " << e0 << std::endl;
+//   std::cout << "e_tol           : " << e_tol << std::endl;
+//   std::cout << "s_min[m]        : " << s_min << std::endl;
+//   std::cout << "s_max[m]        : " << s_max << std::endl;
+//   std::cout << "nr_threads      : " << nr_threads << std::endl;
+//   std::cout << "fam_names       : ";
+//   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+//
+//   std::cout << std::endl;
+//   std::cout << get_timestamp() << " begin timestamp" << std::endl;
+//
+//   Accelerator accelerator;
+//
+//   // reads flat file
+//   Status::type status = read_flat_file(flat_filename, accelerator);
+//   if (status == Status::file_not_found) {
+//     std::cerr << "dynap_ma: flat file not found!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   // builds accelerator
+//   accelerator.energy = ring_energy;
+//   accelerator.harmonic_number = harmonic_number;
+//   accelerator.cavity_on = (cavity_state == "on");
+//   accelerator.radiation_on = (radiation_state == "on");
+//   accelerator.vchamber_on = (vchamber_state == "on");
+//
+//   // calcs dynamical aperture
+//   std::vector<Pos<double> > cod;
+//   Pos<double> p0(0,0,y0,0,0,0);
+//   std::vector<DynApGridPoint> grid;
+//   dynap_ma(accelerator, cod, nr_turns, p0, e0, e_tol, s_min, s_max, fam_names, true, grid, nr_threads);
+//
+//   // generates output files
+//   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+//   status = print_closed_orbit(accelerator, cod);
+//   if (status == Status::file_not_opened) return status;
+//   std::cout << get_timestamp() << " saving dynap_ma grid to file" << std::endl;
+//   status = print_dynapgrid (accelerator, grid, "[dynap_ma]", "dynap_ma_out.txt");
+//   if (status == Status::file_not_opened) return status;
+//
+//   std::cout << get_timestamp() << " end timestamp" << std::endl;
+//   return EXIT_SUCCESS;
+//
+// }
 
-  if (args.size() < 15) {
-    std::cerr << "dynap_ma: invalid number of arguments!" << std::endl;
-    return EXIT_FAILURE;
+int cmd_dynap_acceptance(const std::vector<std::string>& args) {
+
+  std::string calc_type_str, p_init_str, p_delta_str;
+  if (args[1] == "dynap_ma") {
+    calc_type_str = "dynap_ma "; p_init_str = "e_init[rad] "; p_delta_str = "e_delta[rad] ";
+  } else if (args[1] == "dynap_pxa") {
+    calc_type_str = "dynap_pxa"; p_init_str = "px_init[rad]"; p_delta_str = "px_delta[rad]";
+  } else if (args[1] == "dynap_pya") {
+    calc_type_str = "dynap_pya"; p_init_str = "py_init[rad]"; p_delta_str = "py_delta[rad]";
   }
-
-  std::cout << std::endl;
-  std::cout << "[cmd_dynap_ma]" << std::endl << std::endl;
-
-  std::string  flat_filename(args[2]);
-  double       ring_energy      = std::atof(args[3].c_str());
-  unsigned int harmonic_number = std::atoi(args[4].c_str());
-  std::string  cavity_state(args[5].c_str());
-  std::string  radiation_state(args[6].c_str());
-  std::string  vchamber_state(args[7].c_str());
-  unsigned int nr_turns = std::atoi(args[8].c_str());
-  double       y0    = std::atof(args[9].c_str());
-  double       e0    = std::atof(args[10].c_str());
-  double       e_tol = std::atof(args[11].c_str());
-  double       s_min = std::atof(args[12].c_str());
-  double       s_max = std::atof(args[13].c_str());
-
-  unsigned int nr_threads = 1;
-  std::vector<std::string> fam_names;
-  for(unsigned int i=14; i<args.size(); ++i) {
-    unsigned int nr = std::atoi(args[i].c_str());
-    if (nr > 0) {
-      nr_threads = nr;
-    } else fam_names.push_back(args[i]);
-  }
-
-
-  print_header(stdout);
-  std::cout << std::endl;
-  std::cout << "flat_filename   : " << flat_filename << std::endl;
-  std::cout << "energy[eV]      : " << ring_energy << std::endl;
-  std::cout << "harmonic_number : " << harmonic_number << std::endl;
-  std::cout << "cavity_state    : " << cavity_state << std::endl;
-  std::cout << "radiation_state : " << radiation_state << std::endl;
-  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
-  std::cout << "nr_turns        : " << nr_turns << std::endl;
-  std::cout << "y0[m]           : " << y0 << std::endl;
-  std::cout << "e0              : " << e0 << std::endl;
-  std::cout << "e_tol           : " << e_tol << std::endl;
-  std::cout << "s_min[m]        : " << s_min << std::endl;
-  std::cout << "s_max[m]        : " << s_max << std::endl;
-  std::cout << "nr_threads      : " << nr_threads << std::endl;
-  std::cout << "fam_names       : ";
-  for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
-
-  std::cout << std::endl;
-  std::cout << get_timestamp() << " begin timestamp" << std::endl;
-
-  Accelerator accelerator;
-
-  // reads flat file
-  Status::type status = read_flat_file(flat_filename, accelerator);
-  if (status == Status::file_not_found) {
-    std::cerr << "dynap_ma: flat file not found!" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  // builds accelerator
-  accelerator.energy = ring_energy;
-  accelerator.harmonic_number = harmonic_number;
-  accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on");
-  accelerator.vchamber_on = (vchamber_state == "on");
-
-  // calcs dynamical aperture
-  std::vector<Pos<double> > cod;
-  Pos<double> p0(0,0,y0,0,0,0);
-  std::vector<DynApGridPoint> grid;
-  dynap_ma(accelerator, cod, nr_turns, p0, e0, e_tol, s_min, s_max, fam_names, true, grid, nr_threads);
-
-  // generates output files
-  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
-  status = print_closed_orbit(accelerator, cod);
-  if (status == Status::file_not_opened) return status;
-  std::cout << get_timestamp() << " saving dynap_ma grid to file" << std::endl;
-  status = print_dynapgrid (accelerator, grid, "[dynap_ma]", "dynap_ma_out.txt");
-  if (status == Status::file_not_opened) return status;
-
-  std::cout << get_timestamp() << " end timestamp" << std::endl;
-  return EXIT_SUCCESS;
-
-}
-
-int cmd_dynap_ma2(const std::vector<std::string>& args) {
 
   if (args.size() < 17) {
-    std::cerr << args.size() << std::endl;
-    std::cerr << "dynap_ma2: invalid number of arguments!" << std::endl;
+    std::cerr << args[1] << ": invalid number of arguments!" << std::endl;
     return EXIT_FAILURE;
   }
 
   std::cout << std::endl;
-  std::cout << "[cmd_dynap_ma2]" << std::endl << std::endl;
+  std::cout << "[" << args[1] << "]" << std::endl << std::endl;
 
   std::string  flat_filename(args[2]);
   double       ring_energy      = std::atof(args[3].c_str());
@@ -311,14 +319,14 @@ int cmd_dynap_ma2(const std::vector<std::string>& args) {
   std::string  radiation_state(args[6].c_str());
   std::string  vchamber_state(args[7].c_str());
   unsigned int nr_turns = std::atoi(args[8].c_str());
-  double       y0      = std::atof(args[9].c_str());
-  double       e_init  = std::atof(args[10].c_str());
-  double       e_delta = std::atof(args[11].c_str());
+  double       y0       = std::atof(args[9].c_str());
+  double       p_init   = std::atof(args[10].c_str());
+  double       p_delta  = std::atof(args[11].c_str());
   unsigned int nr_steps_back = std::atoi(args[12].c_str());
   double       rescale = std::atof(args[13].c_str());
   unsigned int nr_iterations = std::atoi(args[14].c_str());
-  double       s_min = std::atof(args[15].c_str());
-  double       s_max = std::atof(args[16].c_str());
+  double       s_min    = std::atof(args[15].c_str());
+  double       s_max    = std::atof(args[16].c_str());
   unsigned int nr_threads = 1;
   std::vector<std::string> fam_names;
   for(unsigned int i=17; i<args.size(); ++i) {
@@ -328,26 +336,25 @@ int cmd_dynap_ma2(const std::vector<std::string>& args) {
     } else fam_names.push_back(args[i]);
   }
 
-
   print_header(stdout);
   std::cout << std::endl;
-  std::cout << "flat_filename   : " << flat_filename << std::endl;
-  std::cout << "energy[eV]      : " << ring_energy << std::endl;
-  std::cout << "harmonic_number : " << harmonic_number << std::endl;
-  std::cout << "cavity_state    : " << cavity_state << std::endl;
-  std::cout << "radiation_state : " << radiation_state << std::endl;
-  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
-  std::cout << "nr_turns        : " << nr_turns << std::endl;
-  std::cout << "y0[m]           : " << y0 << std::endl;
-  std::cout << "e_init          : " << e_init << std::endl;
-  std::cout << "e_delta         : " << e_delta << std::endl;
-  std::cout << "nr_steps_back   : " << nr_steps_back << std::endl;
-  std::cout << "rescale         : " << rescale << std::endl;
-  std::cout << "nr_iterations   : " << nr_iterations << std::endl;
-  std::cout << "s_min[m]        : " << s_min << std::endl;
-  std::cout << "s_max[m]        : " << s_max << std::endl;
-  std::cout << "nr_threads      : " << nr_threads << std::endl;
-  std::cout << "fam_names       : ";
+  std::cout <<   "flat_filename   : " << flat_filename << std::endl;
+  std::cout <<   "energy[eV]      : " << ring_energy << std::endl;
+  std::cout <<   "harmonic_number : " << harmonic_number << std::endl;
+  std::cout <<   "cavity_state    : " << cavity_state << std::endl;
+  std::cout <<   "radiation_state : " << radiation_state << std::endl;
+  std::cout <<   "vchamber_state  : " << vchamber_state << std::endl;
+  std::cout <<   "nr_turns        : " << nr_turns << std::endl;
+  std::cout <<   "y0[m]           : " << y0 << std::endl;
+  std::cout << p_init_str << "    : " << p_init << std::endl;
+  std::cout << p_delta_str << "   : " << p_delta << std::endl;
+  std::cout <<   "nr_steps_back   : " << nr_steps_back << std::endl;
+  std::cout <<   "rescale         : " << rescale << std::endl;
+  std::cout <<   "nr_iterations   : " << nr_iterations << std::endl;
+  std::cout <<   "s_min[m]        : " << s_min << std::endl;
+  std::cout <<   "s_max[m]        : " << s_max << std::endl;
+  std::cout <<   "nr_threads      : " << nr_threads << std::endl;
+  std::cout <<   "fam_names       : ";
   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
 
   std::cout << std::endl;
@@ -358,7 +365,7 @@ int cmd_dynap_ma2(const std::vector<std::string>& args) {
   // reads flat file
   Status::type status = read_flat_file(flat_filename, accelerator);
   if (status == Status::file_not_found) {
-    std::cerr << "dynap_ma: flat file not found!" << std::endl;
+    std::cerr << args[1] << ": flat file not found!" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -373,14 +380,15 @@ int cmd_dynap_ma2(const std::vector<std::string>& args) {
   std::vector<Pos<double> > cod;
   Pos<double> p0(0,0,y0,0,0,0);
   std::vector<DynApGridPoint> grid;
-  dynap_ma2(accelerator, cod, nr_turns, p0, e_init, e_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
+  //dynap_pxa(accelerator, cod, nr_turns, p0, p_init, p_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
+  dynap_acceptance(args[1], accelerator, cod, nr_turns, p0, p_init, p_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
 
   // generates output files
   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
   status = print_closed_orbit(accelerator, cod);
   if (status == Status::file_not_opened) return status;
-  std::cout << get_timestamp() << " saving dynap_ma2 grid to file" << std::endl;
-  status = print_dynapgrid (accelerator, grid, "[dynap_ma2]", "dynap_ma2_out.txt");
+  std::cout << get_timestamp() << " saving " << args[1] << " grid to file" << std::endl;
+  status = print_dynapgrid (accelerator, grid, "["+args[1]+"]", args[1]+"_out.txt");
   if (status == Status::file_not_opened) return status;
 
   std::cout << get_timestamp() << " end timestamp" << std::endl;
@@ -388,181 +396,462 @@ int cmd_dynap_ma2(const std::vector<std::string>& args) {
 
 }
 
-int cmd_dynap_pxa(const std::vector<std::string>& args) {
-
-  if (args.size() < 15) {
-    std::cerr << "dynap_pxa: invalid number of arguments!" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  std::cout << std::endl;
-  std::cout << "[cmd_dynap_pxa]" << std::endl << std::endl;
-
-  std::string  flat_filename(args[2]);
-  double       ring_energy      = std::atof(args[3].c_str());
-  unsigned int harmonic_number = std::atoi(args[4].c_str());
-  std::string  cavity_state(args[5].c_str());
-  std::string  radiation_state(args[6].c_str());
-  std::string  vchamber_state(args[7].c_str());
-  unsigned int nr_turns = std::atoi(args[8].c_str());
-  double       y0     = std::atof(args[9].c_str());
-  double       px0    = std::atof(args[10].c_str());
-  double       px_tol = std::atof(args[11].c_str());
-  double       s_min  = std::atof(args[12].c_str());
-  double       s_max  = std::atof(args[13].c_str());
-  unsigned int nr_threads = 1;
-  std::vector<std::string> fam_names;
-  for(unsigned int i=14; i<args.size(); ++i) {
-    unsigned int nr = std::atoi(args[i].c_str());
-    if (nr > 0) {
-      nr_threads = nr;
-    } else fam_names.push_back(args[i]);
-  }
 
 
-  print_header(stdout);
-  std::cout << std::endl;
-  std::cout << "flat_filename   : " << flat_filename << std::endl;
-  std::cout << "energy[eV]      : " << ring_energy << std::endl;
-  std::cout << "harmonic_number : " << harmonic_number << std::endl;
-  std::cout << "cavity_state    : " << cavity_state << std::endl;
-  std::cout << "radiation_state : " << radiation_state << std::endl;
-  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
-  std::cout << "nr_turns        : " << nr_turns << std::endl;
-  std::cout << "y0[m]           : " << y0 << std::endl;
-  std::cout << "px0[rad]        : " << px0 << std::endl;
-  std::cout << "px_tol          : " << px_tol << std::endl;
-  std::cout << "s_min[m]        : " << s_min << std::endl;
-  std::cout << "s_max[m]        : " << s_max << std::endl;
-  std::cout << "nr_threads      : " << nr_threads << std::endl;
-  std::cout << "fam_names       : ";
-  for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+// int cmd_dynap_ma(const std::vector<std::string>& args) {
+//
+//   if (args.size() < 17) {
+//     std::cerr << "dynap_ma: invalid number of arguments!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   std::cout << std::endl;
+//   std::cout << "[cmd_dynap_ma]" << std::endl << std::endl;
+//
+//   std::string  flat_filename(args[2]);
+//   double       ring_energy      = std::atof(args[3].c_str());
+//   unsigned int harmonic_number = std::atoi(args[4].c_str());
+//   std::string  cavity_state(args[5].c_str());
+//   std::string  radiation_state(args[6].c_str());
+//   std::string  vchamber_state(args[7].c_str());
+//   unsigned int nr_turns = std::atoi(args[8].c_str());
+//   double       y0      = std::atof(args[9].c_str());
+//   double       e_init  = std::atof(args[10].c_str());
+//   double       e_delta = std::atof(args[11].c_str());
+//   unsigned int nr_steps_back = std::atoi(args[12].c_str());
+//   double       rescale = std::atof(args[13].c_str());
+//   unsigned int nr_iterations = std::atoi(args[14].c_str());
+//   double       s_min = std::atof(args[15].c_str());
+//   double       s_max = std::atof(args[16].c_str());
+//   unsigned int nr_threads = 1;
+//   std::vector<std::string> fam_names;
+//   for(unsigned int i=17; i<args.size(); ++i) {
+//     unsigned int nr = std::atoi(args[i].c_str());
+//     if (nr > 0) {
+//       nr_threads = nr;
+//     } else fam_names.push_back(args[i]);
+//   }
+//
+//   print_header(stdout);
+//   std::cout << std::endl;
+//   std::cout << "flat_filename   : " << flat_filename << std::endl;
+//   std::cout << "energy[eV]      : " << ring_energy << std::endl;
+//   std::cout << "harmonic_number : " << harmonic_number << std::endl;
+//   std::cout << "cavity_state    : " << cavity_state << std::endl;
+//   std::cout << "radiation_state : " << radiation_state << std::endl;
+//   std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+//   std::cout << "nr_turns        : " << nr_turns << std::endl;
+//   std::cout << "y0[m]           : " << y0 << std::endl;
+//   std::cout << "e_init          : " << e_init << std::endl;
+//   std::cout << "e_delta         : " << e_delta << std::endl;
+//   std::cout << "nr_steps_back   : " << nr_steps_back << std::endl;
+//   std::cout << "rescale         : " << rescale << std::endl;
+//   std::cout << "nr_iterations   : " << nr_iterations << std::endl;
+//   std::cout << "s_min[m]        : " << s_min << std::endl;
+//   std::cout << "s_max[m]        : " << s_max << std::endl;
+//   std::cout << "nr_threads      : " << nr_threads << std::endl;
+//   std::cout << "fam_names       : ";
+//   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+//
+//   std::cout << std::endl;
+//   std::cout << get_timestamp() << " begin timestamp" << std::endl;
+//
+//   Accelerator accelerator;
+//
+//   // reads flat file
+//   Status::type status = read_flat_file(flat_filename, accelerator);
+//   if (status == Status::file_not_found) {
+//     std::cerr << "dynap_ma: flat file not found!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   // builds accelerator
+//   accelerator.energy = ring_energy;
+//   accelerator.harmonic_number = harmonic_number;
+//   accelerator.cavity_on = (cavity_state == "on");
+//   accelerator.radiation_on = (radiation_state == "on");
+//   accelerator.vchamber_on = (vchamber_state == "on");
+//
+//   // calcs dynamical aperture
+//   std::vector<Pos<double> > cod;
+//   Pos<double> p0(0,0,y0,0,0,0);
+//   std::vector<DynApGridPoint> grid;
+//   dynap_ma(accelerator, cod, nr_turns, p0, e_init, e_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
+//
+//   // generates output files
+//   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+//   status = print_closed_orbit(accelerator, cod);
+//   if (status == Status::file_not_opened) return status;
+//   std::cout << get_timestamp() << " saving dynap_ma grid to file" << std::endl;
+//   status = print_dynapgrid (accelerator, grid, "[dynap_ma]", "dynap_ma2_out.txt");
+//   if (status == Status::file_not_opened) return status;
+//
+//   std::cout << get_timestamp() << " end timestamp" << std::endl;
+//   return EXIT_SUCCESS;
+//
+// }
 
-  std::cout << std::endl;
-  std::cout << get_timestamp() << " begin timestamp" << std::endl;
+// int cmd_dynap_pxa(const std::vector<std::string>& args) {
+//
+//   if (args.size() < 17) {
+//     std::cerr << "dynap_pxa: invalid number of arguments!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   std::cout << std::endl;
+//   std::cout << "[cmd_dynap_pxa]" << std::endl << std::endl;
+//
+//   std::string  flat_filename(args[2]);
+//   double       ring_energy      = std::atof(args[3].c_str());
+//   unsigned int harmonic_number = std::atoi(args[4].c_str());
+//   std::string  cavity_state(args[5].c_str());
+//   std::string  radiation_state(args[6].c_str());
+//   std::string  vchamber_state(args[7].c_str());
+//   unsigned int nr_turns = std::atoi(args[8].c_str());
+//   double       y0       = std::atof(args[9].c_str());
+//   double       px_init  = std::atof(args[10].c_str());
+//   double       px_delta = std::atof(args[11].c_str());
+//   unsigned int nr_steps_back = std::atoi(args[12].c_str());
+//   double       rescale = std::atof(args[13].c_str());
+//   unsigned int nr_iterations = std::atoi(args[14].c_str());
+//   double       s_min    = std::atof(args[15].c_str());
+//   double       s_max    = std::atof(args[16].c_str());
+//   unsigned int nr_threads = 1;
+//   std::vector<std::string> fam_names;
+//   for(unsigned int i=17; i<args.size(); ++i) {
+//     unsigned int nr = std::atoi(args[i].c_str());
+//     if (nr > 0) {
+//       nr_threads = nr;
+//     } else fam_names.push_back(args[i]);
+//   }
+//
+//   print_header(stdout);
+//   std::cout << std::endl;
+//   std::cout << "flat_filename   : " << flat_filename << std::endl;
+//   std::cout << "energy[eV]      : " << ring_energy << std::endl;
+//   std::cout << "harmonic_number : " << harmonic_number << std::endl;
+//   std::cout << "cavity_state    : " << cavity_state << std::endl;
+//   std::cout << "radiation_state : " << radiation_state << std::endl;
+//   std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+//   std::cout << "nr_turns        : " << nr_turns << std::endl;
+//   std::cout << "y0[m]           : " << y0 << std::endl;
+//   std::cout << "px_init[rad]    : " << px_init << std::endl;
+//   std::cout << "px_delta[rad]   : " << px_delta << std::endl;
+//   std::cout << "nr_steps_back   : " << nr_steps_back << std::endl;
+//   std::cout << "rescale         : " << rescale << std::endl;
+//   std::cout << "nr_iterations   : " << nr_iterations << std::endl;
+//   std::cout << "s_min[m]        : " << s_min << std::endl;
+//   std::cout << "s_max[m]        : " << s_max << std::endl;
+//   std::cout << "nr_threads      : " << nr_threads << std::endl;
+//   std::cout << "fam_names       : ";
+//   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+//
+//   std::cout << std::endl;
+//   std::cout << get_timestamp() << " begin timestamp" << std::endl;
+//
+//   Accelerator accelerator;
+//
+//   // reads flat file
+//   Status::type status = read_flat_file(flat_filename, accelerator);
+//   if (status == Status::file_not_found) {
+//     std::cerr << "dynap_pxa: flat file not found!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   // builds accelerator
+//   accelerator.energy = ring_energy;
+//   accelerator.harmonic_number = harmonic_number;
+//   accelerator.cavity_on = (cavity_state == "on");
+//   accelerator.radiation_on = (radiation_state == "on");
+//   accelerator.vchamber_on = (vchamber_state == "on");
+//
+//   // calcs dynamical aperture
+//   std::vector<Pos<double> > cod;
+//   Pos<double> p0(0,0,y0,0,0,0);
+//   std::vector<DynApGridPoint> grid;
+//   dynap_pxa(accelerator, cod, nr_turns, p0, px_init, px_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
+//
+//   // generates output files
+//   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+//   status = print_closed_orbit(accelerator, cod);
+//   if (status == Status::file_not_opened) return status;
+//   std::cout << get_timestamp() << " saving dynap_pxa grid to file" << std::endl;
+//   status = print_dynapgrid (accelerator, grid, "[dynap_pxa]", "dynap_pxa_out.txt");
+//   if (status == Status::file_not_opened) return status;
+//
+//   std::cout << get_timestamp() << " end timestamp" << std::endl;
+//   return EXIT_SUCCESS;
+//
+// }
 
-  Accelerator accelerator;
+// int cmd_dynap_pxa_old(const std::vector<std::string>& args) {
+//
+//   if (args.size() < 15) {
+//     std::cerr << "dynap_pxa: invalid number of arguments!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   std::cout << std::endl;
+//   std::cout << "[cmd_dynap_pxa]" << std::endl << std::endl;
+//
+//   std::string  flat_filename(args[2]);
+//   double       ring_energy      = std::atof(args[3].c_str());
+//   unsigned int harmonic_number = std::atoi(args[4].c_str());
+//   std::string  cavity_state(args[5].c_str());
+//   std::string  radiation_state(args[6].c_str());
+//   std::string  vchamber_state(args[7].c_str());
+//   unsigned int nr_turns = std::atoi(args[8].c_str());
+//   double       y0     = std::atof(args[9].c_str());
+//   double       px0    = std::atof(args[10].c_str());
+//   double       px_tol = std::atof(args[11].c_str());
+//   double       s_min  = std::atof(args[12].c_str());
+//   double       s_max  = std::atof(args[13].c_str());
+//   unsigned int nr_threads = 1;
+//   std::vector<std::string> fam_names;
+//   for(unsigned int i=14; i<args.size(); ++i) {
+//     unsigned int nr = std::atoi(args[i].c_str());
+//     if (nr > 0) {
+//       nr_threads = nr;
+//     } else fam_names.push_back(args[i]);
+//   }
+//
+//
+//   print_header(stdout);
+//   std::cout << std::endl;
+//   std::cout << "flat_filename   : " << flat_filename << std::endl;
+//   std::cout << "energy[eV]      : " << ring_energy << std::endl;
+//   std::cout << "harmonic_number : " << harmonic_number << std::endl;
+//   std::cout << "cavity_state    : " << cavity_state << std::endl;
+//   std::cout << "radiation_state : " << radiation_state << std::endl;
+//   std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+//   std::cout << "nr_turns        : " << nr_turns << std::endl;
+//   std::cout << "y0[m]           : " << y0 << std::endl;
+//   std::cout << "px0[rad]        : " << px0 << std::endl;
+//   std::cout << "px_tol          : " << px_tol << std::endl;
+//   std::cout << "s_min[m]        : " << s_min << std::endl;
+//   std::cout << "s_max[m]        : " << s_max << std::endl;
+//   std::cout << "nr_threads      : " << nr_threads << std::endl;
+//   std::cout << "fam_names       : ";
+//   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+//
+//   std::cout << std::endl;
+//   std::cout << get_timestamp() << " begin timestamp" << std::endl;
+//
+//   Accelerator accelerator;
+//
+//   // reads flat file
+//   Status::type status = read_flat_file(flat_filename, accelerator);
+//   if (status == Status::file_not_found) {
+//     std::cerr << "dynap_pxa: flat file not found!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   // builds accelerator
+//   accelerator.energy = ring_energy;
+//   accelerator.harmonic_number = harmonic_number;
+//   accelerator.cavity_on = (cavity_state == "on");
+//   accelerator.radiation_on = (radiation_state == "on");
+//   accelerator.vchamber_on = (vchamber_state == "on");
+//
+//   // calcs dynamical aperture
+//   std::vector<Pos<double> > cod;
+//   Pos<double> p0(0,0,y0,0,0,0);
+//   std::vector<DynApGridPoint> grid;
+//   dynap_pxa(accelerator, cod, nr_turns, p0, px0, px_tol, s_min, s_max, fam_names, true, grid, nr_threads);
+//
+//   // generates output files
+//   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+//   status = print_closed_orbit(accelerator, cod);
+//   if (status == Status::file_not_opened) return status;
+//   std::cout << get_timestamp() << " saving dynap_pxa grid to file" << std::endl;
+//   status = print_dynapgrid (accelerator, grid, "[dynap_pxa]", "dynap_pxa_out.txt");
+//   if (status == Status::file_not_opened) return status;
+//
+//   std::cout << get_timestamp() << " end timestamp" << std::endl;
+//   return EXIT_SUCCESS;
+//
+// }
 
-  // reads flat file
-  Status::type status = read_flat_file(flat_filename, accelerator);
-  if (status == Status::file_not_found) {
-    std::cerr << "dynap_pxa: flat file not found!" << std::endl;
-    return EXIT_FAILURE;
-  }
+// int cmd_dynap_pya(const std::vector<std::string>& args) {
+//
+//   if (args.size() < 15) {
+//     std::cerr << "dynap_pya: invalid number of arguments!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   std::cout << std::endl;
+//   std::cout << "[cmd_dynap_pya]" << std::endl << std::endl;
+//
+//   std::string  flat_filename(args[2]);
+//   double       ring_energy      = std::atof(args[3].c_str());
+//   unsigned int harmonic_number = std::atoi(args[4].c_str());
+//   std::string  cavity_state(args[5].c_str());
+//   std::string  radiation_state(args[6].c_str());
+//   std::string  vchamber_state(args[7].c_str());
+//   unsigned int nr_turns = std::atoi(args[8].c_str());
+//   double       y0     = std::atof(args[9].c_str());
+//   double       py0    = std::atof(args[10].c_str());
+//   double       py_tol = std::atof(args[11].c_str());
+//   double       s_min  = std::atof(args[12].c_str());
+//   double       s_max  = std::atof(args[13].c_str());
+//   unsigned int nr_threads = 1;
+//   std::vector<std::string> fam_names;
+//   for(unsigned int i=14; i<args.size(); ++i) {
+//     unsigned int nr = std::atoi(args[i].c_str());
+//     if (nr > 0) {
+//       nr_threads = nr;
+//     } else fam_names.push_back(args[i]);
+//   }
+//
+//
+//   print_header(stdout);
+//   std::cout << std::endl;
+//   std::cout << "flat_filename   : " << flat_filename << std::endl;
+//   std::cout << "energy[eV]      : " << ring_energy << std::endl;
+//   std::cout << "harmonic_number : " << harmonic_number << std::endl;
+//   std::cout << "cavity_state    : " << cavity_state << std::endl;
+//   std::cout << "radiation_state : " << radiation_state << std::endl;
+//   std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+//   std::cout << "nr_turns        : " << nr_turns << std::endl;
+//   std::cout << "y0[m]           : " << y0 << std::endl;
+//   std::cout << "py0[rad]        : " << py0 << std::endl;
+//   std::cout << "py_tol          : " << py_tol << std::endl;
+//   std::cout << "s_min[m]        : " << s_min << std::endl;
+//   std::cout << "s_max[m]        : " << s_max << std::endl;
+//   std::cout << "nr_threads      : " << nr_threads << std::endl;
+//   std::cout << "fam_names       : ";
+//   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+//
+//   std::cout << std::endl;
+//   std::cout << get_timestamp() << " begin timestamp" << std::endl;
+//
+//   Accelerator accelerator;
+//
+//   // reads flat file
+//   Status::type status = read_flat_file(flat_filename, accelerator);
+//   if (status == Status::file_not_found) {
+//     std::cerr << "dynap_pya: flat file not found!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   // builds accelerator
+//   accelerator.energy = ring_energy;
+//   accelerator.harmonic_number = harmonic_number;
+//   accelerator.cavity_on = (cavity_state == "on");
+//   accelerator.radiation_on = (radiation_state == "on");
+//   accelerator.vchamber_on = (vchamber_state == "on");
+//
+//   // calcs dynamical aperture
+//   std::vector<Pos<double> > cod;
+//   Pos<double> p0(0,0,y0,0,0,0);
+//   std::vector<DynApGridPoint> grid;
+//   dynap_pya(accelerator, cod, nr_turns, p0, py0, py_tol, s_min, s_max, fam_names, true, grid, nr_threads);
+//
+//   // generates output files
+//   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+//   status = print_closed_orbit(accelerator, cod);
+//   if (status == Status::file_not_opened) return status;
+//   std::cout << get_timestamp() << " saving dynap_pya grid to file" << std::endl;
+//   status = print_dynapgrid (accelerator, grid, "[dynap_pya]", "dynap_pya_out.txt");
+//   if (status == Status::file_not_opened) return status;
+//
+//   std::cout << get_timestamp() << " end timestamp" << std::endl;
+//   return EXIT_SUCCESS;
+//
+// }
 
-  // builds accelerator
-  accelerator.energy = ring_energy;
-  accelerator.harmonic_number = harmonic_number;
-  accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on");
-  accelerator.vchamber_on = (vchamber_state == "on");
-
-  // calcs dynamical aperture
-  std::vector<Pos<double> > cod;
-  Pos<double> p0(0,0,y0,0,0,0);
-  std::vector<DynApGridPoint> grid;
-  dynap_pxa(accelerator, cod, nr_turns, p0, px0, px_tol, s_min, s_max, fam_names, true, grid, nr_threads);
-
-  // generates output files
-  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
-  status = print_closed_orbit(accelerator, cod);
-  if (status == Status::file_not_opened) return status;
-  std::cout << get_timestamp() << " saving dynap_pxa grid to file" << std::endl;
-  status = print_dynapgrid (accelerator, grid, "[dynap_pxa]", "dynap_pxa_out.txt");
-  if (status == Status::file_not_opened) return status;
-
-  std::cout << get_timestamp() << " end timestamp" << std::endl;
-  return EXIT_SUCCESS;
-
-}
-
-int cmd_dynap_pya(const std::vector<std::string>& args) {
-
-  if (args.size() < 15) {
-    std::cerr << "dynap_pya: invalid number of arguments!" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  std::cout << std::endl;
-  std::cout << "[cmd_dynap_pya]" << std::endl << std::endl;
-
-  std::string  flat_filename(args[2]);
-  double       ring_energy      = std::atof(args[3].c_str());
-  unsigned int harmonic_number = std::atoi(args[4].c_str());
-  std::string  cavity_state(args[5].c_str());
-  std::string  radiation_state(args[6].c_str());
-  std::string  vchamber_state(args[7].c_str());
-  unsigned int nr_turns = std::atoi(args[8].c_str());
-  double       y0     = std::atof(args[9].c_str());
-  double       py0    = std::atof(args[10].c_str());
-  double       py_tol = std::atof(args[11].c_str());
-  double       s_min  = std::atof(args[12].c_str());
-  double       s_max  = std::atof(args[13].c_str());
-  unsigned int nr_threads = 1;
-  std::vector<std::string> fam_names;
-  for(unsigned int i=14; i<args.size(); ++i) {
-    unsigned int nr = std::atoi(args[i].c_str());
-    if (nr > 0) {
-      nr_threads = nr;
-    } else fam_names.push_back(args[i]);
-  }
-
-
-  print_header(stdout);
-  std::cout << std::endl;
-  std::cout << "flat_filename   : " << flat_filename << std::endl;
-  std::cout << "energy[eV]      : " << ring_energy << std::endl;
-  std::cout << "harmonic_number : " << harmonic_number << std::endl;
-  std::cout << "cavity_state    : " << cavity_state << std::endl;
-  std::cout << "radiation_state : " << radiation_state << std::endl;
-  std::cout << "vchamber_state  : " << vchamber_state << std::endl;
-  std::cout << "nr_turns        : " << nr_turns << std::endl;
-  std::cout << "y0[m]           : " << y0 << std::endl;
-  std::cout << "py0[rad]        : " << py0 << std::endl;
-  std::cout << "py_tol          : " << py_tol << std::endl;
-  std::cout << "s_min[m]        : " << s_min << std::endl;
-  std::cout << "s_max[m]        : " << s_max << std::endl;
-  std::cout << "nr_threads      : " << nr_threads << std::endl;
-  std::cout << "fam_names       : ";
-  for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
-
-  std::cout << std::endl;
-  std::cout << get_timestamp() << " begin timestamp" << std::endl;
-
-  Accelerator accelerator;
-
-  // reads flat file
-  Status::type status = read_flat_file(flat_filename, accelerator);
-  if (status == Status::file_not_found) {
-    std::cerr << "dynap_pya: flat file not found!" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  // builds accelerator
-  accelerator.energy = ring_energy;
-  accelerator.harmonic_number = harmonic_number;
-  accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on");
-  accelerator.vchamber_on = (vchamber_state == "on");
-
-  // calcs dynamical aperture
-  std::vector<Pos<double> > cod;
-  Pos<double> p0(0,0,y0,0,0,0);
-  std::vector<DynApGridPoint> grid;
-  dynap_pya(accelerator, cod, nr_turns, p0, py0, py_tol, s_min, s_max, fam_names, true, grid, nr_threads);
-
-  // generates output files
-  std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
-  status = print_closed_orbit(accelerator, cod);
-  if (status == Status::file_not_opened) return status;
-  std::cout << get_timestamp() << " saving dynap_pya grid to file" << std::endl;
-  status = print_dynapgrid (accelerator, grid, "[dynap_pya]", "dynap_pya_out.txt");
-  if (status == Status::file_not_opened) return status;
-
-  std::cout << get_timestamp() << " end timestamp" << std::endl;
-  return EXIT_SUCCESS;
-
-}
+// int cmd_dynap_pya(const std::vector<std::string>& args) {
+//
+//   if (args.size() < 17) {
+//     std::cerr << "dynap_pya: invalid number of arguments!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   std::cout << std::endl;
+//   std::cout << "[cmd_dynap_pya]" << std::endl << std::endl;
+//
+//   std::string  flat_filename(args[2]);
+//   double       ring_energy      = std::atof(args[3].c_str());
+//   unsigned int harmonic_number = std::atoi(args[4].c_str());
+//   std::string  cavity_state(args[5].c_str());
+//   std::string  radiation_state(args[6].c_str());
+//   std::string  vchamber_state(args[7].c_str());
+//   unsigned int nr_turns = std::atoi(args[8].c_str());
+//   double       y0       = std::atof(args[9].c_str());
+//   double       py_init  = std::atof(args[10].c_str());
+//   double       py_delta = std::atof(args[11].c_str());
+//   unsigned int nr_steps_back = std::atoi(args[12].c_str());
+//   double       rescale = std::atof(args[13].c_str());
+//   unsigned int nr_iterations = std::atoi(args[14].c_str());
+//   double       s_min    = std::atof(args[15].c_str());
+//   double       s_max    = std::atof(args[16].c_str());
+//   unsigned int nr_threads = 1;
+//   std::vector<std::string> fam_names;
+//   for(unsigned int i=17; i<args.size(); ++i) {
+//     unsigned int nr = std::atoi(args[i].c_str());
+//     if (nr > 0) {
+//       nr_threads = nr;
+//     } else fam_names.push_back(args[i]);
+//   }
+//
+//   print_header(stdout);
+//   std::cout << std::endl;
+//   std::cout << "flat_filename   : " << flat_filename << std::endl;
+//   std::cout << "energy[eV]      : " << ring_energy << std::endl;
+//   std::cout << "harmonic_number : " << harmonic_number << std::endl;
+//   std::cout << "cavity_state    : " << cavity_state << std::endl;
+//   std::cout << "radiation_state : " << radiation_state << std::endl;
+//   std::cout << "vchamber_state  : " << vchamber_state << std::endl;
+//   std::cout << "nr_turns        : " << nr_turns << std::endl;
+//   std::cout << "y0[m]           : " << y0 << std::endl;
+//   std::cout << "py_init[rad]    : " << py_init << std::endl;
+//   std::cout << "py_delta[rad]   : " << py_delta << std::endl;
+//   std::cout << "nr_steps_back   : " << nr_steps_back << std::endl;
+//   std::cout << "rescale         : " << rescale << std::endl;
+//   std::cout << "nr_iterations   : " << nr_iterations << std::endl;
+//   std::cout << "s_min[m]        : " << s_min << std::endl;
+//   std::cout << "s_max[m]        : " << s_max << std::endl;
+//   std::cout << "nr_threads      : " << nr_threads << std::endl;
+//   std::cout << "fam_names       : ";
+//   for(unsigned int i=0; i<fam_names.size(); ++i) std::cout << fam_names[i] << " "; std::cout << std::endl;
+//
+//   std::cout << std::endl;
+//   std::cout << get_timestamp() << " begin timestamp" << std::endl;
+//
+//   Accelerator accelerator;
+//
+//   // reads flat file
+//   Status::type status = read_flat_file(flat_filename, accelerator);
+//   if (status == Status::file_not_found) {
+//     std::cerr << "dynap_pya: flat file not found!" << std::endl;
+//     return EXIT_FAILURE;
+//   }
+//
+//   // builds accelerator
+//   accelerator.energy = ring_energy;
+//   accelerator.harmonic_number = harmonic_number;
+//   accelerator.cavity_on = (cavity_state == "on");
+//   accelerator.radiation_on = (radiation_state == "on");
+//   accelerator.vchamber_on = (vchamber_state == "on");
+//
+//   // calcs dynamical aperture
+//   std::vector<Pos<double> > cod;
+//   Pos<double> p0(0,0,y0,0,0,0);
+//   std::vector<DynApGridPoint> grid;
+//   dynap_pya(accelerator, cod, nr_turns, p0, py_init, py_delta, nr_steps_back, rescale, nr_iterations, s_min, s_max, fam_names, true, grid, nr_threads);
+//
+//   // generates output files
+//   std::cout << get_timestamp() << " saving closed-orbit to file" << std::endl;
+//   status = print_closed_orbit(accelerator, cod);
+//   if (status == Status::file_not_opened) return status;
+//   std::cout << get_timestamp() << " saving dynap_pya grid to file" << std::endl;
+//   status = print_dynapgrid (accelerator, grid, "[dynap_pya]", "dynap_pya_out.txt");
+//   if (status == Status::file_not_opened) return status;
+//
+//   std::cout << get_timestamp() << " end timestamp" << std::endl;
+//   return EXIT_SUCCESS;
+//
+// }
 
 int cmd_dynap_xyfmap(const std::vector<std::string>& args) {
 
@@ -808,4 +1097,64 @@ int cmd_track_linepass(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " end timestamp" << std::endl;
   return EXIT_SUCCESS;
 
+}
+
+int cmd_help(const std::vector<std::string>& args) {
+
+  std::vector<std::string> help_help = {
+    "help",
+    "====",
+    "possible commands:",
+    "",
+    "help:           this help. accepts secong argument for detailed help",
+    "dynap_xy:       calculates dynamical aperture in xy plane",
+    "dynap_ex:       calculates dynamical aperture in ex plane",
+    "dynap_ma:       calculates momentum acceptance along the ring",
+    "dynap_pxa:      calculates maximum px along the ring",
+    "dynap_pya:      calculates maximum px along the ring",
+    "dynap_xyfmap:   calculates fmap in xy plane",
+    "dynap_exfmap:   calculates fmap in ex plane",
+    "track_linepass: does one turn tracking of a initial condition",
+    "tests:          used for debugging and testing trackcpp"
+  };
+
+  std::vector<std::string> dynap_ma_help = {
+    "dynap_ma",
+    "========",
+    "calculates momentum acceptance along the ring",
+    "both positive and negative momentum acceptances are searched"
+    "",
+    "input parameters (in order):",
+    "",
+    "flat_filename   : name of the file with flat lattice",
+    "energy[eV]      : energy of the electron beam",
+    "harmonic_number : harmonic number of the lattice",
+    "cavity_state    : on|off",
+    "radiation_state : on|off",
+    "vchamber_state  : on|off",
+    "nr_turns        : number of turns to track for each initial condition",
+    "y0[m]           : initial y position (typically a small number <> 0)",
+    "e_init          : initial energy for search",
+    "e_delta         : intial delta energy",
+    "nr_steps_back   : number of current energy delta to step back when an unstable point if found",
+    "rescale         : rescaling factor for e_delta in new iterations",
+    "nr_iterations   : number of iterations",
+    "s_min[m]        : calcs momentum acceptance limited at s=[s_min,s_max] and at elements belonging to 'fam_names'",
+    "s_max[m]        : calcs momentum acceptance limited at s=[s_min,s_max]",
+    "nr_threads      : number of threads to run in parallel",
+    "fam_names       : calcs momentum acceptance limited at s=[s_min,s_max] and at elements belonging to 'fam_names'",
+  };
+
+  std::vector<std::string> default_text = {"trackcpp: no help available."};
+  std::vector<std::string>* text = &default_text;
+  if (args.size() == 2) {
+    text = &help_help;
+  } if (args.size() > 2) {
+    if (args[2] == "dynap_ma") text = &dynap_ma_help;
+  }
+  print_header (stdout); std::cout << std::endl;
+  for(unsigned int i=0; i<text->size(); ++i) std::cout << (*text)[i] << std::endl;
+
+  return EXIT_SUCCESS;
+  
 }

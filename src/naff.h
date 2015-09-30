@@ -58,9 +58,21 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 #define SYSCHECKMALLOC(variable, type) \
   if ((variable=(type*)malloc(sizeof(type)))==NULL)\
   { printf("error : malloc failed!\n"); exit(1);}
+// #define DIM2(prow,row,col,type,l) \
+//   {\
+//   register type *pdata;\
+//   int I;\
+//   SYSCHECKMALLOCSIZE(pdata, type,(row) * (col));\
+//   SYSCHECKMALLOCSIZE(prow, type *,(row));\
+//   for (I = 0; I < (row); I++)\
+//      {\
+//      prow[I] = pdata;\
+//      pdata += col;\
+//      }\
+//   }
 #define DIM2(prow,row,col,type,l) \
   {\
-  register type *pdata;\
+  type *pdata;\
   int I;\
   SYSCHECKMALLOCSIZE(pdata, type,(row) * (col));\
   SYSCHECKMALLOCSIZE(prow, type *,(row));\

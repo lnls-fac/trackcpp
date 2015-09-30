@@ -33,13 +33,16 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<argc; ++i) args.push_back(std::string(argv[i]));
 
     std::string cmd(args[1]);
-    if (cmd == "tests")    return cmd_tests(args);
+    if (cmd == "help") return cmd_help(args);
+    if (cmd == "tests") return cmd_tests(args);
     if (cmd == "dynap_xy") return cmd_dynap_xy(args);
     if (cmd == "dynap_ex") return cmd_dynap_ex(args);
-    if (cmd == "dynap_ma") return cmd_dynap_ma(args);
-    if (cmd == "dynap_ma2") return cmd_dynap_ma2(args);
-    if (cmd == "dynap_pxa") return cmd_dynap_pxa(args);
-    if (cmd == "dynap_pya") return cmd_dynap_pya(args);
+    // if (cmd == "dynap_ma") return cmd_dynap_ma(args);
+    // if (cmd == "dynap_pxa") return cmd_dynap_pxa(args);
+    // if (cmd == "dynap_pya") return cmd_dynap_pya(args);
+    if (cmd == "dynap_ma") return cmd_dynap_acceptance(args);
+    if (cmd == "dynap_pxa") return cmd_dynap_acceptance(args);
+    if (cmd == "dynap_pya") return cmd_dynap_acceptance(args);
     if (cmd == "dynap_xyfmap") return cmd_dynap_xyfmap(args);
     if (cmd == "dynap_exfmap") return cmd_dynap_exfmap(args);
     if (cmd == "track_linepass") return cmd_track_linepass(args);

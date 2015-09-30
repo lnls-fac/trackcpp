@@ -40,22 +40,23 @@ OPT_FLAG    = -O3 -std=c++11
 DBG_FLAG    = -O0 -g3 -std=c++11
 ARFLAGS     = rcs
 DFLAGS      = -DVERSION=$(VERSION)
-LIBSOURCES_CPP  = lattice.cpp \
-                  elements.cpp \
-                  passmethods.cpp \
-                  tracking.cpp \
-                  trackcpp.cpp \
-                  flat_file.cpp \
-                  optics.cpp \
-                  dynap.cpp \
-                  output.cpp \
-                  kicktable.cpp \
-                  multithreads.cpp \
-                  accelerator.cpp
-BINSOURCES_CPP =  exec.cpp \
-                  tests.cpp \
-                  commands.cpp \
+LIBSOURCES_CPP  =	lattice.cpp \
+									elements.cpp \
+									passmethods.cpp \
+									tracking.cpp \
+									trackcpp.cpp \
+									flat_file.cpp \
+									optics.cpp \
+									dynap.cpp \
+									output.cpp \
+									kicktable.cpp \
+									multithreads.cpp \
+									accelerator.cpp \
 									naff.cpp
+BINSOURCES_CPP =	exec.cpp \
+									tests.cpp \
+									commands.cpp \
+
 
 AUXFILES  = VERSION
 
