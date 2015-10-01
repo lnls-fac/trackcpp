@@ -22,9 +22,6 @@
 
 #include <trackcpp/trackcpp.h>
 #include <trackcpp/auxiliary.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_permutation.h>
-#include <gsl/gsl_linalg.h>
 
 
 // track_findm66
@@ -58,41 +55,41 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
     }
   }
 
-  Pos<Tpsa<6,1> > tpsa;
-  tpsa.rx = Tpsa<6,1>(closed_orbit[0].rx, 0); tpsa.px = Tpsa<6,1>(closed_orbit[0].px, 1);
-  tpsa.ry = Tpsa<6,1>(closed_orbit[0].ry, 2); tpsa.py = Tpsa<6,1>(closed_orbit[0].py, 3);
-  tpsa.de = Tpsa<6,1>(closed_orbit[0].de, 4); tpsa.dl = Tpsa<6,1>(closed_orbit[0].dl, 5);
+  Pos<Tpsa<6,1> > map;
+  map.rx = Tpsa<6,1>(closed_orbit[0].rx, 0); map.px = Tpsa<6,1>(closed_orbit[0].px, 1);
+  map.ry = Tpsa<6,1>(closed_orbit[0].ry, 2); map.py = Tpsa<6,1>(closed_orbit[0].py, 3);
+  map.de = Tpsa<6,1>(closed_orbit[0].de, 4); map.dl = Tpsa<6,1>(closed_orbit[0].dl, 5);
 
   for(unsigned int i=0; i<lattice.size(); ++i) {
 
     // track through element
-    if ((status = track_elementpass (lattice[i], tpsa, accelerator)) != Status::success) return status;
+    if ((status = track_elementpass (lattice[i], map, accelerator)) != Status::success) return status;
 
     Matrix m = {row0,row0,row0,row0,row0,row0};
 
-    m[0][0] = tpsa.rx.c[1]; m[0][1] = tpsa.rx.c[2];
-    m[0][2] = tpsa.rx.c[3]; m[0][3] = tpsa.rx.c[4];
-    m[0][4] = tpsa.rx.c[5]; m[0][5] = tpsa.rx.c[6];
+    m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2];
+    m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4];
+    m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
 
-    m[1][0] = tpsa.px.c[1]; m[1][1] = tpsa.px.c[2];
-    m[1][2] = tpsa.px.c[3]; m[1][3] = tpsa.px.c[4];
-    m[1][4] = tpsa.px.c[5]; m[1][5] = tpsa.px.c[6];
+    m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2];
+    m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4];
+    m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
 
-    m[2][0] = tpsa.ry.c[1]; m[2][1] = tpsa.ry.c[2];
-    m[2][2] = tpsa.ry.c[3]; m[2][3] = tpsa.ry.c[4];
-    m[2][4] = tpsa.ry.c[5]; m[2][5] = tpsa.ry.c[6];
+    m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2];
+    m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4];
+    m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
 
-    m[3][0] = tpsa.py.c[1]; m[3][1] = tpsa.py.c[2];
-    m[3][2] = tpsa.py.c[3]; m[3][3] = tpsa.py.c[4];
-    m[3][4] = tpsa.py.c[5]; m[3][5] = tpsa.py.c[6];
+    m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2];
+    m[3][2] = map.py.c[3]; m[3][3] = map.py.c[4];
+    m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
 
-    m[4][0] = tpsa.de.c[1]; m[4][1] = tpsa.de.c[2];
-    m[4][2] = tpsa.de.c[3]; m[4][3] = tpsa.de.c[4];
-    m[4][4] = tpsa.de.c[5]; m[4][5] = tpsa.de.c[6];
+    m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2];
+    m[4][2] = map.de.c[3]; m[4][3] = map.de.c[4];
+    m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
 
-    m[5][0] = tpsa.dl.c[1]; m[5][1] = tpsa.dl.c[2];
-    m[5][2] = tpsa.dl.c[3]; m[5][3] = tpsa.dl.c[4];
-    m[5][4] = tpsa.dl.c[5]; m[5][5] = tpsa.dl.c[6];
+    m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2];
+    m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4];
+    m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
 
     m66.push_back(m);
 
@@ -129,7 +126,7 @@ Status::type track_findorbit6(
   Pos<double> dco(1.0,1.0,1.0,1.0,1.0,1.0);
   Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
   theta.dl = fixedpoint;
-  matrix6_set_identity(D, delta);
+  matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
@@ -163,9 +160,9 @@ Status::type track_findorbit6(
 
     Pos<double> b = Rf - Ri - theta;
     std::vector<Pos<double> > M_1(6,0);
-    matrix6_set_identity(M_1);
+    matrix6_set_identity_posvec(M_1);
     M_1 = M_1 - M;
-    dco = linalg_solve6(M_1, b);
+    dco = linalg_solve6_posvec(M_1, b);
     co[6] = dco + Ri;
     co[0] = co[6]; co[1] = co[6];
     co[2] = co[6]; co[3] = co[6];
@@ -206,7 +203,7 @@ Status::type track_findorbit4(
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,0.0,0.0);
   Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
-  matrix6_set_identity(D, delta);
+  matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
@@ -240,9 +237,9 @@ Status::type track_findorbit4(
     //print(M);
     Pos<double> b = Rf - Ri;
     std::vector<Pos<double> > M_1(6,0);
-    matrix6_set_identity(M_1);
+    matrix6_set_identity_posvec(M_1);
     M_1 = M_1 - M;
-    dco = linalg_solve4(M_1, b);
+    dco = linalg_solve4_posvec(M_1, b);
     //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", Rf.rx, Rf.px, Rf.ry, Rf.py, Rf.de, Rf.dl);
     //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", b.rx, b.px, b.ry, b.py, b.de, b.dl);
     //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", dco.rx, dco.px, dco.ry, dco.py, dco.de, dco.dl);
@@ -265,56 +262,4 @@ Status::type track_findorbit4(
   closed_orbit.pop_back(); // eliminates last element which is the same as first
   return Status::success;
 
-}
-
-Pos<double> linalg_solve4(const std::vector<Pos<double> >& M, const Pos<double>& B) {
-
-  gsl_matrix* m = gsl_matrix_alloc(4,4);
-  gsl_vector* b = gsl_vector_alloc(4);
-  gsl_vector* x = gsl_vector_alloc(4);
-  gsl_permutation* p = gsl_permutation_alloc(4);
-
-  gsl_vector_set(b,0,B.rx); gsl_vector_set(b,1,B.px);
-  gsl_vector_set(b,2,B.ry); gsl_vector_set(b,3,B.py);
-  for(unsigned int i=0; i<4; ++i) {
-    gsl_matrix_set(m,0,i,M[i].rx); gsl_matrix_set(m,1,i,M[i].px);
-    gsl_matrix_set(m,2,i,M[i].ry); gsl_matrix_set(m,3,i,M[i].py);
-  }
-
-  int s; gsl_linalg_LU_decomp(m, p, &s);
-  gsl_linalg_LU_solve(m, p, b, x);
-  Pos<double> X(gsl_vector_get(x,0),gsl_vector_get(x,1),gsl_vector_get(x,2),gsl_vector_get(x,3),0,0);
-
-  gsl_matrix_free(m);
-  gsl_vector_free(b);
-  gsl_vector_free(x);
-  gsl_permutation_free(p);
-  return X;
-}
-
-Pos<double> linalg_solve6(const std::vector<Pos<double> >& M, const Pos<double>& B) {
-
-  gsl_matrix* m = gsl_matrix_alloc(6,6);
-  gsl_vector* b = gsl_vector_alloc(6);
-  gsl_vector* x = gsl_vector_alloc(6);
-  gsl_permutation* p = gsl_permutation_alloc(6);
-
-  gsl_vector_set(b,0,B.rx); gsl_vector_set(b,1,B.px);
-  gsl_vector_set(b,2,B.ry); gsl_vector_set(b,3,B.py);
-  gsl_vector_set(b,4,B.de); gsl_vector_set(b,5,B.dl);
-  for(unsigned int i=0; i<6; ++i) {
-    gsl_matrix_set(m,0,i,M[i].rx); gsl_matrix_set(m,1,i,M[i].px);
-    gsl_matrix_set(m,2,i,M[i].ry); gsl_matrix_set(m,3,i,M[i].py);
-    gsl_matrix_set(m,4,i,M[i].de); gsl_matrix_set(m,5,i,M[i].dl);
-  }
-
-  int s; gsl_linalg_LU_decomp(m, p, &s);
-  gsl_linalg_LU_solve(m, p, b, x);
-  Pos<double> X(gsl_vector_get(x,0),gsl_vector_get(x,1),gsl_vector_get(x,2),gsl_vector_get(x,3),gsl_vector_get(x,4),gsl_vector_get(x,5));
-
-  gsl_matrix_free(m);
-  gsl_vector_free(b);
-  gsl_vector_free(x);
-  gsl_permutation_free(p);
-  return X;
 }

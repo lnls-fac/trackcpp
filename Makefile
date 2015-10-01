@@ -52,7 +52,8 @@ LIBSOURCES_CPP  =	lattice.cpp \
 									kicktable.cpp \
 									multithreads.cpp \
 									accelerator.cpp \
-									naff.cpp
+									naff.cpp \
+									linalg.cpp
 BINSOURCES_CPP =	exec.cpp \
 									tests.cpp \
 									commands.cpp \

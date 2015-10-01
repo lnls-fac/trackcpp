@@ -36,8 +36,8 @@
 #include "pos.h"
 #include "tpsa.h"
 #include "auxiliary.h"
-//#include "naff.h"
 #include "multithreads.h"
+#include "linalg.h"
 
 extern bool verbose_on;
 

@@ -29,7 +29,6 @@
 #include <iostream>
 #include <cmath>
 
-
 struct PassMethod {
     enum type {
         pm_identity_pass                  = 0,
@@ -106,8 +105,8 @@ struct Plane {
 	};
 };
 
-template <typename T> class Pos;
-class Element;
+// template <typename T> class Pos;
+// class Element;
 
 const double light_speed              = 299792458;         // [m/s]   - definition
 const double vacuum_permeability      = 4*M_PI*1e-7;       // [T.m/A] - definition

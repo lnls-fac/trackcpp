@@ -24,6 +24,7 @@
 #define _POS_H
 
 #include <vector>
+#include <iostream>
 
 template <typename T = double>
 class Pos {
@@ -46,6 +47,18 @@ public:
 	}
 };
 
+
+template <typename T>
+std::ostream& operator<< (std::ostream &out, const Pos<T>& el) {
+	char buffer[255];
+	sprintf(buffer, "%+.16e\n", el.rx); out << buffer;
+	sprintf(buffer, "%+.16e\n", el.px); out << buffer;
+	sprintf(buffer, "%+.16e\n", el.ry); out << buffer;
+	sprintf(buffer, "%+.16e\n", el.py); out << buffer;
+	sprintf(buffer, "%+.16e\n", el.de); out << buffer;
+	sprintf(buffer, "%+.16e\n", el.dl); out << buffer;
+	return out;
+}
 
 template <typename T>
 Pos<T>::Pos(const T& rx_, const T& px_, const T& ry_, const T& py_, const T& de_, const T& dl_):
@@ -135,21 +148,6 @@ Pos<T> operator/ (const Pos<T>& v1, const T& v) {
 	return (1/v)*v1;
 }
 
-template <typename T>
-inline
-void vector6_sum(Pos<T>& v, const T& a1, const Pos<T>& v1, const T& a2, const Pos<T>& v2) {
-	unsigned int i = 0;
-	v.rx = a1 * v1.rx + a2 * v2.rx; v.px = a1 * v1.px + a2 * v2.px;
-	v.ry = a1 * v1.ry + a2 * v2.ry; v.py = a1 * v1.py + a2 * v2.py;
-	v.de = a1 * v1.de + a2 * v2.de; v.de = a1 * v1.de + a2 * v2.de;
-}
-
-template <typename T>
-inline
-void matrix6_set_identity(std::vector<Pos<T> >& m, const T& a = 1) {
-	for(unsigned int i=0; i<m.size(); ++i) m[i] = Pos<T>(0,0,0,0,0,0);
-	m[0].rx = m[1].px = m[2].ry = m[3].py = m[4].de = m[5].dl = a;
-}
 
 template <typename T>
 T abs(const T& x) {

@@ -584,33 +584,42 @@ int test_flatfile() {
 
 }
 
+int test_calc_twiss() {
+
+  Accelerator accelerator;
+  read_flat_file("sirius-v10.txt", accelerator);
+  accelerator.cavity_on = true;
+  accelerator.radiation_on = true;
+  accelerator.vchamber_on = false;
+
+  std::cout << "Energy: " << accelerator.energy << " eV" << '\n';
+  std::cout << "Harmonic number: " << accelerator.harmonic_number << '\n';
+  std::cout << "Cavity on: " << accelerator.cavity_on << '\n';
+  std::cout << "Radiation on: " << accelerator.radiation_on << '\n';
+  std::cout << "Vacuum chamber on: " << accelerator.vchamber_on << '\n';
+
+  Pos<double> fixed_point_guess;
+  std::vector<Pos<double>> closed_orbit;
+  Status::type status = track_findorbit6(accelerator, closed_orbit, fixed_point_guess);
+  if (status != Status::success) {
+    std::cerr << "could not find 6d closed orbit" << std::endl;
+  }
+
+  std::vector<Twiss> twiss;
+  Matrix m66;
+  status = calc_twiss(accelerator, closed_orbit[0], m66, twiss);
+  if (status != Status::success) {
+    std::cerr << "could not calculate twiss" << std::endl;
+  }
+
+  for(unsigned int i=0; i<twiss.size(); ++i) {
+    std::cout << twiss[i].mux << std::endl;
+  }
+
+
+}
+
 int cmd_tests(const std::vector<std::string>& args) {
-
-
-
-  //sirius_v500(accelerator.lattice);
-  //latt_read_flat_file("/home/afonso/flatfile.txt", accelerator);
-  //Status::type status = latt_read_flat_file("/home/fac_files/code/python/trackcpp/pytrack/flat_file_ff.txt", accelerator);
-  //if (status != Status::success) {
-  //  return EXIT_FAILURE;
-  //}
-  //accelerator.lattice[15].nr_steps = 1;
-  // accelerator.energy = 3e9; // [ev]
-  // accelerator.harmonic_number = 864;
-  // accelerator.radiation_on = true;
-  // accelerator.cavity_on = true;
-  // accelerator.vchamber_on = false;
-  //accelerator.radiation_on = false;
-  //accelerator.cavity_on = false;
-
-  //latt_setcavity(the_ring, "on");
-  //latt_setradiation(the_ring, "on", 3e9);
-  //the_ring[13].hkick = 1e-4;
-
-  //std::vector<Element> the_ring2(the_ring);
-  //the_ring2.insert(the_ring2.begin(), the_ring.begin(), the_ring.end());
-  //latt_print(the_ring);
-  //std::cout << the_ring.size() << std::endl;
 
   //test_printlattice(accelerator);
   //test_findm66(accelerator);
@@ -623,7 +632,7 @@ int cmd_tests(const std::vector<std::string>& args) {
   //test_cmd_dynap_xy();
   //test_cmd_dynap_ex();
   //test_cmd_dynap_ma();
-  test_cmd_dynap_ma();
+  //test_cmd_dynap_ma();
   //test_cmd_dynap_pxa();
   //test_cmd_dynap_xyfmap();
   //test_cmd_dynap_exfmap();
@@ -632,8 +641,7 @@ int cmd_tests(const std::vector<std::string>& args) {
   //test_simple_drift();
   //test_simple_quadrupole();
   //test_linepass2();
-
-
+  test_calc_twiss();
 
   return 0;
 

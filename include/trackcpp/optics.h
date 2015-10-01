@@ -25,5 +25,24 @@
 
 #include "elements.h"
 #include "pos.h"
+#include "accelerator.h"
+#include "tracking.h"
+
+class Twiss {
+
+public:
+  Pos<double> cox, coy;
+  Pos<double> etax, etay;
+  double mux, betax, alphax;
+  double muy, betay, alphay;
+  Twiss() {
+    mux = muy = 0.0;
+    betax = betay = std::nan("");
+    alphax = alphay = std::nan("");
+    etax.de = etay.de = 1.0;  // so that (etax * de) gives orbit with delta energy
+  }
+};
+
+Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed_point, Matrix& m66, std::vector<Twiss>& twiss);
 
 #endif
