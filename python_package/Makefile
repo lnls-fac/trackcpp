@@ -9,15 +9,16 @@ SOURCES_I =     trackcpp.i \
 WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o \
                 elementswrapper.o
-TRACKCPPOBJS =  elements.o \
-                kicktable.o \
-                trackcpp.o \
-                tracking.o \
-                passmethods.o \
-                lattice.o \
-                flat_file.o \
-                optics.o \
-                accelerator.o
+TRACKCPPOBJS =  lattice.o \
+								elements.o \
+								passmethods.o \
+								tracking.o \
+								trackcpp.o \
+								flat_file.o \
+								optics.o \
+								kicktable.o \
+								accelerator.o \
+								linalg.o \
 
 OBJECTS = $(WRAPPEROBJS) $(TRACKCPPOBJS) $(INTERFACEOBJS)
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)

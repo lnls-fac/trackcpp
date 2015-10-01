@@ -15,6 +15,7 @@ void matrix2_eye(Matrix2& m) {
   m[0][0] = 1; m[0][1] = 0;
   m[1][0] = 0; m[1][1] = 1;
 }
+
 void matrix2_lc(Matrix2& m, const double& a1, const Matrix2& m1, const double& a2, const Matrix2& m2) {
   m[0][0] = a1 * m1[0][0] + a2 * m2[0][0]; m[0][1] = a1 * m1[0][1] + a2 * m2[0][1];
   m[1][0] = a1 * m1[1][0] + a2 * m2[1][0]; m[1][1] = a1 * m1[1][1] + a2 * m2[1][1];

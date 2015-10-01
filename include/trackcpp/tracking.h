@@ -34,8 +34,8 @@
 Status::type track_findm66     (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& m66);
 Status::type track_findorbit4  (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, const Pos<double>& fixed_point_guess = Pos<double>(0));
 Status::type track_findorbit6  (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, const Pos<double>& fixed_point_guess = Pos<double>(0));
-Pos<double>  linalg_solve4     (const std::vector<Pos<double> >& M, const Pos<double>& b);
-Pos<double>  linalg_solve6     (const std::vector<Pos<double> >& M, const Pos<double>& b);
+Pos<double>  linalg_solve4_posvec (const std::vector<Pos<double> >& M, const Pos<double>& b);
+Pos<double>  linalg_solve6_posvec (const std::vector<Pos<double> >& M, const Pos<double>& b);
 
 template <typename T>
 Status::type track_elementpass (

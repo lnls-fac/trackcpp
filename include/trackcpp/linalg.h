@@ -20,7 +20,6 @@ Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<d
 void getmx(const Matrix& m, Matrix2& mx);
 void getmy(const Matrix& m, Matrix2& my);
 
-
 void matrix2_eye(Matrix2& m);
 void matrix2_lc(Matrix2& m, const double& a1, const Matrix2& m1, const double& a2, const Matrix2& m2);
 
