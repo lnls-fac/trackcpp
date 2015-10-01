@@ -23,7 +23,7 @@ TRACKCPPOBJS =  lattice.o \
 OBJECTS = $(WRAPPEROBJS) $(TRACKCPPOBJS) $(INTERFACEOBJS)
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas
-INC = -I/usr/include/python3.4 -I../include/trackcpp/
+INC = -I/usr/include/python3.4 -I../include
 PYTHON = python3
 SETUPARGS =
 
@@ -40,7 +40,7 @@ trackcpp/_trackcpp.so: $(OBJECTS)
 	$(CXX) -shared $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(TRACKCPPSRCS) $(INTERFACESRCS) $(INTERFACEHDRS)
-	swig -c++ -python -I../include/trackcpp trackcpp.i && cp -f trackcpp.py trackcpp
+	swig -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: all
 	$(PYTHON) setup.py install $(SETUPARGS)
