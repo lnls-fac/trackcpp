@@ -619,6 +619,43 @@ int test_calc_twiss() {
 
 }
 
+int test_matrix_inversion() {
+
+
+  // without radiation
+  // Matrix m3 = {
+  //   {  8.4960e-01,   9.5487e+00,   4.8134e-02,  -1.0850e+00,   3.3269e-06,  -2.7194e-07 },
+  //   { -3.0764e-02,   8.4960e-01,  -1.3468e-02,  -1.9919e-02,   6.5802e-07,  -1.2677e-08 },
+  //   { -1.9919e-02,  -1.0850e+00,   4.7728e-01,   4.4408e+00,  -7.6608e-08,   1.3834e-08 },
+  //   { -1.3468e-02,   4.8134e-02,  -1.7740e-01,   4.7728e-01,   1.2033e-07,  -1.3208e-09 },
+  //   {  1.2031e-08,  -1.4563e-07,   1.1888e-09,   4.9343e-09,   9.9992e-01,  -1.0472e-02 },
+  //   {  6.5896e-07,   3.3188e-06,   1.2042e-07,  -7.6371e-08,   7.7621e-02,   9.9927e-01 },
+  // };
+
+  // with radiation
+  Matrix m3 = {
+    {  8.5097e-01,   9.5435e+00,   4.8249e-02,  -1.0855e+00,   1.1619e-05,   3.4703e-07 },
+    { -3.0791e-02,   8.4784e-01,  -1.3454e-02,  -1.9875e-02,   6.6804e-06,  -6.2775e-08 },
+    { -2.0008e-02,  -1.0838e+00,   4.7620e-01,   4.4448e+00,  -1.2785e-06,  -8.2503e-09 },
+    { -1.3476e-02,   4.7875e-02,  -1.7726e-01,   4.7778e-01,   5.8921e-07,  -6.6216e-09 },
+    {  2.8625e-07,   1.7946e-06,   5.3438e-08,  -3.6462e-08,   9.9961e-01,  -1.0303e-02 },
+    {  5.9759e-06,   5.4213e-05,   4.6994e-07,  -3.8983e-06,   7.7609e-02,   9.9928e-01 },
+  };
+
+  std::cout << "m:" << std::endl;
+  matrix_print(m3);
+
+  //matrix_multiplication(m3,m1,m2);
+  Status::type status = matrix_inverse(m3);
+  if (status != Status::success) {
+    std::cerr << "newton did not converge!" << std::endl;
+  }
+
+  std::cout << "inv_m:" << std::endl;
+  matrix_print(m3);
+
+}
+
 int cmd_tests(const std::vector<std::string>& args) {
 
   //test_printlattice(accelerator);
@@ -641,7 +678,8 @@ int cmd_tests(const std::vector<std::string>& args) {
   //test_simple_drift();
   //test_simple_quadrupole();
   //test_linepass2();
-  test_calc_twiss();
+  //test_calc_twiss();
+  test_matrix_inversion();
 
   return 0;
 

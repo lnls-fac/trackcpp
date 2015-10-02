@@ -70,7 +70,8 @@ struct Status {
         file_not_opened = 9,
         kicktable_not_defined = 10,
         kicktable_out_of_range = 11,
-        flat_file_error = 12
+        flat_file_error = 12,
+        newton_not_converged = 13,
     };
 };
 
@@ -87,7 +88,8 @@ const std::vector<std::string> string_error_messages = {
         "file_not_opened",
         "kicktable_not_defined",
         "kicktable_out_of_range",
-        "flat_file_error"
+        "flat_file_error",
+        "newton_not_converged",
 };
 
 #define STR_HELPER(x) #x
@@ -128,6 +130,8 @@ std::string get_timestamp();
 typedef double Vector4[4];
 typedef double Vector6[6];
 typedef double Matrix4[4][4];
+
+typedef std::vector<double> Vector;
 typedef std::vector<std::vector<double> > Matrix;
 
 #undef sqr

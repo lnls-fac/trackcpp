@@ -7,9 +7,23 @@
 #include <gsl/gsl_linalg.h>
 
 #include "pos.h"
+#include "auxiliary.h"
+
 
 typedef double Vector2[2];
 typedef double Matrix2[2][2];
+
+double matrix_norm(const Matrix& m);
+void matrix_print(const Matrix& m);
+void matrix_eye(Matrix& m, const double& v=1.0);
+void matrix_scalar(Matrix& m, double scalar);
+void matrix_transpose(Matrix& m);
+void matrix_linear_combination(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2);
+void matrix_multiplication(Matrix& m, const Matrix& m1, const Matrix& m2);
+void matrix_symplectic_inverse2(Matrix& m, unsigned int i = 0, unsigned int j = 0);
+void matrix_inverse2(Matrix& m, unsigned int i, unsigned int j);
+void matrix_symplectic_inverse6(Matrix& m);
+Status::type matrix_inverse(Matrix& m, const unsigned int size = 6, const unsigned int i = 0, const unsigned int j = 0);
 
 void linalg_solve2(Vector2&, const Matrix2& m, const Vector2& b);
 
