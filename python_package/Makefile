@@ -9,37 +9,28 @@ SOURCES_I =     trackcpp.i \
 WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o \
                 elementswrapper.o
-TRACKCPPOBJS =  lattice.o \
-								elements.o \
-								passmethods.o \
-								tracking.o \
-								trackcpp.o \
-								flat_file.o \
-								optics.o \
-								kicktable.o \
-								accelerator.o \
-								linalg.o \
+TRACKCPPLIB = ../build/libtrackcpp.a
 
-OBJECTS = $(WRAPPEROBJS) $(TRACKCPPOBJS) $(INTERFACEOBJS)
+OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
+
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
-LIBS = -lgsl -lblas
+LIBS = -lgsl -lblas -L../build -ltrackcpp
 INC = -I/usr/include/python3.4 -I../include
 PYTHON = python3
 SETUPARGS =
 
-TRACKCPPSRCS = $(addprefix ../src/, $(TRACKCPPOBJS:.o=.cpp))
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
 
 all: trackcpp/_trackcpp.so
 
-$(shell $(CXX) -MM $(TRACKCPPSRCS) $(INTERFACESRCS) > .depend)
+$(shell $(CXX) -MM $(INTERFACESRCS) > .depend)
 -include .depend
 
-trackcpp/_trackcpp.so: $(OBJECTS)
-	$(CXX) -shared $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
+trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
+	$(CXX) -shared -Wl,--whole-archive $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
-trackcpp_wrap.cxx: $(SOURCES_I) $(TRACKCPPSRCS) $(INTERFACESRCS) $(INTERFACEHDRS)
+trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
 	swig -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: all
@@ -53,9 +44,6 @@ clean:
 
 $(INTERFACESRCS): $(INTERFACEHDRS)
 
-
-%.o: ../src/%.cpp
-	$(CXX) -c $(CPPFLAGS) $(INC) $< -o $@
 
 %.o: %.cpp
 	$(CXX) -c $(CPPFLAGS) $(INC) $< -o $@

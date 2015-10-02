@@ -36,8 +36,8 @@ CC          = gcc
 CXX         = g++
 AR          = ar
 MACHINE     = -m64
-OPT_FLAG    = -O3 -std=c++11
-DBG_FLAG    = -O0 -g3 -std=c++11
+OPT_FLAG    = -O3 -std=c++11 -fPIC
+DBG_FLAG    = -O0 -g3 -std=c++11 -fPIC
 ARFLAGS     = rcs
 DFLAGS      = -DVERSION=$(VERSION)
 LIBSOURCES_CPP  =	lattice.cpp \
@@ -71,6 +71,8 @@ OBJDIR = build
 SRCDIR = src
 INCDIR = include
 
+PYTHON_PACKAGE_DIR = python_package
+
 $(shell touch $(SRCDIR)/output.cpp) # this is so that last compilation time always goes into executable
 
 ifeq ($(MAKECMDGOALS),trackcpp-debug)
@@ -96,7 +98,7 @@ endif
 
 #### TARGETS ####
 
-all:  libtrackcpp trackcpp
+all:  libtrackcpp trackcpp python_package
 
 #### GENERATES DEPENDENCY FILE ####
 $(shell $(CXX) -MM $(CFLAGS) $(addprefix $(SRCDIR)/, $(LIBSOURCES_CPP)) $(addprefix $(SRCDIR)/, $(BINSOURCES_CPP)) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
@@ -105,6 +107,11 @@ $(shell $(CXX) -MM $(CFLAGS) $(addprefix $(SRCDIR)/, $(LIBSOURCES_CPP)) $(addpre
 libtrackcpp: $(OBJDIR)/libtrackcpp.a
 
 trackcpp: $(OBJDIR)/trackcpp
+
+python_package: $(PYTHON_PACKAGE_DIR)/trackcpp/_trackcpp.so
+
+$(PYTHON_PACKAGE_DIR)/trackcpp/_trackcpp.so: libtrackcpp
+	$(MAKE) -C $(PYTHON_PACKAGE_DIR)
 
 $(OBJDIR)/libtrackcpp.a: $(LIBOBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
@@ -123,12 +130,13 @@ install: uninstall all
 	cp $(OBJDIR)/trackcpp $(BINDEST_DIR)
 	cp $(OBJDIR)/libtrackcpp.a $(LIBDEST_DIR)
 	cp -r $(INCDIR)/trackcpp $(INCDEST_DIR)
+	$(MAKE) install -C $(PYTHON_PACKAGE_DIR)
 
 develop: uninstall all
 	ln -srf $(OBJDIR)/trackcpp $(BINDEST_DIR)
 	ln -srf $(OBJDIR)/libtrackcpp.a $(LIBDEST_DIR)
-	rm -rf $(INCDEST_DIR)/trackcpp
 	ln -srf $(INCDIR)/trackcpp $(INCDEST_DIR)
+	$(MAKE) develop -C $(PYTHON_PACKAGE_DIR)
 
 $(BINDEST_DIR):
 	mkdir $(BINDEST_DIR)
@@ -141,9 +149,12 @@ $(INCDEST_DIR):
 
 clean:
 	-rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~ *.o *.a
+	$(MAKE) clean -C $(PYTHON_PACKAGE_DIR)
 
 uninstall:
 	-rm -rf $(BINDEST_DIR)/trackcpp
+	-rm -rf $(LIBDEST_DIR)/libtrackcpp.a
+	-rm -rf $(INCDEST_DIR)/trackcpp
 
 cleanall: clean
 	cd tracking_mp; make clean;
