@@ -47,7 +47,7 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
 
 
 
-  //std::vector<double> row0 = {0,0,0,0,0,0};
+  std::vector<double> row0 = {0,0,0,0,0,0};
 
   // case no closed_orbit has been defined
   if (closed_orbit.size() != lattice.size()) {
@@ -65,7 +65,8 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
   tm.clear();
   for(unsigned int i=0; i<lattice.size(); ++i) {
 
-    Matrix m(6,std::vector<double>(6,0.0));
+    //Matrix m(6,std::vector<double>(6,0.0));
+    Matrix m = {row0,row0,row0,row0,row0,row0};
     m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
     m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
     m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
@@ -80,7 +81,7 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
   }
 
   Matrix& m = m66;
-  //m.clear();
+  m.clear(); m = std::vector<std::vector<double>>(6, std::vector<double>(6, 0.0));
   m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
   m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
   m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
