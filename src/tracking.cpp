@@ -80,7 +80,7 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
   }
 
   Matrix& m = m66;
-  m.clear();
+  //m.clear();
   m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
   m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
   m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
