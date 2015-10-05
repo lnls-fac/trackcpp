@@ -120,6 +120,15 @@ void matrix_scalar(Matrix& m, double scalar) {
 
 }
 
+void matrix_linear_combination2(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2) {
+
+  { const int i=0, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
+  { const int i=0, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
+  { const int i=1, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
+  { const int i=1, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
+
+}
+
 void matrix_linear_combination(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2) {
 
   { const int i=0, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
@@ -165,6 +174,13 @@ void matrix_linear_combination(Matrix& m, const double& a1, const Matrix& m1, co
   { const int i=5, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
 
 
+}
+
+void matrix_multiplication2(Matrix& m, const Matrix& m1, const Matrix& m2) {
+  m[0][0] = m1[0][0] * m2[0][0] + m1[0][1] * m2[1][0];
+  m[0][1] = m1[0][0] * m2[0][1] + m1[0][1] * m2[1][1];
+  m[1][0] = m1[1][0] * m2[0][0] + m1[1][1] * m2[1][0];
+  m[1][1] = m1[1][0] * m2[0][1] + m1[1][1] * m2[1][1];
 }
 
 void matrix_multiplication(Matrix& m, const Matrix& m1, const Matrix& m2) {
@@ -309,6 +325,21 @@ Status::type matrix_inverse6_newton(Matrix& m) {
 
 }
 
+
+// Status::type matrix_inverse4_blockwise(Matrix& m) {
+//   Matrix t1;
+//   Matrix A = {{m[0][0],m[0][1]},{m[1][0],m[1][1]}};
+//   Matrix B = {{m[0][2],m[0][3]},{m[1][2],m[1][3]}};
+//   Matrix C = {{m[2][0],m[2][1]},{m[3][0],m[3][1]}};
+//   Matrix D = {{m[2][2],m[2][3]},{m[3][2],m[3][3]}};
+//   matrix_inverse2(A);
+//   //matrix_multiplication2(t1,C,A);
+//   //matrix_multiplication2(t2,t1,B);
+//   //matrix_linear_combination2(t1,1,D,-1,t2);
+// }
+
+
+
 Status::type matrix_inverse(Matrix& m, const unsigned int size, const unsigned int i, const unsigned int j) {
 
 
@@ -316,7 +347,6 @@ Status::type matrix_inverse(Matrix& m, const unsigned int size, const unsigned i
     case 1: m[i+0][j+0] = 1.0 / m[i+0][j+0]; break;
     case 2: matrix_inverse2(m, i, j); break;
     case 6: matrix_inverse6_newton(m); break;
-
 
   }
 

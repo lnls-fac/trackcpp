@@ -1258,8 +1258,7 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
 
   DynApGridPoint p = (*thread_grid)[task_id];
   DynApGridPoint point;
-  unsigned int element_nr = task_id / 2;
-  unsigned int start_element = elements[element_nr];
+  unsigned int element_nr;
   double p_init, p_delta;
 
 
@@ -1268,19 +1267,23 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
   const int ma = 0; const int pxa = 1; const int pya = 2;
   int calc_type;
   if (thread_type == "dynap_ma") {
+    element_nr = task_id / 2;
     calc_type = ma;
     p_init = (*thread_ma_e_init) * ((task_id % 2) ? -1.0 : 1.0);
     p_delta = (*thread_ma_e_delta) * ((task_id % 2) ? -1.0 : 1.0);
   } else if (thread_type == "dynap_pxa") {
+    element_nr = task_id;
     calc_type = pxa;
     p_init = (*thread_ma_e_init);
     p_delta = (*thread_ma_e_delta);
   } else if (thread_type == "dynap_pya") {
+    element_nr = task_id;
     calc_type = pya;
     p_init = (*thread_ma_e_init);
     p_delta = (*thread_ma_e_delta);
   }
-
+  
+  unsigned int start_element = elements[element_nr];
   double nr_iterations = (*thread_ma_nr_iterations);
   double nr_steps_back = (*thread_ma_nr_steps_back);
   double rescale = (*thread_ma_rescale);
