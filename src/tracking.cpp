@@ -33,17 +33,19 @@
 //    closed_orbit:  Pos vector representing calculated closed orbit.
 //
 // outputs:
-//    m66:    vector of Matrix6 elements. Each elements represents the transfer
-//            element of that element. The matrix is is row-format:
-//            (drx_f/drx_i, drx_f/dpx_i, ..., dl_f/de_i, dl_f/dl_i)
+//    tm:     vector of Matrix6 elements. Each component represents the accumulated
+//            transfer matrix from the start of the lattice to the entrance of that element.
+//    m66:    one-turn transfer matrix
+//
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
-Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& m66) {
+//Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& tm, Matrix& m66) {
+Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& tm) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
 
-  m66.clear();
+  tm.clear();
 
   std::vector<double> row0 = {0,0,0,0,0,0};
 
@@ -91,7 +93,9 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
     m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4];
     m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
 
-    m66.push_back(m);
+    tm.push_back(m);
+
+
 
   }
 

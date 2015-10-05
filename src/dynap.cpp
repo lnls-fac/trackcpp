@@ -289,10 +289,9 @@ Status::type dynap_acceptance(
         elements.push_back(i);            // calcs at start of element
         DynApGridPoint p;
         p.start_element = 0; p.lost_turn = 0; p.lost_element = 0; p.lost_plane = Plane::no_plane;
-        grid.push_back(p);        // for positive acceptance
+        grid.push_back(p);        // for positive pxa and pya acceptance (negative ma)
         if (calc_type == "dynap_ma") {
-          //std::cout << e_init << std::endl;
-          grid.push_back(p); // for negative acceptance
+          grid.push_back(p); // for positive acceptance
         }
       }
     }
@@ -1262,15 +1261,14 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
   double p_init, p_delta;
 
 
-
   // checks the rype of calculation
   const int ma = 0; const int pxa = 1; const int pya = 2;
   int calc_type;
   if (thread_type == "dynap_ma") {
     element_nr = task_id / 2;
     calc_type = ma;
-    p_init = (*thread_ma_e_init) * ((task_id % 2) ? -1.0 : 1.0);
-    p_delta = (*thread_ma_e_delta) * ((task_id % 2) ? -1.0 : 1.0);
+    p_init = (*thread_ma_e_init) * ((task_id % 2) ? 1.0 : -1.0);
+    p_delta = (*thread_ma_e_delta) * ((task_id % 2) ? 1.0 : -1.0);
   } else if (thread_type == "dynap_pxa") {
     element_nr = task_id;
     calc_type = pxa;
@@ -1282,7 +1280,7 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
     p_init = (*thread_ma_e_init);
     p_delta = (*thread_ma_e_delta);
   }
-  
+
   unsigned int start_element = elements[element_nr];
   double nr_iterations = (*thread_ma_nr_iterations);
   double nr_steps_back = (*thread_ma_nr_steps_back);

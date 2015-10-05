@@ -16,7 +16,7 @@ typedef double Matrix2[2][2];
 double matrix_norm(const Matrix& m);
 void matrix_print(const Matrix& m);
 void matrix_eye(Matrix& m, const double& v=1.0);
-void matrix_scalar(Matrix& m, double scalar);
+void matrix_scalar(Matrix& m, const double scalar);
 void matrix_transpose(Matrix& m);
 void matrix_linear_combination(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2);
 void matrix_multiplication(Matrix& m, const Matrix& m1, const Matrix& m2);

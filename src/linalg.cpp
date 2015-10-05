@@ -74,7 +74,12 @@ void matrix_transpose(Matrix& m) {
   }
 }
 
-void matrix_scalar(Matrix& m, double scalar) {
+void matrix_scale2(Matrix& m, const double scalar) {
+  m[0][0] *= scalar; m[0][1] *= scalar;
+  m[1][0] *= scalar; m[1][1] *= scalar;
+}
+
+void matrix_scalar(Matrix& m, const double scalar) {
 
   { const int i=0, j=0; m[i][j] *= scalar; }
   { const int i=0, j=1; m[i][j] *= scalar; }
@@ -253,25 +258,11 @@ void matrix_symplectic_inverse6(Matrix& m) {
               {+0,+0, +0,+0, +0,+1},
               {+0,+0, +0,+0, -1,+0},
             };
-
   Matrix m1 = m;
   matrix_transpose(m);
   matrix_multiplication(m1,m,J);
   matrix_multiplication(m,J,m1);
   matrix_scalar(m,-1);
-
-  //std::cout << "mt:" << std::endl;
-  //matrix_print(m);
-  // matrix_symplectic_inverse2(m, 0, 0); // -J M_xx J
-  // matrix_symplectic_inverse2(m, 0, 2); // -J M_xy J
-  // matrix_symplectic_inverse2(m, 0, 4); // -J M_xz J
-  // matrix_symplectic_inverse2(m, 2, 0); // -J M_yx J
-  // matrix_symplectic_inverse2(m, 2, 2); // -J M_yy J
-  // matrix_symplectic_inverse2(m, 2, 4); // -J M_yz J
-  // matrix_symplectic_inverse2(m, 4, 0); // -J M_zx J
-  // matrix_symplectic_inverse2(m, 4, 2); // -J M_zy J
-  // matrix_symplectic_inverse2(m, 4, 4); // -J M_zz J
-  // matrix_transpose(m);
 }
 
 #include <chrono>
@@ -326,17 +317,34 @@ Status::type matrix_inverse6_newton(Matrix& m) {
 }
 
 
-// Status::type matrix_inverse4_blockwise(Matrix& m) {
-//   Matrix t1;
-//   Matrix A = {{m[0][0],m[0][1]},{m[1][0],m[1][1]}};
-//   Matrix B = {{m[0][2],m[0][3]},{m[1][2],m[1][3]}};
-//   Matrix C = {{m[2][0],m[2][1]},{m[3][0],m[3][1]}};
-//   Matrix D = {{m[2][2],m[2][3]},{m[3][2],m[3][3]}};
-//   matrix_inverse2(A);
-//   //matrix_multiplication2(t1,C,A);
-//   //matrix_multiplication2(t2,t1,B);
-//   //matrix_linear_combination2(t1,1,D,-1,t2);
-// }
+Status::type matrix_inverse4_blockwise(Matrix& m) {
+  Matrix t1 = {{0,0},{0,0}};
+  Matrix t2 = {{0,0},{0,0}};
+  Matrix t3 = {{0,0},{0,0}};
+  Matrix t4 = {{0,0},{0,0}};
+  Matrix A = {{m[0][0],m[0][1]},{m[1][0],m[1][1]}};
+  Matrix B = {{m[0][2],m[0][3]},{m[1][2],m[1][3]}};
+  Matrix C = {{m[2][0],m[2][1]},{m[3][0],m[3][1]}};
+  Matrix D = {{m[2][2],m[2][3]},{m[3][2],m[3][3]}};
+  matrix_inverse2(A);
+  matrix_multiplication2(t1,C,A);           // t1 = C * A^-1
+  matrix_multiplication2(t2,A,B);           // t2 = A^-1 * B
+
+  matrix_multiplication2(t4,C,t2);          // t4 = C * A^-1 * B
+  matrix_linear_combination2(t3,1,D,-1,t4); // t3 = D - C * A^-1 * B
+  matrix_inverse2(t3);                      // t3 = (D - C * A^-1 * B)^-1
+
+  m[2][2] = t3[0][0]; m[2][3] = t3[0][1];
+  m[3][2] = t3[1][0]; m[3][3] = t3[1][1];
+
+  matrix_multiplication2(t1,t3,t1);          // t1 = (D - C * A^-1 * B)^-1 * C * A^-1
+
+  m[2][0] = -t1[0][0]; m[2][1] = -t1[0][1];
+  m[3][0] = -t1[1][0]; m[3][1] = -t1[1][1];
+
+
+
+}
 
 
 
