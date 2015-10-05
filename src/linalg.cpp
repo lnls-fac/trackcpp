@@ -1,427 +1,249 @@
 #include <limits>
 #include <trackcpp/linalg.h>
 
+Vector& Vector::multiplication(const Matrix& m, const Vector& b) {
+  Vector& v = *this;
+  v.clear();
+  for(unsigned int i=0; i<m.size(); i++) {
+    v.push_back(0);
+    for(unsigned int j=0; j<b.size(); ++j) v[i] += m[i][j] * b[j];
+  }
+  return v;
+}
 
-double matrix_norm(const Matrix& m) {
-
+double Matrix::norm() const {
   double max = 0;
-  { const int i=0, j=0; max = std::max(max,abs(m[i][j])); }
-  { const int i=0, j=1; max = std::max(max,abs(m[i][j])); }
-  { const int i=0, j=2; max = std::max(max,abs(m[i][j])); }
-  { const int i=0, j=3; max = std::max(max,abs(m[i][j])); }
-  { const int i=0, j=4; max = std::max(max,abs(m[i][j])); }
-  { const int i=0, j=5; max = std::max(max,abs(m[i][j])); }
-
-  { const int i=1, j=0; max = std::max(max,abs(m[i][j])); }
-  { const int i=1, j=1; max = std::max(max,abs(m[i][j])); }
-  { const int i=1, j=2; max = std::max(max,abs(m[i][j])); }
-  { const int i=1, j=3; max = std::max(max,abs(m[i][j])); }
-  { const int i=1, j=4; max = std::max(max,abs(m[i][j])); }
-  { const int i=1, j=5; max = std::max(max,abs(m[i][j])); }
-
-  { const int i=2, j=0; max = std::max(max,abs(m[i][j])); }
-  { const int i=2, j=1; max = std::max(max,abs(m[i][j])); }
-  { const int i=2, j=2; max = std::max(max,abs(m[i][j])); }
-  { const int i=2, j=3; max = std::max(max,abs(m[i][j])); }
-  { const int i=2, j=4; max = std::max(max,abs(m[i][j])); }
-  { const int i=2, j=5; max = std::max(max,abs(m[i][j])); }
-
-  { const int i=3, j=0; max = std::max(max,abs(m[i][j])); }
-  { const int i=3, j=1; max = std::max(max,abs(m[i][j])); }
-  { const int i=3, j=2; max = std::max(max,abs(m[i][j])); }
-  { const int i=3, j=3; max = std::max(max,abs(m[i][j])); }
-  { const int i=3, j=4; max = std::max(max,abs(m[i][j])); }
-  { const int i=3, j=5; max = std::max(max,abs(m[i][j])); }
-
-  { const int i=4, j=0; max = std::max(max,abs(m[i][j])); }
-  { const int i=4, j=1; max = std::max(max,abs(m[i][j])); }
-  { const int i=4, j=2; max = std::max(max,abs(m[i][j])); }
-  { const int i=4, j=3; max = std::max(max,abs(m[i][j])); }
-  { const int i=4, j=4; max = std::max(max,abs(m[i][j])); }
-  { const int i=4, j=5; max = std::max(max,abs(m[i][j])); }
-
-  { const int i=5, j=0; max = std::max(max,abs(m[i][j])); }
-  { const int i=5, j=1; max = std::max(max,abs(m[i][j])); }
-  { const int i=5, j=2; max = std::max(max,abs(m[i][j])); }
-  { const int i=5, j=3; max = std::max(max,abs(m[i][j])); }
-  { const int i=5, j=4; max = std::max(max,abs(m[i][j])); }
-  { const int i=5, j=5; max = std::max(max,abs(m[i][j])); }
-
+  const Matrix& m = *this;
+  for(unsigned int i=0; i<m.size(); ++i)
+    for(unsigned int j=0; j<m[i].size(); ++j)
+      max = std::max(max, abs(m[i][j]));
   return max;
 }
 
-void matrix_eye(Matrix& m, const double& v) {
-  for(unsigned int i=0; i<6; ++i) {
-      for(unsigned int j=0; j<6; ++j) m[i][j] = 0.0;
-      m[i][i] = v;
-    }
+Matrix& Matrix::eye(const double& v) {
+  Matrix& m = *this;
+  for(unsigned int i=0; i<m.size(); ++i)
+    for(unsigned int j=0; j<m[i].size(); ++j)
+      if (j==i) m[i][j] = v; else m[i][j] = 0.0;
+  return m;
 }
 
-void matrix_print(const Matrix& m) {
-  for(unsigned int i=0; i<6; ++i) {
-    for(unsigned int j=0; j<6; ++j) {
+Matrix& Matrix::scalar(const double& v) {
+  Matrix& m = *this;
+  for(unsigned int i=0; i<m.size(); ++i)
+    for(unsigned int j=0; j<m[i].size(); ++j)
+      m[i][j] *= v;
+  return m;
+}
+
+Matrix& Matrix::transpose(int size, unsigned int r, unsigned int c) {
+  Matrix& m = *this;
+  if (size < 0) size = m.size();
+  for(unsigned int i=0; i<size; ++i)
+    for(unsigned int j=i+1; j<size; ++j)
+      std::swap(m[r+i][c+j], m[r+j][c+i]);
+  return m;
+}
+
+void    Matrix::print() const {
+  const Matrix& m = *this;
+  for(unsigned int i=0; i<m.size(); ++i) {
+    for(unsigned int j=0; j<m[i].size(); ++j) {
       printf("%+.4e ", m[i][j]);
     }
     printf("\n");
   }
 }
 
-void matrix_transpose(Matrix& m) {
-  for(unsigned int i=0; i<6; ++i) {
-    for(unsigned int j=i+1; j<6; ++j) {
-        double t = m[i][j]; m[i][j] = m[j][i]; m[j][i] = t;
-    }
+Matrix& Matrix::linear_combination(const double& a1, const Matrix& m1, const double& a2, const Matrix& m2) {
+
+  Matrix& m = *this;
+  m.clear();
+  for(unsigned int i=0; i<m1.size(); ++i) {
+    Vector v(m2[i].size());
+    for(unsigned int j=0; j<v.size(); ++j)
+      v[j] = a1 * m1[i][j] + a2 * m2[i][j];
+    m.push_back(v);
   }
+  return m;
 }
 
-void matrix_scale2(Matrix& m, const double scalar) {
-  m[0][0] *= scalar; m[0][1] *= scalar;
-  m[1][0] *= scalar; m[1][1] *= scalar;
+Matrix& Matrix::multiplication(const Matrix& m1, const Matrix& m2) {
+  Matrix& m = *this;
+  unsigned int nr = m1.size();
+  unsigned int nc = m2[0].size();
+  m.clear();
+  for(unsigned int i=0; i<nr; ++i) {
+    Vector v(std::vector<double>(nc,0));
+    m.push_back(v);
+    for(unsigned int j=0; j<nc; ++j)
+      for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
+  }
+  return m;
 }
 
-void matrix_scalar(Matrix& m, const double scalar) {
-
-  { const int i=0, j=0; m[i][j] *= scalar; }
-  { const int i=0, j=1; m[i][j] *= scalar; }
-  { const int i=0, j=2; m[i][j] *= scalar; }
-  { const int i=0, j=3; m[i][j] *= scalar; }
-  { const int i=0, j=4; m[i][j] *= scalar; }
-  { const int i=0, j=5; m[i][j] *= scalar; }
-
-  { const int i=1, j=0; m[i][j] *= scalar; }
-  { const int i=1, j=1; m[i][j] *= scalar; }
-  { const int i=1, j=2; m[i][j] *= scalar; }
-  { const int i=1, j=3; m[i][j] *= scalar; }
-  { const int i=1, j=4; m[i][j] *= scalar; }
-  { const int i=1, j=5; m[i][j] *= scalar; }
-
-  { const int i=2, j=0; m[i][j] *= scalar; }
-  { const int i=2, j=1; m[i][j] *= scalar; }
-  { const int i=2, j=2; m[i][j] *= scalar; }
-  { const int i=2, j=3; m[i][j] *= scalar; }
-  { const int i=2, j=4; m[i][j] *= scalar; }
-  { const int i=2, j=5; m[i][j] *= scalar; }
-
-  { const int i=3, j=0; m[i][j] *= scalar; }
-  { const int i=3, j=1; m[i][j] *= scalar; }
-  { const int i=3, j=2; m[i][j] *= scalar; }
-  { const int i=3, j=3; m[i][j] *= scalar; }
-  { const int i=3, j=4; m[i][j] *= scalar; }
-  { const int i=3, j=5; m[i][j] *= scalar; }
-
-  { const int i=4, j=0; m[i][j] *= scalar; }
-  { const int i=4, j=1; m[i][j] *= scalar; }
-  { const int i=4, j=2; m[i][j] *= scalar; }
-  { const int i=4, j=3; m[i][j] *= scalar; }
-  { const int i=4, j=4; m[i][j] *= scalar; }
-  { const int i=4, j=5; m[i][j] *= scalar; }
-
-  { const int i=5, j=0; m[i][j] *= scalar; }
-  { const int i=5, j=1; m[i][j] *= scalar; }
-  { const int i=5, j=2; m[i][j] *= scalar; }
-  { const int i=5, j=3; m[i][j] *= scalar; }
-  { const int i=5, j=4; m[i][j] *= scalar; }
-  { const int i=5, j=5; m[i][j] *= scalar; }
-
+Matrix& Matrix::getM(Matrix& s, int nr, int nc, unsigned int r, unsigned int c) const {
+  const Matrix& m = *this;
+  s.clear();
+  for(unsigned int i=0; i<nr; ++i) {
+    s.push_back(std::vector<double>(nc,0.0));
+    for(unsigned int j=0; j<nc; ++j) s[i][j] = m[r+i][c+j];
+  }
+  return s;
 }
 
-void matrix_linear_combination2(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2) {
-
-  { const int i=0, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=0, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
+Matrix& Matrix::setM(Matrix& s, int nr, int nc, unsigned int r, unsigned int c) {
+  Matrix& m = *this;
+  for(unsigned int i=0; i<nr; ++i) {
+    s.push_back(std::vector<double>(nc,0.0));
+    for(unsigned int j=0; j<nc; ++j) m[r+i][c+j] = s[i][j];
+  }
+  return m;
 }
 
-void matrix_linear_combination(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2) {
-
-  { const int i=0, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=0, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=0, j=2; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=0, j=3; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=0, j=4; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=0, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
-  { const int i=1, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=2; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=3; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=4; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=1, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
-  { const int i=2, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=2, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=2, j=2; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=2, j=3; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=2, j=4; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=2, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
-  { const int i=3, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=3, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=3, j=2; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=3, j=3; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=3, j=4; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=3, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
-  { const int i=4, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=4, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=4, j=2; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=4, j=3; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=4, j=4; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=4, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
-  { const int i=5, j=0; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=5, j=1; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=5, j=2; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=5, j=3; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=5, j=4; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-  { const int i=5, j=5; m[i][j] = a1 * m1[i][j] + a2 * m2[i][j]; }
-
-
+Matrix& Matrix::getMx(Matrix& s) const {
+  s = Matrix(2);
+  this->getM(s, 2, 2, 0, 0);
+  return s;
 }
 
-void matrix_multiplication2(Matrix& m, const Matrix& m1, const Matrix& m2) {
-  m[0][0] = m1[0][0] * m2[0][0] + m1[0][1] * m2[1][0];
-  m[0][1] = m1[0][0] * m2[0][1] + m1[0][1] * m2[1][1];
-  m[1][0] = m1[1][0] * m2[0][0] + m1[1][1] * m2[1][0];
-  m[1][1] = m1[1][0] * m2[0][1] + m1[1][1] * m2[1][1];
+Matrix& Matrix::getMy(Matrix& s) const {
+  s = Matrix(2);
+  this->getM(s, 2, 2, 2, 2);
+  return s;
 }
 
-void matrix_multiplication(Matrix& m, const Matrix& m1, const Matrix& m2) {
-
-  { const int i=0, j=0; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=0, j=1; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=0, j=2; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=0, j=3; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=0, j=4; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=0, j=5; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-
-  { const int i=1, j=0; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=1, j=1; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=1, j=2; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=1, j=3; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=1, j=4; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=1, j=5; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-
-  { const int i=2, j=0; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=2, j=1; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=2, j=2; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=2, j=3; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=2, j=4; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=2, j=5; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-
-  { const int i=3, j=0; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=3, j=1; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=3, j=2; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=3, j=3; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=3, j=4; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=3, j=5; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-
-  { const int i=4, j=0; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=4, j=1; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=4, j=2; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=4, j=3; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=4, j=4; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=4, j=5; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-
-  { const int i=5, j=0; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=5, j=1; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=5, j=2; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=5, j=3; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=5, j=4; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-  { const int i=5, j=5; m[i][j] = m1[i][0]*m2[0][j]+m1[i][1]*m2[1][j]+m1[i][2]*m2[2][j]+m1[i][3]*m2[3][j]+m1[i][4]*m2[4][j]+m1[i][5]*m2[5][j]; }
-
+Matrix& Matrix::inverse_symplectic(int size, unsigned int r, unsigned int c) {
+  Matrix& m = *this;
+  if (size < 0) size = m.size();
+  if (size == 2) {
+    std::swap(m[r+0][c+0],m[r+1][c+1]);
+    m[r+0][c+1] = - m[r+0][c+1];
+    m[r+1][c+0] = - m[r+1][c+0];
+  } else {
+    Matrix J({{+0, +1, +0,+0, +0, +0},
+              {-1, +0, +0,+0, +0, +0},
+              {+0, +0, +0,+1, +0, +0},
+              {+0, +0, -1,+0, +0, +0},
+              {+0, +0, +0,+0, +0, +1},
+              {+0, +0, +0,+0, -1, +0}}
+              );
+    Matrix m1(size);
+    m.transpose();
+    m1.multiplication(m,J);
+    m.multiplication(J,m1);
+    m.scalar(-1);
+  }
+  return m;
 }
 
-void matrix_symplectic_inverse2(Matrix& m, unsigned int i, unsigned int j) {
-  //std::swap(m[i+0][j+0],m[i+1][j+1]);
-  double t = m[i+0][j+0]; m[i+0][j+0] = m[i+1][j+1]; m[i+1][j+1] = t;
-  m[i+0][j+1] = - m[i+0][j+1];
-  m[i+1][j+0] = - m[i+1][j+0];
-}
+//#include <chrono>
+Status::type matrix_inverse6_newton(Matrix& m, int size, unsigned int r, unsigned int c) {
 
-void matrix_inverse2(Matrix& m, unsigned int i, unsigned int j) {
-  double det = m[i+0][j+0]*m[i+1][j+1] - m[i+0][j+1]*m[i+1][j+0];
-  std::swap(m[i+0][j+0],m[i+1][j+1]);
-  m[i+0][j+0] /= det;
-  m[i+1][j+1] /= det;
-  m[i+0][j+1] = - m[i+0][j+1]/det;
-  m[i+1][j+0] = - m[i+1][j+0]/det;
-}
+  // auto start = std::chrono::steady_clock::now();
+  // auto end = std::chrono::steady_clock::now();
+  // auto diff = end - start;
+  // start = std::chrono::steady_clock::now();
 
-void matrix_symplectic_inverse6(Matrix& m) {
-  Matrix J = {{+0,+1, +0,+0, +0,+0},
-              {-1,+0, +0,+0, +0,+0},
-              {+0,+0, +0,+1, +0,+0},
-              {+0,+0, -1,+0, +0,+0},
-              {+0,+0, +0,+0, +0,+1},
-              {+0,+0, +0,+0, -1,+0},
-            };
-  Matrix m1 = m;
-  matrix_transpose(m);
-  matrix_multiplication(m1,m,J);
-  matrix_multiplication(m,J,m1);
-  matrix_scalar(m,-1);
-}
-
-#include <chrono>
-Status::type matrix_inverse6_newton(Matrix& m) {
-
-  auto start = std::chrono::steady_clock::now();
-  auto end = std::chrono::steady_clock::now();
-  auto diff = end - start;
-
-  start = std::chrono::steady_clock::now();
   // Newton algorithm
-  Matrix x0(6,std::vector<double>(6,0));
-  Matrix x1(6,std::vector<double>(6,0));
-  Matrix t1(6,std::vector<double>(6,0));
-  Matrix t2(6,std::vector<double>(6,0));
-  Matrix dm(6,std::vector<double>(6,0));
-  x0 = m;
-  matrix_symplectic_inverse6(x0);      //  x0 = -j m j
+  if (size < 0) size = m.size();
+  Matrix x1(size);
+  Matrix t1(size);
+  Matrix t2(size);
+  Matrix dm(size);
+  Matrix tm(1); m.getM(tm, size, size, r, c);
+  Matrix x0(1); m.getM(x0, size, size, r, c); x0.inverse_symplectic(); // x0 = -j*m*j
   unsigned int iter_left = 20;
   while (true) {
-    //std::cout << std::endl << "new iteration" << std::endl;
-    //std::cout << "x0:" << std::endl;
-    //matrix_print(x0);
-    matrix_multiplication(t1,m,x0);            //  t1 = m x0
-    //std::cout << "t1:" << std::endl;
-    //matrix_print(t1);
-    matrix_multiplication(t2,x0,t1);           //  t2 = x0 t1 = x0 m x0
-    //std::cout << "t2:" << std::endl;
-    //matrix_print(t2);
-    matrix_linear_combination(x1, 2,x0,-1,t2);  //  x1 = 2 x0 - x0 m x0
-    //std::cout << "x1:" << std::endl;
-    //matrix_print(m);
-    matrix_linear_combination(dm,1,x1,-1,x0);  //  dm = x1 - x0
-    double norm = matrix_norm(dm);
-    //std::cout << "dm:" << std::endl;
-    //matrix_print(dm);
-    //std::cout << "norm: " << norm << std::endl;
-    //std::cout << "epsilon: " <<  std::numeric_limits<double>::epsilon() << std::endl;
+    t1.multiplication(tm,x0);            //  t1 = m x0
+    t2.multiplication(x0,t1);            //  t2 = x0 t1 = x0 m x0
+    x1.linear_combination(2,x0,-1,t2);   //  x1 = 2 x0 - x0 m x0
+    dm.linear_combination(1,x1,-1,x0);   //  dm = x1 - x0
+    double norm = dm.norm();
     if (norm < std::numeric_limits<double>::epsilon()) break;
     x0 = x1;
-    iter_left--;
-    if (iter_left == 0) return Status::newton_not_converged;
+    iter_left--; if (iter_left == 0) return Status::newton_not_converged;
   }
-  m = x1;
-
-  end = std::chrono::steady_clock::now();
-  diff = end - start;
-  std::cout << "newton: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << " in " << 20-iter_left << " iterations" << std::endl;
-
+  m.setM(x1, size, size, r, c);
+  // end = std::chrono::steady_clock::now(); diff = end - start;
+  // std::cout << "newton: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << " in " << 20-iter_left << " iterations" << std::endl;
   return Status::success;
 
 }
 
+Status::type Matrix::inverse_quase_symplectic(int size, unsigned int r, unsigned int c) {
+  Status::type status = Status::success;
+  Matrix& m = *this;
+  if (size < 0) size = m.size();
+  if (size == 2) {
+    double det = m[r+0][c+0] * m[r+1][c+1] - m[r+0][c+1] * m[r+1][c+0];
+    std::swap(m[r+0][c+0],m[r+1][c+1]);
+    m[r+0][c+1] = - m[r+0][c+1] / det;
+    m[r+1][c+0] = - m[r+1][c+0] / det;
+    m[r+0][c+0] /= det; m[r+1][c+1] /= det;
+  } else {
+    status = matrix_inverse6_newton(m, size, r, c);
+  }
+  return status;
+}
+
+Matrix& Matrix::inverse(int size, unsigned int r, unsigned int c) {
+  Status::type status = Status::success;
+  Matrix& m = *this;
+  if (size < 0) size = m.size();
+  if (size == 2) {
+    double det = m[r+0][c+0] * m[r+1][c+1] - m[r+0][c+1] * m[r+1][c+0];
+    std::swap(m[r+0][c+0],m[r+1][c+1]);
+    m[r+0][c+1] = - m[r+0][c+1] / det;
+    m[r+1][c+0] = - m[r+1][c+0] / det;
+    m[r+0][c+0] /= det; m[r+1][c+1] /= det;
+  } else {
+    status = Status::not_implemented;
+  }
+  return m;
+}
 
 Status::type matrix_inverse4_blockwise(Matrix& m) {
-  Matrix t1 = {{0,0},{0,0}};
-  Matrix t2 = {{0,0},{0,0}};
-  Matrix t3 = {{0,0},{0,0}};
-  Matrix t4 = {{0,0},{0,0}};
-  Matrix A = {{m[0][0],m[0][1]},{m[1][0],m[1][1]}};
-  Matrix B = {{m[0][2],m[0][3]},{m[1][2],m[1][3]}};
-  Matrix C = {{m[2][0],m[2][1]},{m[3][0],m[3][1]}};
-  Matrix D = {{m[2][2],m[2][3]},{m[3][2],m[3][3]}};
-  matrix_inverse2(A);
-  matrix_multiplication2(t1,C,A);           // t1 = C * A^-1
-  matrix_multiplication2(t2,A,B);           // t2 = A^-1 * B
 
-  matrix_multiplication2(t4,C,t2);          // t4 = C * A^-1 * B
-  matrix_linear_combination2(t3,1,D,-1,t4); // t3 = D - C * A^-1 * B
-  matrix_inverse2(t3);                      // t3 = (D - C * A^-1 * B)^-1
+  Matrix A({{m[0][0],m[0][1]},{m[1][0],m[1][1]}});
+  Matrix B({{m[0][2],m[0][3]},{m[1][2],m[1][3]}});
+  Matrix C({{m[2][0],m[2][1]},{m[3][0],m[3][1]}});
+  Matrix D({{m[2][2],m[2][3]},{m[3][2],m[3][3]}});
+
+  Matrix t1(2);
+  Matrix t2(2);
+  Matrix t3(2);
+  Matrix t4(2);
+  Matrix t5(2);
+
+  A.inverse();
+  t1.multiplication(C,A);            // t1 = C * A^-1
+  t2.multiplication(A,B);            // t2 = A^-1 * B
+
+  t4.multiplication(C,t2);           // t4 = C * A^-1 * B
+  t3.linear_combination(1,D,-1,t4);  // t3 = D - C * A^-1 * B
+  t3.inverse();               // t3 = (D - C * A^-1 * B)^-1
 
   m[2][2] = t3[0][0]; m[2][3] = t3[0][1];
   m[3][2] = t3[1][0]; m[3][3] = t3[1][1];
 
-  matrix_multiplication2(t1,t3,t1);          // t1 = (D - C * A^-1 * B)^-1 * C * A^-1
+  t5.multiplication(t3,t1);          // t1 = (D - C * A^-1 * B)^-1 * C * A^-1
 
-  m[2][0] = -t1[0][0]; m[2][1] = -t1[0][1];
-  m[3][0] = -t1[1][0]; m[3][1] = -t1[1][1];
+  m[2][0] = -t5[0][0]; m[2][1] = -t5[0][1];
+  m[3][0] = -t5[1][0]; m[3][1] = -t5[1][1];
 
+  std::cerr << "matrix_inverse4_blockwise not finished" << std::endl;
 
 
 }
 
 
-
-Status::type matrix_inverse(Matrix& m, const unsigned int size, const unsigned int i, const unsigned int j) {
-
-
-  switch (size) {
-    case 1: m[i+0][j+0] = 1.0 / m[i+0][j+0]; break;
-    case 2: matrix_inverse2(m, i, j); break;
-    case 6: matrix_inverse6_newton(m); break;
-
-  }
-
+Vector operator+(const Vector& v1, const Vector& v2) {
+  Vector v(v1);
+  for(unsigned int i=0; i<v.size(); ++i) v[i] += v2[i];
+  return v;
 }
 
-void getmx(const Matrix& m, Matrix2& mx) {
-  mx[0][0] = m[0][0]; mx[0][1] = m[0][1];
-  mx[1][0] = m[1][0]; mx[1][1] = m[1][1];
-}
-
-void getmy(const Matrix& m, Matrix2& my) {
-  Matrix2 r;
-  my[0][0] = m[2][2]; my[0][1] = m[2][3];
-  my[1][0] = m[3][2]; my[1][1] = m[3][3];
-}
-
-void matrix2_eye(Matrix2& m) {
-  m[0][0] = 1; m[0][1] = 0;
-  m[1][0] = 0; m[1][1] = 1;
-}
-
-void matrix2_lc(Matrix2& m, const double& a1, const Matrix2& m1, const double& a2, const Matrix2& m2) {
-  m[0][0] = a1 * m1[0][0] + a2 * m2[0][0]; m[0][1] = a1 * m1[0][1] + a2 * m2[0][1];
-  m[1][0] = a1 * m1[1][0] + a2 * m2[1][0]; m[1][1] = a1 * m1[1][1] + a2 * m2[1][1];
-}
-
-void linalg_solve2(Vector2& X, const Matrix2& M, const Vector2& B) {
-  gsl_matrix* m = gsl_matrix_alloc(2,2);
-  gsl_vector* b = gsl_vector_alloc(2);
-  gsl_vector* x = gsl_vector_alloc(2);
-  gsl_permutation* p = gsl_permutation_alloc(2);
-  gsl_vector_set(b,0,B[0]); gsl_vector_set(b,1,B[1]);
-  for(unsigned int i=0; i<2; ++i) {
-    gsl_matrix_set(m,0,i,M[i][0]); gsl_matrix_set(m,1,i,M[i][1]);
-  }
-  int s; gsl_linalg_LU_decomp(m, p, &s);
-  gsl_linalg_LU_solve(m, p, b, x);
-  X[0] = gsl_vector_get(x,0);
-  X[1] = gsl_vector_get(x,1);
-  gsl_matrix_free(m);
-  gsl_vector_free(b);
-  gsl_vector_free(x);
-  gsl_permutation_free(p);
-}
-
-Pos<double> linalg_solve2_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B) {
-
-  gsl_matrix* m = gsl_matrix_alloc(2,2);
-  gsl_vector* b = gsl_vector_alloc(2);
-  gsl_vector* x = gsl_vector_alloc(2);
-  gsl_permutation* p = gsl_permutation_alloc(2);
-
-  gsl_vector_set(b,0,B.rx); gsl_vector_set(b,1,B.px);
-  for(unsigned int i=0; i<2; ++i) {
-    gsl_matrix_set(m,0,i,M[i].rx); gsl_matrix_set(m,1,i,M[i].px);
-  }
-
-  int s; gsl_linalg_LU_decomp(m, p, &s);
-  gsl_linalg_LU_solve(m, p, b, x);
-  Pos<double> X(gsl_vector_get(x,0),gsl_vector_get(x,1),0,0,0,0);
-
-  gsl_matrix_free(m);
-  gsl_vector_free(b);
-  gsl_vector_free(x);
-  gsl_permutation_free(p);
-  return X;
-}
 
 Pos<double> linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 
@@ -447,6 +269,7 @@ Pos<double> linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<d
   gsl_permutation_free(p);
   return X;
 }
+
 
 Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 

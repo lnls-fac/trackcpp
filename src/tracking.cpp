@@ -65,8 +65,7 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
   tm.clear();
   for(unsigned int i=0; i<lattice.size(); ++i) {
 
-    //Matrix m(6,std::vector<double>(6,0.0));
-    Matrix m = {row0,row0,row0,row0,row0,row0};
+    Matrix m(6);
     m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
     m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
     m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
@@ -80,8 +79,7 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
 
   }
 
-  Matrix& m = m66;
-  m.clear(); m = std::vector<std::vector<double>>(6, std::vector<double>(6, 0.0));
+  Matrix& m = m66; m = Matrix(6);
   m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
   m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
   m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
@@ -211,32 +209,20 @@ Status::type track_findorbit4(
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false));
-    //status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false));
-    //status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false));
     status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false));
     if (status != Status::success) {
-      //printf("nr_iter: %i\n", nr_iter);
-      //printf("element: %i\n", element_offset);
-      //printf("plane: %i\n", lost_plane);
       return Status::findorbit_one_turn_matrix_problem;
     }
-    //print(co2);
     Pos<double> Rf = co2[4];
     M[0] = (co2[0] - Rf) / delta;
     M[1] = (co2[1] - Rf) / delta;
     M[2] = (co2[2] - Rf) / delta;
     M[3] = (co2[3] - Rf) / delta;
-    //M[4] = (co2[4] - Rf) / delta;
-    //M[5] = (co2[5] - Rf) / delta;
-    //print(M);
     Pos<double> b = Rf - Ri;
     std::vector<Pos<double> > M_1(6,0);
     matrix6_set_identity_posvec(M_1);
     M_1 = M_1 - M;
     dco = linalg_solve4_posvec(M_1, b);
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", Rf.rx, Rf.px, Rf.ry, Rf.py, Rf.de, Rf.dl);
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", b.rx, b.px, b.ry, b.py, b.de, b.dl);
-    //printf("%.4e %.4e %.4e %.4e %.4e %.4e\n", dco.rx, dco.px, dco.ry, dco.py, dco.de, dco.dl);
     co[6] = dco + Ri;
     co[0] = co[6]; co[1] = co[6];
     co[2] = co[6]; co[3] = co[6];

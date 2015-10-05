@@ -30,15 +30,15 @@ double get_magnetic_rigidity(const double energy) {
     return b_rho;
 }
 
-//#include <chrono>
+#include <chrono>
 Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed_point, Matrix& m66, std::vector<Twiss>& twiss) {
 
   std::vector<Matrix> tmv;
   Status::type status;
 
-  // auto start = std::chrono::steady_clock::now();
-  // auto end = std::chrono::steady_clock::now();
-  // auto diff = end - start;
+  auto start = std::chrono::steady_clock::now();
+  auto end = std::chrono::steady_clock::now();
+  auto diff = end - start;
 
   // start = std::chrono::steady_clock::now();
   Pos<double> fp = fixed_point;
@@ -54,7 +54,7 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
   // start = std::chrono::steady_clock::now();
   status = track_findm66 (accelerator, closed_orbit, tmv, m66);
   if (status != Status::success) return status;
-  m66 = tmv.back();
+
   // end = std::chrono::steady_clock::now();
   // diff = end - start;
   // std::cout << "findm66: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
@@ -62,7 +62,6 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
 
   // start = std::chrono::steady_clock::now();
   Twiss tw0;
-  //tw0.etax.
   double sin_mux = sgn(m66[0][1]) * std::sqrt(-m66[0][1]*m66[1][0]-pow(m66[0][0]-m66[1][1],2)/4.0);
   double sin_muy = sgn(m66[2][3]) * std::sqrt(-m66[2][3]*m66[3][2]-pow(m66[2][2]-m66[3][3],2)/4.0);
   tw0.alphax = (m66[0][0]-m66[1][1])/2.0/sin_mux;
@@ -71,28 +70,14 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
   tw0.betay  =  m66[2][3]/sin_muy;
 
   // dispersion function based on eta = (1 - M)^(-1) D
-  Vector2 Dx = {m66[0][4], m66[1][4]};
-  Vector2 Dy = {m66[2][4], m66[3][4]};
-  Matrix2 eye; matrix2_eye(eye);
-  Matrix2 mx, eye_mx; getmx(m66, mx); matrix2_lc(eye_mx, 1, eye, -1, mx);
-  Matrix2 my, eye_my; getmy(m66, my); matrix2_lc(eye_my, 1, eye, -1, my);
-  Vector2 etax; linalg_solve2(etax, eye_mx, Dx);
-  Vector2 etay; linalg_solve2(etay, eye_my, Dy);
-  tw0.etax = Pos<double>(etax[0],etax[1],0,0,1,0);
-  tw0.etay = Pos<double>(0,0,etay[0],etay[1],1,0);
-
-  std::cout << tw0.etax << std::endl;
-  //std::vector<Pos<double>> eye_mx; matrix6_lc(eye_mx, 1, eye, -1, m66);
-  //linalg_solve2(const std::vector<Pos<double> >& M, const Pos<double>& B) {
-
-  //linalg_solve2(const std::vector<Pos<double> >& M, const Pos<double>& B) {
-
-
-      // t.etax = _np.linalg.solve(_np.eye(2,2) - mx, Dx)
-      // t.etay = _np.linalg.solve(_np.eye(2,2) - my, Dy)
-
+  Vector Dx({m66[0][4], m66[1][4]});
+  Vector Dy({m66[2][4], m66[3][4]});
+  Matrix eye2({{1,0},{0,1}});
+  Matrix mx; m66.getM(mx, 2, 2, 0, 0); mx.linear_combination(1.0,eye2,-1.0,mx); mx.inverse();
+  Matrix my; m66.getM(my, 2, 2, 2, 2); my.linear_combination(1.0,eye2,-1.0,my); my.inverse();
+  tw0.etax.multiplication(mx, Dx);
+  tw0.etay.multiplication(my, Dy);
   twiss.push_back(tw0);
-
 
   for(unsigned int i=1; i<tmv.size(); ++i) {
     const Matrix& tm = tmv[i];
@@ -103,6 +88,17 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
     tw.alphay = -((tm[2][2] * tw0.betay - tm[2][3] * tw0.alphay) * (tm[3][2] * tw0.betay - tm[3][3] * tw0.alphay) + tm[2][3]*tm[3][3])/tw0.betay;
     tw.mux = std::atan(tm[0][1]/(tm[0][0] * tw0.betax - tm[0][1] * tw0.alphax));
     tw.muy = std::atan(tm[2][3]/(tm[2][2] * tw0.betay - tm[2][3] * tw0.alphay));
+    // dispersion function
+    Matrix t1(tmv[i-1]);
+    //t1.inverse_quase_symplectic();
+    std::cout << t1.size() << std::endl;
+    Matrix T; T.multiplication(tmv[i],t1);
+    Vector Dx({T[0][4], T[1][4]});
+    Vector Dy({T[2][4], T[3][4]});
+    Matrix mx; T.getM(mx, 2, 2, 0, 0);
+    Matrix my; T.getM(my, 2, 2, 2, 2);
+    tw.etax = Dx + tw.etax.multiplication(mx, tw0.etax);
+    tw.etay = Dy + tw.etay.multiplication(my, tw0.etay);
     twiss.push_back(tw);
   }
 
@@ -118,9 +114,9 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
   twiss.back().mux += jumpx.back();
   twiss.back().muy += jumpy.back();
 
-  // end = std::chrono::steady_clock::now();
-  // diff = end - start;
-  // std::cout << "calc_twiss: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
+  end = std::chrono::steady_clock::now();
+  diff = end - start;
+  std::cout << "calc_twiss: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
 
   return Status::success;
 }

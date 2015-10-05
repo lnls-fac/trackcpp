@@ -10,59 +10,47 @@
 #include "auxiliary.h"
 
 
-typedef double Vector2[2];
-typedef double Matrix2[2][2];
+class Matrix;
 
-double matrix_norm(const Matrix& m);
-void matrix_print(const Matrix& m);
-void matrix_eye(Matrix& m, const double& v=1.0);
-void matrix_scalar(Matrix& m, const double scalar);
-void matrix_transpose(Matrix& m);
-void matrix_linear_combination(Matrix& m, const double& a1, const Matrix& m1, const double& a2, const Matrix& m2);
-void matrix_multiplication(Matrix& m, const Matrix& m1, const Matrix& m2);
-void matrix_symplectic_inverse2(Matrix& m, unsigned int i = 0, unsigned int j = 0);
-void matrix_inverse2(Matrix& m, unsigned int i = 0, unsigned int j = 0);
-void matrix_symplectic_inverse6(Matrix& m);
-Status::type matrix_inverse(Matrix& m, const unsigned int size = 6, const unsigned int i = 0, const unsigned int j = 0);
+class Vector : public std::vector<double> {
+public:
+    Vector(const unsigned int size = 0) : std::vector<double>(size, 0) {}
+    Vector(const std::vector<double>& v) : std::vector<double>(v) {}
+    Vector& multiplication(const Matrix& m, const Vector& b);
+};
 
-void linalg_solve2(Vector2&, const Matrix2& m, const Vector2& b);
+class Matrix : public std::vector<std::vector<double>> {
+public:
+  Matrix(const unsigned int size = 0) : std::vector<std::vector<double>>(size, std::vector<double>(size,0)) {}
+  Matrix(const std::vector<std::vector<double>>& v) : std::vector<std::vector<double>>(v) {}
+  double norm() const;
+  Matrix& eye(const double& v = 1);
+  Matrix& scalar(const double& v);
+  Matrix& transpose(int size = -1, unsigned int r=0, unsigned int c=0);
+  Matrix& linear_combination(const double& a1, const Matrix& m1, const double& a2, const Matrix& m2);
+  Matrix& multiplication(const Matrix& m1, const Matrix& m2);
+  Matrix& getM(Matrix& s, int nr, int nc, unsigned int r=0, unsigned int c=0) const;
+  Matrix& setM(Matrix& s, int nr, int nc, unsigned int r=0, unsigned int c=0);
+  Matrix& getMx(Matrix& s) const;
+  Matrix& getMy(Matrix& s) const;
+  Matrix& inverse_symplectic(int size=-1, unsigned int r=0, unsigned int c=0);
+  Matrix& inverse(int size=-1, unsigned int r=0, unsigned int c=0);
+  Status::type inverse_quase_symplectic(int size=-1, unsigned int r=0, unsigned int c=0);
 
-Pos<double> linalg_solve2_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B);
+  void print() const;
+};
+
+
+Vector operator+(const Vector& v1, const Vector& v2);
+
 Pos<double> linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B);
 Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B);
-
-void getmx(const Matrix& m, Matrix2& mx);
-void getmy(const Matrix& m, Matrix2& my);
-
-void matrix2_eye(Matrix2& m);
-void matrix2_lc(Matrix2& m, const double& a1, const Matrix2& m1, const double& a2, const Matrix2& m2);
-
-template <typename T>
-inline
-void vector6_lc_posvec(Pos<T>& v, const T& a1, const Pos<T>& v1, const T& a2, const Pos<T>& v2) {
-	unsigned int i = 0;
-	v.rx = a1 * v1.rx + a2 * v2.rx; v.px = a1 * v1.px + a2 * v2.px;
-	v.ry = a1 * v1.ry + a2 * v2.ry; v.py = a1 * v1.py + a2 * v2.py;
-	v.de = a1 * v1.de + a2 * v2.de; v.de = a1 * v1.de + a2 * v2.de;
-}
 
 template <typename T>
 inline
 void matrix6_set_identity_posvec(std::vector<Pos<T> >& m, const T& a = 1) {
-	for(unsigned int i=0; i<m.size(); ++i) m[i] = Pos<T>(0,0,0,0,0,0);
-	m[0].rx = m[1].px = m[2].ry = m[3].py = m[4].de = m[5].dl = a;
-}
-
-template <typename T>
-inline
-void matrix6_lc_posvec(std::vector<Pos<T> >& m, const T& a1, const std::vector<Pos<T>>& m1, const T& a2, const std::vector<Pos<T>>& m2) {
-	m = m1;
-	vector6_sum(m[0], a1, m1[0], a2, m2[0]);
-	vector6_sum(m[1], a1, m1[1], a2, m2[1]);
-	vector6_sum(m[2], a1, m1[2], a2, m2[2]);
-	vector6_sum(m[3], a1, m1[3], a2, m2[3]);
-	vector6_sum(m[4], a1, m1[4], a2, m2[4]);
-	vector6_sum(m[5], a1, m1[5], a2, m2[5]);
+  for(unsigned int i=0; i<m.size(); ++i) m[i] = Pos<T>(0,0,0,0,0,0);
+  m[0].rx = m[1].px = m[2].ry = m[3].py = m[4].de = m[5].dl = a;
 }
 
 #endif

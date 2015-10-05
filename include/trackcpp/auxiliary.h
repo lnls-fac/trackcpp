@@ -72,6 +72,7 @@ struct Status {
         kicktable_out_of_range = 11,
         flat_file_error = 12,
         newton_not_converged = 13,
+        not_implemented = 14,
     };
 };
 
@@ -90,6 +91,7 @@ const std::vector<std::string> string_error_messages = {
         "kicktable_out_of_range",
         "flat_file_error",
         "newton_not_converged",
+        "not_implemented",
 };
 
 #define STR_HELPER(x) #x
@@ -127,12 +129,12 @@ int sgn(T val) {
 bool isfinite(const double& v);
 std::string get_timestamp();
 
-typedef double Vector4[4];
-typedef double Vector6[6];
-typedef double Matrix4[4][4];
+//typedef double Vector4[4];
+//typedef double Vector6[6];
+//typedef double Matrix4[4][4];
 
-typedef std::vector<double> Vector;
-typedef std::vector<std::vector<double> > Matrix;
+//typedef std::vector<double> Vector;
+//typedef std::vector<std::vector<double> > Matrix;
 
 #undef sqr
 

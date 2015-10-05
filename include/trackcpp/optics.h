@@ -32,14 +32,13 @@ class Twiss {
 
 public:
   Pos<double> cox, coy;
-  Pos<double> etax, etay;
+  Vector etax, etay;
   double mux, betax, alphax;
   double muy, betay, alphay;
   Twiss() {
     mux = muy = 0.0;
     betax = betay = std::nan("");
     alphax = alphay = std::nan("");
-    etax.de = etay.de = 1.0;  // so that (etax * de) gives orbit with delta energy
   }
 };
 

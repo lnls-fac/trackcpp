@@ -27,6 +27,7 @@
 #include "accelerator.h"
 #include "elements.h"
 #include "auxiliary.h"
+#include "linalg.h"
 #include <vector>
 #include <limits>
 #include <cmath>

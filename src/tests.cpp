@@ -586,8 +586,15 @@ int test_flatfile() {
 
 int test_calc_twiss() {
 
+  Status::type status;
+
   Accelerator accelerator;
-  read_flat_file("sirius-v10.txt", accelerator);
+  status = read_flat_file("sirius-v10.txt", accelerator);
+  if (status != Status::success) {
+    std::cerr << "could not open flat_file!" << std::endl;
+    return status;
+  }
+
   accelerator.cavity_on = true;
   accelerator.radiation_on = true;
   accelerator.vchamber_on = false;
@@ -600,7 +607,7 @@ int test_calc_twiss() {
 
   Pos<double> fixed_point_guess;
   std::vector<Pos<double>> closed_orbit;
-  Status::type status = track_findorbit6(accelerator, closed_orbit, fixed_point_guess);
+  status = track_findorbit6(accelerator, closed_orbit, fixed_point_guess);
   if (status != Status::success) {
     std::cerr << "could not find 6d closed orbit" << std::endl;
   }
@@ -613,7 +620,7 @@ int test_calc_twiss() {
   }
 
   for(unsigned int i=0; i<twiss.size(); ++i) {
-    std::cout << twiss[i].mux << std::endl;
+    //std::cout << twiss[i].mux << std::endl;
   }
 
 
@@ -633,26 +640,33 @@ int test_matrix_inversion() {
   // };
 
   // with radiation
-  Matrix m3 = {
+  Matrix m1({
     {  8.5097e-01,   9.5435e+00,   4.8249e-02,  -1.0855e+00,   1.1619e-05,   3.4703e-07 },
     { -3.0791e-02,   8.4784e-01,  -1.3454e-02,  -1.9875e-02,   6.6804e-06,  -6.2775e-08 },
     { -2.0008e-02,  -1.0838e+00,   4.7620e-01,   4.4448e+00,  -1.2785e-06,  -8.2503e-09 },
     { -1.3476e-02,   4.7875e-02,  -1.7726e-01,   4.7778e-01,   5.8921e-07,  -6.6216e-09 },
     {  2.8625e-07,   1.7946e-06,   5.3438e-08,  -3.6462e-08,   9.9961e-01,  -1.0303e-02 },
     {  5.9759e-06,   5.4213e-05,   4.6994e-07,  -3.8983e-06,   7.7609e-02,   9.9928e-01 },
-  };
+  });
 
-  std::cout << "m:" << std::endl;
-  matrix_print(m3);
+  Matrix m2(m1); m2.inverse();
+  Matrix m3; m3.multiplication(m1,m2);
+  Matrix m4(6); m4.eye();
+  Matrix m5; m5.linear_combination(1,m4,-1,m3);
 
-  //matrix_multiplication(m3,m1,m2);
-  Status::type status = matrix_inverse(m3);
-  if (status != Status::success) {
-    std::cerr << "newton did not converge!" << std::endl;
-  }
+  std::cout << "M:" << std::endl; m1.print();
+  std::cout << "inv(M):" << std::endl; m2.print();
+  std::cout << "M*inv(M)-1:" << std::endl; m5.print();
 
-  std::cout << "inv_m:" << std::endl;
-  matrix_print(m3);
+
+  // //matrix_multiplication(m3,m1,m2);
+  // Status::type status = m3.inverse();
+  // if (status != Status::success) {
+  //   std::cerr << "newton did not converge!" << std::endl;
+  // }
+  //
+  // std::cout << "inv_m:" << std::endl;
+  // m3.print();
 
 }
 
@@ -678,8 +692,8 @@ int cmd_tests(const std::vector<std::string>& args) {
   //test_simple_drift();
   //test_simple_quadrupole();
   //test_linepass2();
-  //test_calc_twiss();
-  test_matrix_inversion();
+  test_calc_twiss();
+  //test_matrix_inversion();
 
   return 0;
 
