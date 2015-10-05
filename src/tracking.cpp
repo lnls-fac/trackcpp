@@ -41,6 +41,7 @@
 
 Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& tm, Matrix& m66) {
 
+
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
 

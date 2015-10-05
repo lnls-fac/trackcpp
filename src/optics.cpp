@@ -52,7 +52,7 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
   // std::cout << "closed_orbit: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
 
   // start = std::chrono::steady_clock::now();
-  status = track_findm66 (accelerator, closed_orbit, tmv);
+  status = track_findm66 (accelerator, closed_orbit, tmv, m66);
   if (status != Status::success) return status;
   m66 = tmv.back();
   // end = std::chrono::steady_clock::now();
