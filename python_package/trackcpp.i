@@ -43,6 +43,7 @@ double get_double_max() {
 %include "elements.i"
 %include "accelerator.i"
 %include "optics.i"
+%include "linalg.i"
 
 %include "../include/trackcpp/kicktable.h"
 %include "../include/trackcpp/auxiliary.h"
