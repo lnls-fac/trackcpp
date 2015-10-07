@@ -23,6 +23,7 @@
 #include "commands.h"
 #include <trackcpp/trackcpp.h>
 #include <ctime>
+#include <chrono>
 
 int test_printlattice(const Accelerator& accelerator) {
   latt_print(accelerator.lattice);
@@ -589,7 +590,7 @@ int test_calc_twiss() {
   Status::type status;
 
   Accelerator accelerator;
-  status = read_flat_file("sirius-v10.txt", accelerator);
+  status = read_flat_file("sirius-v12.txt", accelerator);
   if (status != Status::success) {
     std::cerr << "could not open flat_file!" << std::endl;
     return status;
@@ -599,12 +600,6 @@ int test_calc_twiss() {
   accelerator.radiation_on = true;
   accelerator.vchamber_on = false;
 
-  std::cout << "Energy: " << accelerator.energy << " eV" << '\n';
-  std::cout << "Harmonic number: " << accelerator.harmonic_number << '\n';
-  std::cout << "Cavity on: " << accelerator.cavity_on << '\n';
-  std::cout << "Radiation on: " << accelerator.radiation_on << '\n';
-  std::cout << "Vacuum chamber on: " << accelerator.vchamber_on << '\n';
-
   Pos<double> fixed_point_guess;
   std::vector<Pos<double>> closed_orbit;
   status = track_findorbit6(accelerator, closed_orbit, fixed_point_guess);
@@ -612,15 +607,26 @@ int test_calc_twiss() {
     std::cerr << "could not find 6d closed orbit" << std::endl;
   }
 
+  auto start = std::chrono::steady_clock::now();
+  auto end = std::chrono::steady_clock::now();
+  auto diff = end - start;
+
   std::vector<Twiss> twiss;
   Matrix m66;
+  start = std::chrono::steady_clock::now();
+
   status = calc_twiss(accelerator, closed_orbit[0], m66, twiss);
+
+  end = std::chrono::steady_clock::now(); diff = end - start;
+  std::cout << "calc_twiss: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
+
   if (status != Status::success) {
     std::cerr << "could not calculate twiss" << std::endl;
   }
 
+
   for(unsigned int i=0; i<twiss.size(); ++i) {
-    //std::cout << twiss[i].mux << std::endl;
+    //std::cout << twiss[i] << std::endl;
   }
 
 
@@ -670,6 +676,33 @@ int test_matrix_inversion() {
 
 }
 
+int test_new_write_flat_file() {
+
+  Status::type status;
+
+  Accelerator accelerator;
+  status = read_flat_file("sirius-v12.txt", accelerator);
+  if (status != Status::success) {
+    std::cerr << "could not open flat_file!" << std::endl;
+    return status;
+  }
+
+  accelerator.cavity_on = true;
+  accelerator.radiation_on = true;
+  accelerator.vchamber_on = false;
+
+  std::string serialized_accelerator;
+  status = write_flat_file(serialized_accelerator, accelerator);
+
+  std::cout << serialized_accelerator.size() << std::endl;
+  for(unsigned int i=0;i<1000;++i) {
+    std::cout << serialized_accelerator[i];
+  }
+  std::cout << std::endl;
+  return 0;
+
+}
+
 int cmd_tests(const std::vector<std::string>& args) {
 
   //test_printlattice(accelerator);
@@ -694,6 +727,7 @@ int cmd_tests(const std::vector<std::string>& args) {
   //test_linepass2();
   test_calc_twiss();
   //test_matrix_inversion();
+  //test_new_write_flat_file();
 
   return 0;
 

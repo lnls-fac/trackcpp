@@ -11,6 +11,12 @@ Vector& Vector::multiplication(const Matrix& m, const Vector& b) {
   return v;
 }
 
+void    Vector::print() const {
+  const Vector& m = *this;
+  for(unsigned int i=0; i<m.size(); ++i) printf("%+.4e ", m[i]);
+  printf("\n");
+}
+
 double Matrix::norm() const {
   double max = 0;
   const Matrix& m = *this;
@@ -102,13 +108,11 @@ Matrix& Matrix::setM(Matrix& s, int nr, int nc, unsigned int r, unsigned int c) 
 }
 
 Matrix& Matrix::getMx(Matrix& s) const {
-  s = Matrix(2);
   this->getM(s, 2, 2, 0, 0);
   return s;
 }
 
 Matrix& Matrix::getMy(Matrix& s) const {
-  s = Matrix(2);
   this->getM(s, 2, 2, 2, 2);
   return s;
 }
@@ -137,54 +141,22 @@ Matrix& Matrix::inverse_symplectic(int size, unsigned int r, unsigned int c) {
   return m;
 }
 
-//#include <chrono>
-Status::type matrix_inverse6_newton(Matrix& m, int size, unsigned int r, unsigned int c) {
+static void matrix_inverse6_lu(Matrix& M) {
 
-  // auto start = std::chrono::steady_clock::now();
-  // auto end = std::chrono::steady_clock::now();
-  // auto diff = end - start;
-  // start = std::chrono::steady_clock::now();
+  gsl_matrix* m = gsl_matrix_alloc(6,6);
+  gsl_matrix* inv_m = gsl_matrix_alloc(6,6);
+  gsl_permutation* p = gsl_permutation_alloc(6);
+  for(unsigned int i=0; i<6; ++i)
+    for(unsigned int j=0; j<6; ++j) gsl_matrix_set(m,i,j,M[i][j]);
+  int s;
+  gsl_linalg_LU_decomp(m, p, &s);
+  gsl_linalg_LU_invert(m, p, inv_m);
+  for(unsigned int i=0; i<6; ++i)
+    for(unsigned int j=0; j<6; ++j) M[i][j] = gsl_matrix_get(inv_m,i,j);
+  gsl_matrix_free(m);
+  gsl_matrix_free(inv_m);
+  gsl_permutation_free(p);
 
-  // Newton algorithm
-  if (size < 0) size = m.size();
-  Matrix x1(size);
-  Matrix t1(size);
-  Matrix t2(size);
-  Matrix dm(size);
-  Matrix tm(1); m.getM(tm, size, size, r, c);
-  Matrix x0(1); m.getM(x0, size, size, r, c); x0.inverse_symplectic(); // x0 = -j*m*j
-  unsigned int iter_left = 20;
-  while (true) {
-    t1.multiplication(tm,x0);            //  t1 = m x0
-    t2.multiplication(x0,t1);            //  t2 = x0 t1 = x0 m x0
-    x1.linear_combination(2,x0,-1,t2);   //  x1 = 2 x0 - x0 m x0
-    dm.linear_combination(1,x1,-1,x0);   //  dm = x1 - x0
-    double norm = dm.norm();
-    if (norm < std::numeric_limits<double>::epsilon()) break;
-    x0 = x1;
-    iter_left--; if (iter_left == 0) return Status::newton_not_converged;
-  }
-  m.setM(x1, size, size, r, c);
-  // end = std::chrono::steady_clock::now(); diff = end - start;
-  // std::cout << "newton: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << " in " << 20-iter_left << " iterations" << std::endl;
-  return Status::success;
-
-}
-
-Status::type Matrix::inverse_quase_symplectic(int size, unsigned int r, unsigned int c) {
-  Status::type status = Status::success;
-  Matrix& m = *this;
-  if (size < 0) size = m.size();
-  if (size == 2) {
-    double det = m[r+0][c+0] * m[r+1][c+1] - m[r+0][c+1] * m[r+1][c+0];
-    std::swap(m[r+0][c+0],m[r+1][c+1]);
-    m[r+0][c+1] = - m[r+0][c+1] / det;
-    m[r+1][c+0] = - m[r+1][c+0] / det;
-    m[r+0][c+0] /= det; m[r+1][c+1] /= det;
-  } else {
-    status = matrix_inverse6_newton(m, size, r, c);
-  }
-  return status;
 }
 
 Matrix& Matrix::inverse(int size, unsigned int r, unsigned int c) {
@@ -197,6 +169,8 @@ Matrix& Matrix::inverse(int size, unsigned int r, unsigned int c) {
     m[r+0][c+1] = - m[r+0][c+1] / det;
     m[r+1][c+0] = - m[r+1][c+0] / det;
     m[r+0][c+0] /= det; m[r+1][c+1] /= det;
+  } else if (size == 6) {
+    matrix_inverse6_lu(m);
   } else {
     status = Status::not_implemented;
   }
@@ -237,13 +211,11 @@ Status::type matrix_inverse4_blockwise(Matrix& m) {
 
 }
 
-
 Vector operator+(const Vector& v1, const Vector& v2) {
   Vector v(v1);
   for(unsigned int i=0; i<v.size(); ++i) v[i] += v2[i];
   return v;
 }
-
 
 Pos<double> linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 
@@ -269,7 +241,6 @@ Pos<double> linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<d
   gsl_permutation_free(p);
   return X;
 }
-
 
 Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<double>& B) {
 

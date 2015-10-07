@@ -8,6 +8,7 @@
 #include <trackcpp/pos.h>
 #include <trackcpp/tracking.h>
 #include <trackcpp/flat_file.h>
+#include <trackcpp/optics.h>
 #include "interface.h"
 #include "elementswrapper.h"
 %}
@@ -40,6 +41,7 @@ double get_double_max() {
 
 %include "elements.i"
 %include "accelerator.i"
+%include "optics.i"
 
 %include "../include/trackcpp/kicktable.h"
 %include "../include/trackcpp/auxiliary.h"

@@ -54,8 +54,8 @@ template <typename T> inline T SQR(const T& X) { return X*X; }
 template <typename T> inline T POW3(const T& X) { return X*X*X; }
 
 template <typename T>
-inline void drift(Pos<T>& pos, const double& length)
-{
+inline void drift(Pos<T>& pos, const double& length) {
+
   T pnorm = 1 / (1 + pos.de);
   T norml = length * pnorm;
   pos.rx += norml * pos.px;
@@ -64,17 +64,16 @@ inline void drift(Pos<T>& pos, const double& length)
 }
 
 //template <typename T>
-//inline void drift(Pos<T> &pos, const double& length)
-//{
+//inline void drift(Pos<T> &pos, const double& length) {
 //  drift(pos, length);
 //}
 
 template <typename T>
 inline void calcpolykick(const Pos<T> &pos, const std::vector<double>& polynom_a,
                          const std::vector<double>& polynom_b,
-                         T& real_sum, T& imag_sum)
-{
-  int n = polynom_b.size();
+                         T& real_sum, T& imag_sum) {
+
+  const int n = polynom_b.size();
   real_sum = polynom_b[n-1];
   imag_sum = polynom_a[n-1];
   for(int i=n-2;i>=0;--i) {
@@ -85,8 +84,8 @@ inline void calcpolykick(const Pos<T> &pos, const std::vector<double>& polynom_a
 }
 
 template <typename T>
-void fastdrift(Pos<T> &pos, const T& norml)
-{
+void fastdrift(Pos<T> &pos, const T& norml) {
+
   T dx = norml * pos.px;
   T dy = norml * pos.py;
   pos.rx += dx;
@@ -95,8 +94,9 @@ void fastdrift(Pos<T> &pos, const T& norml)
 }
 
 template <typename T>
-T b2_perp(const T& bx, const T& by, const T& rx, const T& px, const T& ry, const T& py, const double& irho = 0)
-{
+T b2_perp(const T& bx, const T& by, const T& rx, const T& px,
+          const T& ry, const T& py, const double& irho = 0) {
+
   // Calculates sqr(|B x e|) , where e is a unit vector in the direction of velocity
   T v_norm2 = 1 /(SQR(1+irho*rx) + SQR(px) + SQR(py));
   return((SQR(by*(1+irho*rx)) + SQR(bx*(1+irho*rx)) + SQR(bx*py - by*px))*v_norm2);
@@ -104,8 +104,8 @@ T b2_perp(const T& bx, const T& by, const T& rx, const T& px, const T& ry, const
 
 template <typename T>
 Status::type kicktablethinkick(Pos<T>& pos, const Kicktable* kicktable,
-                               const double& brho, const int nr_steps)
-{
+                               const double& brho, const int nr_steps) {
+
   T hkick, vkick;
   Status::type status = kicktable_getkicks(kicktable, pos.rx, pos.ry, hkick, vkick);
   pos.px += hkick / (brho * brho) / nr_steps;
@@ -125,8 +125,8 @@ template <typename T>
 void strthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_a,
                  const std::vector<double>& polynom_b,
-                 const Accelerator& accelerator)
-{
+                 const Accelerator& accelerator) {
+
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
   if (accelerator.radiation_on) {
@@ -153,8 +153,8 @@ void bndthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_a,
                  const std::vector<double>& polynom_b,
                  const double& irho,
-                 const Accelerator& accelerator)
-{
+                 const Accelerator& accelerator) {
+
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
   T de = pos.de;
@@ -181,8 +181,8 @@ void bndthinkick(Pos<T>& pos, const double& length,
 template <typename T>
 void edge_fringe(Pos<T>& pos, const double& inv_rho,
                  const double& edge_angle, const double& fint,
-                const double& gap)
-{
+                const double& gap) {
+
   const T &rx = pos.rx, &ry = pos.ry, &de = pos.de;
   T       &px = pos.px, &py = pos.py;
   T fx      = inv_rho * std::tan(edge_angle)/(1 + de);
@@ -195,16 +195,16 @@ void edge_fringe(Pos<T>& pos, const double& inv_rho,
 }
 
 template <typename T>
-inline void translate_pos(Pos<T> &pos, const double* t)
-{
+inline void translate_pos(Pos<T> &pos, const double* t) {
+
   pos.rx += t[0]; pos.px += t[1];
   pos.ry += t[2]; pos.py += t[3];
   pos.de += t[4]; pos.dl += t[5];
 }
 
 template <typename T>
-inline void rotate_pos(Pos<T> &pos, const double* R)
-{
+inline void rotate_pos(Pos<T> &pos, const double* R) {
+
   const T rx0 = pos.rx, px0 = pos.px;
   const T ry0 = pos.ry, py0 = pos.py;
   const T de0 = pos.de, dl0 = pos.dl;
@@ -217,15 +217,15 @@ inline void rotate_pos(Pos<T> &pos, const double* R)
 }
 
 template <typename T>
-void global_2_local(Pos<T> &pos, const Element &elem)
-{
+void global_2_local(Pos<T> &pos, const Element &elem) {
+
   translate_pos(pos, elem.t_in);
   rotate_pos(pos, elem.r_in);
 }
 
 template <typename T>
-void local_2_global(Pos<T> &pos, const Element &elem)
-{
+void local_2_global(Pos<T> &pos, const Element &elem) {
+
   rotate_pos(pos, elem.r_out);
   translate_pos(pos, elem.t_out);
 }
@@ -233,23 +233,23 @@ void local_2_global(Pos<T> &pos, const Element &elem)
 
 template <typename T>
 Status::type pm_identity_pass(Pos<T> &pos, const Element &elem,
-                              const Accelerator& accelerator)
-{
+                              const Accelerator& accelerator) {
+
   return Status::success;
 }
 
 template <typename T>
 Status::type pm_drift_pass(Pos<T> &pos, const Element &elem,
-                           const Accelerator& accelerator)
-{
+                           const Accelerator& accelerator) {
+
   drift<T>(pos, elem.length);
   return Status::success;
 }
 
 template <typename T>
 Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
-                                           const Accelerator& accelerator)
-{
+                                           const Accelerator& accelerator) {
+
   global_2_local(pos, elem);
   double sl = elem.length / float(elem.nr_steps);
   double l1 = sl * DRIFT1;
@@ -273,8 +273,8 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
-                                           const Accelerator& accelerator)
-{
+                                           const Accelerator& accelerator) {
+
   double sl = elem.length / float(elem.nr_steps);
   double l1 = sl * DRIFT1;
   double l2 = sl * DRIFT2;
@@ -304,8 +304,8 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
-                               const Accelerator& accelerator)
-{
+                               const Accelerator& accelerator) {
+
   global_2_local(pos, elem);
   const double& xkick = elem.hkick;
   const double& ykick = elem.vkick;
@@ -336,8 +336,8 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
-                            const Accelerator& accelerator)
-{
+                            const Accelerator& accelerator) {
+
   if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
 
   global_2_local(pos, elem);
@@ -370,23 +370,23 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_thinquad_pass(Pos<T> &pos, const Element &elem,
-                              const Accelerator& accelerator)
-{
+                              const Accelerator& accelerator) {
+
   return Status::passmethod_not_implemented;
 }
 
 template <typename T>
 Status::type pm_thinsext_pass(Pos<T> &pos, const Element &elem,
-                              const Accelerator& accelerator)
-{
+                              const Accelerator& accelerator) {
+
   return Status::passmethod_not_implemented;
 }
 
 
 template <typename T>
 Status::type pm_kicktable_pass(Pos<T> &pos, const Element &elem,
-                               const Accelerator& accelerator)
-{
+                               const Accelerator& accelerator) {
+
   if (elem.kicktable == nullptr) return Status::kicktable_not_defined;
 
   Status::type status = Status::success;

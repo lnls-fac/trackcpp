@@ -29,7 +29,7 @@
 // returns a vector with 6-d transfer matrices, one for each element
 //
 // inputs:
-//    accelerator: strucrure representing the accelerator
+//    accelerator:   structure representing the accelerator
 //    closed_orbit:  Pos vector representing calculated closed orbit.
 //
 // outputs:
@@ -39,13 +39,13 @@
 //
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
-Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, std::vector<Matrix>& tm, Matrix& m66) {
-
+Status::type track_findm66 (const Accelerator& accelerator,
+                            std::vector<Pos<double> >& closed_orbit,
+                            std::vector<Matrix>& tm,
+                            Matrix& m66) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
-
-
 
   std::vector<double> row0 = {0,0,0,0,0,0};
 
@@ -62,24 +62,21 @@ Status::type track_findm66 (const Accelerator& accelerator, std::vector<Pos<doub
   map.ry = Tpsa<6,1>(closed_orbit[0].ry, 2); map.py = Tpsa<6,1>(closed_orbit[0].py, 3);
   map.de = Tpsa<6,1>(closed_orbit[0].de, 4); map.dl = Tpsa<6,1>(closed_orbit[0].dl, 5);
 
-  tm.clear();
+  tm.clear(); tm.resize(lattice.size(), Matrix(6));
   for(unsigned int i=0; i<lattice.size(); ++i) {
-
-    Matrix m(6);
+    Matrix& m = tm[i];
     m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
     m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
     m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
     m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3]; m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
     m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3]; m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
     m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
-    tm.push_back(m);
-
     // track through element
     if ((status = track_elementpass (lattice[i], map, accelerator)) != Status::success) return status;
-
   }
 
-  Matrix& m = m66; m = Matrix(6);
+  m66 = Matrix(6);
+  Matrix& m = m66;
   m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
   m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
   m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];

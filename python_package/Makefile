@@ -5,7 +5,8 @@ CXX = g++
 MACHINE = -m64
 OPT_FLAG = -O3
 SOURCES_I =     trackcpp.i \
-                elements.i
+                elements.i \
+								optics.i
 WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o \
                 elementswrapper.o

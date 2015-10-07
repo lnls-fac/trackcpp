@@ -46,5 +46,6 @@ Status::type read_flat_file_tracy(const std::string& filename, Accelerator& acce
 Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& accelerator);
 Status::type read_flat_file(const std::string& filename, Accelerator& accelerator);
 Status::type write_flat_file(const std::string& filename, Accelerator& accelerator);
+Status::type write_flat_file(std::string& filename, Accelerator& accelerator);
 
 #endif

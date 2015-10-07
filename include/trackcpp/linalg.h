@@ -17,12 +17,13 @@ public:
     Vector(const unsigned int size = 0) : std::vector<double>(size, 0) {}
     Vector(const std::vector<double>& v) : std::vector<double>(v) {}
     Vector& multiplication(const Matrix& m, const Vector& b);
+    void print() const;
 };
 
-class Matrix : public std::vector<std::vector<double>> {
+class Matrix : public std::vector<std::vector<double> > {
 public:
-  Matrix(const unsigned int size = 0) : std::vector<std::vector<double>>(size, std::vector<double>(size,0)) {}
-  Matrix(const std::vector<std::vector<double>>& v) : std::vector<std::vector<double>>(v) {}
+  Matrix(const unsigned int size = 0) : std::vector<std::vector<double> >(size, std::vector<double>(size,0)) {}
+  Matrix(const std::vector<std::vector<double> >& v) : std::vector<std::vector<double> >(v) {}
   double norm() const;
   Matrix& eye(const double& v = 1);
   Matrix& scalar(const double& v);
@@ -35,8 +36,6 @@ public:
   Matrix& getMy(Matrix& s) const;
   Matrix& inverse_symplectic(int size=-1, unsigned int r=0, unsigned int c=0);
   Matrix& inverse(int size=-1, unsigned int r=0, unsigned int c=0);
-  Status::type inverse_quase_symplectic(int size=-1, unsigned int r=0, unsigned int c=0);
-
   void print() const;
 };
 
