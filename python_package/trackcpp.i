@@ -20,7 +20,6 @@
 namespace std {
     %template(CppStringVector) vector<string>;
     %template(CppDoubleVector) vector<double>;
-    //%template(CppDoublePVector) vector<double*>;
     %template(CppElementVector) vector<Element>;
     %template(CppDoublePosVector) vector< Pos<double> >;
     %template(CppDoubleMatrix) vector< vector<double> >;
@@ -42,6 +41,7 @@ double get_double_max() {
 %include "elements.i"
 %include "accelerator.i"
 %include "optics.i"
+%include "linalg.i"
 
 %include "../include/trackcpp/kicktable.h"
 %include "../include/trackcpp/auxiliary.h"
@@ -52,4 +52,3 @@ double get_double_max() {
 %include "elementswrapper.h"
 
 %template(CppDoublePos) Pos<double>;
-//%template(double_track_elementpass) track_elementpass<double>;
