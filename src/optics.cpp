@@ -46,7 +46,7 @@ std::ostream& operator<< (std::ostream &out, const Twiss& tw) {
   return out;
 }
 
-#define TIMEIT
+//#define TIMEIT
 #ifdef TIMEIT
 #include <chrono>
 #endif
