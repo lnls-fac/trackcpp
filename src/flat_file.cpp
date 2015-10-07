@@ -41,16 +41,10 @@ static void synchronize_polynomials(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
 static void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator);
 static Status::type read_flat_file_trackcpp(std::istream&, Accelerator& accelerator);
-//static void read_flat_file_tracy(const std::string& filename, Accelerator& accelerator);
-
 
 
 // -- implementation of API --
 
-
-Status::type read_flat_file(const std::string& filename, Accelerator& accelerator, bool file_flag) {
-  read_flat_file(std::string(filename), accelerator, file_flag);
-}
 
 Status::type read_flat_file(std::string& filename, Accelerator& accelerator, bool file_flag) {
   if (file_flag) {
@@ -61,15 +55,12 @@ Status::type read_flat_file(std::string& filename, Accelerator& accelerator, boo
     return Status::success;
   } else {
     std::stringstream fp;
+    fp.str(filename);
     read_flat_file_trackcpp(fp, accelerator);
-    filename = fp.str();
+    //filename = fp.str();
     return Status::success;
   }
 
-}
-
-Status::type write_flat_file(const std::string& filename, const Accelerator& accelerator, bool file_flag) {
-  write_flat_file(std::string(filename), accelerator);
 }
 
 Status::type write_flat_file(std::string& filename, const Accelerator& accelerator, bool file_flag) {
@@ -166,6 +157,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
   bool found_vmin = false;
   unsigned int line_count = 0;
   while (std::getline(fp, line)) {
+    //std::cout << line << std::endl;
     line_count++;
     std::istringstream ss(line);
     std::string cmd;
@@ -295,7 +287,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
 
 }
 
-Status::type read_flat_file_tracy(const std::string& filename, Accelerator& accelerator) {
+static Status::type read_flat_file_tracy(const std::string& filename, Accelerator& accelerator) {
 
   std::ifstream fp(filename);
   if (fp.fail()) return Status::file_not_found;

@@ -118,7 +118,8 @@ int test_ringpass(const Accelerator& accelerator) {
 int test_findorbit4() {
 
   Accelerator accelerator;
-  read_flat_file("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt", accelerator);
+  std::string fname("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt");
+  read_flat_file(fname, accelerator);
   accelerator.cavity_on = false;
   accelerator.radiation_on = false;
   accelerator.vchamber_on = false;
@@ -140,7 +141,8 @@ int test_findorbit4() {
 int test_findorbit6() {
 
   Accelerator accelerator;
-  read_flat_file("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt", accelerator);
+  std::string fname("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt");
+  read_flat_file(fname, accelerator);
   accelerator.cavity_on = true;
   accelerator.radiation_on = true;
   accelerator.vchamber_on = false;
@@ -321,7 +323,8 @@ int test_kicktable(Accelerator& accelerator) {
 
 int test_read_flat_file(Accelerator& accelerator) {
 
-  read_flat_file("/home/ximenes/flatfile.txt", accelerator);
+  std::string fname("/home/ximenes/flatfile.txt");
+  read_flat_file(fname, accelerator);
   std::cout << "nr_elements: " << accelerator.lattice.size() << std::endl;
   return 0;
 
@@ -433,7 +436,7 @@ int test_flatfile() {
 
 
   std::string fname = "/home/afonso/flatfile.txt";
-  read_flat_file("/home/afonso/flatfile.txt", accelerator);
+  read_flat_file(fname, accelerator);
   std::cout << "Energy: " << accelerator.energy << " eV" << '\n';
   std::cout << "Harmonic number: " << accelerator.harmonic_number << '\n';
   std::cout << "Cavity on: " << accelerator.cavity_on << '\n';
@@ -441,7 +444,7 @@ int test_flatfile() {
   std::cout << "Vacuum chamber on: " << accelerator.vchamber_on << '\n';
   accelerator.vchamber_on = false;
   fname = "/home/afonso/newflatfile.txt";
-  write_flat_file("/home/afonso/newflatfile.txt", accelerator);
+  write_flat_file(fname, accelerator);
 
   return EXIT_SUCCESS;
 
@@ -452,7 +455,8 @@ int test_calc_twiss() {
   Status::type status;
 
   Accelerator accelerator;
-  status = read_flat_file("sirius-v12.txt", accelerator);
+  std::string fname("sirius-v12.txt");
+  status = read_flat_file(fname, accelerator);
   if (status != Status::success) {
     std::cerr << "could not open flat_file!" << std::endl;
     return status;
@@ -542,26 +546,43 @@ int test_new_write_flat_file() {
 
   Status::type status;
 
-  Accelerator accelerator;
-  status = read_flat_file("sirius-v12.txt", accelerator);
+  Accelerator accelerator, accelerator2;
+  std::string fname("sirius-v12-small.txt");
+  status = read_flat_file(fname, accelerator, true);
   if (status != Status::success) {
     std::cerr << "could not open flat_file!" << std::endl;
     return status;
   }
 
+
   accelerator.cavity_on = true;
   accelerator.radiation_on = true;
   accelerator.vchamber_on = false;
 
-  std::string serialized_accelerator;
-  status = write_flat_file(serialized_accelerator, accelerator);
+  std::string a;
 
-  std::cout << serialized_accelerator.size() << std::endl;
-  for(unsigned int i=0;i<1000;++i) {
-    std::cout << serialized_accelerator[i];
+  status = write_flat_file(a, accelerator, false);
+  if (status != Status::success) {
+    std::cout << "could not serialize accelerator!" << std::endl;
+    return status;
+  } else {
+    std::cout << "size of accelerator         (#elements) : " << accelerator.lattice.size() << std::endl;
+    std::cout << "size of serialized accelerator (#chars) : " << a.size() << std::endl;
   }
-  std::cout << std::endl;
-  return 0;
+
+  status = read_flat_file(a, accelerator2, false);
+  if (status != Status::success) {
+    std::cout << "could not unserialize accelerator!" << std::endl;
+    return status;
+  } else {
+    if (accelerator == accelerator2) {
+      std::cout << "unserialized accelerator is identical to original" << std::endl;
+      return Status::success;
+    } else {
+      std::cout << "unserialized accelerator is NOT identical to original !" << std::endl;
+      return Status::not_implemented;
+    }
+  }
 
 }
 

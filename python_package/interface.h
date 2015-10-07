@@ -24,7 +24,9 @@ struct RingPassArgs : public LinePassArgs {
 };
 
 struct String {
-  public: std::string data;
+public:
+  std::string data;
+  String(const std::string& v = "") : data(v) {};
 };
 
 Status::type track_elementpass_wrapper (
