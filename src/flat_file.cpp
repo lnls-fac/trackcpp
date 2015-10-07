@@ -39,34 +39,57 @@ static void write_6d_vector(std::ostream& fp, const std::string& label, const do
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
 static void synchronize_polynomials(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
-static void write_flat_file_trackcpp(std::ostream& fp, Accelerator& accelerator);
+static void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator);
+static Status::type read_flat_file_trackcpp(std::istream&, Accelerator& accelerator);
+//static void read_flat_file_tracy(const std::string& filename, Accelerator& accelerator);
+
+
 
 // -- implementation of API --
 
-Status::type read_flat_file(const std::string& filename, Accelerator& accelerator) {
-  return read_flat_file_trackcpp(filename, accelerator);
+
+Status::type read_flat_file(const std::string& filename, Accelerator& accelerator, bool file_flag) {
+  read_flat_file(std::string(filename), accelerator, file_flag);
 }
 
-Status::type write_flat_file(const std::string& filename, Accelerator& accelerator) {
-	write_flat_file(std::string(filename), accelerator);
-}
-
-Status::type write_flat_file(std::string& filename, Accelerator& accelerator) {
-
-  if (filename.empty()) {
-    std::stringstream fp;
-    write_flat_file_trackcpp(fp, accelerator);
-		filename = fp.str(); // very costly. no other way?!
-  } else {
-    std::ofstream fp(filename.c_str());
+Status::type read_flat_file(std::string& filename, Accelerator& accelerator, bool file_flag) {
+  if (file_flag) {
+    std::ifstream fp(filename.c_str());
     if (fp.fail()) return Status::file_not_found;
-    write_flat_file_trackcpp(fp, accelerator);
-		fp.close();
+    read_flat_file_trackcpp(fp, accelerator);
+    fp.close();
+    return Status::success;
+  } else {
+    std::stringstream fp;
+    read_flat_file_trackcpp(fp, accelerator);
+    filename = fp.str();
+    return Status::success;
   }
 
 }
 
-void write_flat_file_trackcpp(std::ostream& fp, Accelerator& accelerator) {
+Status::type write_flat_file(const std::string& filename, const Accelerator& accelerator, bool file_flag) {
+  write_flat_file(std::string(filename), accelerator);
+}
+
+Status::type write_flat_file(std::string& filename, const Accelerator& accelerator, bool file_flag) {
+
+  if (file_flag) {
+    std::ofstream fp(filename.c_str());
+    if (fp.fail()) return Status::file_not_found;
+    write_flat_file_trackcpp(fp, accelerator);
+    fp.close();
+    return Status::success;
+  } else {
+    std::stringstream fp;
+    write_flat_file_trackcpp(fp, accelerator);
+    filename = fp.str(); // very costly. no other way?!
+    return Status::success;
+  }
+
+}
+
+void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) {
 
   fp.setf(std::ios_base::left | std::ios_base::scientific | std::ios_base::uppercase);
   fp.precision(np);
@@ -133,10 +156,7 @@ void write_flat_file_trackcpp(std::ostream& fp, Accelerator& accelerator) {
 
 }
 
-Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& accelerator) {
-
-  std::ifstream fp(filename.c_str());
-  if (fp.fail()) return Status::file_not_found;
+Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator) {
 
   accelerator.lattice.clear();
 
@@ -266,11 +286,11 @@ Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& a
     return Status::flat_file_error;
     //std::cout << line_count << ": " << line << std::endl;
   }
-  fp.close();
 
   if (e.fam_name.compare("") != 0) {
     accelerator.lattice.push_back(e);
   }
+
   return Status::success;
 
 }

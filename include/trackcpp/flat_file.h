@@ -42,10 +42,12 @@ struct FlatFileType {
     };
   };
 
-Status::type read_flat_file_tracy(const std::string& filename, Accelerator& accelerator);
-Status::type read_flat_file_trackcpp(const std::string& filename, Accelerator& accelerator);
-Status::type read_flat_file(const std::string& filename, Accelerator& accelerator);
-Status::type write_flat_file(const std::string& filename, Accelerator& accelerator);
-Status::type write_flat_file(std::string& filename, Accelerator& accelerator);
+//Status::type read_flat_file(const std::string& filename, Accelerator& accelerator);
+
+Status::type read_flat_file(const std::string& filename, Accelerator& accelerator, bool file_flag = true);
+Status::type read_flat_file(std::string& filename, Accelerator& accelerator, bool file_flag = true);
+
+Status::type write_flat_file(const std::string& filename, const Accelerator& accelerator, bool file_flag = true);
+Status::type write_flat_file(std::string& filename, const Accelerator& accelerator, bool file_flag = true);
 
 #endif

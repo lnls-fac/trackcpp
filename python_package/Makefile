@@ -8,8 +8,7 @@ SOURCES_I =     trackcpp.i \
                 elements.i \
 								optics.i
 WRAPPEROBJS =   trackcpp_wrap.o
-INTERFACEOBJS = interface.o \
-                elementswrapper.o
+INTERFACEOBJS = interface.o 
 TRACKCPPLIB = ../build/libtrackcpp.a
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)

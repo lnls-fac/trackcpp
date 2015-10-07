@@ -10,8 +10,8 @@
 #include <trackcpp/flat_file.h>
 #include <trackcpp/optics.h>
 #include "interface.h"
-#include "elementswrapper.h"
 %}
+
 %include "carrays.i"
 %include "std_string.i"
 %include "std_vector.i"
@@ -20,7 +20,6 @@
 namespace std {
     %template(CppStringVector) vector<string>;
     %template(CppDoubleVector) vector<double>;
-    //%template(CppDoublePVector) vector<double*>;
     %template(CppElementVector) vector<Element>;
     %template(CppDoublePosVector) vector< Pos<double> >;
     %template(CppDoubleMatrix) vector< vector<double> >;
@@ -37,7 +36,9 @@ void c_array_set(double* v, int i, double x) {
 double get_double_max() {
     return DBL_MAX;
 }
+
 %}
+
 
 %include "elements.i"
 %include "accelerator.i"
@@ -47,9 +48,7 @@ double get_double_max() {
 %include "../include/trackcpp/auxiliary.h"
 %include "../include/trackcpp/pos.h"
 %include "../include/trackcpp/tracking.h"
-%include "../include/trackcpp/flat_file.h"
+//%include "../include/trackcpp/flat_file.h"
 %include "interface.h"
-%include "elementswrapper.h"
 
 %template(CppDoublePos) Pos<double>;
-//%template(double_track_elementpass) track_elementpass<double>;
