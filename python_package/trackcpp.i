@@ -24,6 +24,7 @@ namespace std {
     %template(CppDoublePosVector) vector< Pos<double> >;
     %template(CppDoubleMatrix) vector< vector<double> >;
     %template(CppDoubleMatrixVector) vector< vector< vector<double> > >;
+    %template(CppTwissVector) vector<Twiss>;
 }
 
 %inline %{
