@@ -1,3 +1,19 @@
+// TRACKCPP - Particle tracking code
+// Copyright (C) 2015  LNLS Accelerator Physics Group
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include <trackcpp/trackcpp.h>
 #include "naff.h"
 
@@ -19,11 +35,24 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 }
 
 
-
 // ******************************************************************************
 // * -- Functions below this line have been created by Laskar/L.Nadolski/etc -- *
+// *                                                                            *
+// * -- and modified by Ximenes R. Resende                                      *
+// *                                                                            *
 // ******************************************************************************
 
+
+// ***************************************************************************
+//                              -------------------
+//     begin                : Fri Dec 22 20:24:44 CET 2002
+//     copyright            : (C) 2002 by Laurent Nadolski
+//     email                : nadolski@synchrotron-soleil.fr
+//
+//  Origine : Bureau des Longitudes (IMCCE)
+//            J. Laskar, M. Gastineau
+//
+//  ***************************************************************************/
 
 /****************************************************************************/
 /* void Get_NAFF(int nterm, long ndata, double T[DIM][NTURN],
