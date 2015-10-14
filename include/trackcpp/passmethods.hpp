@@ -67,7 +67,7 @@ inline void calcpolykick(const Pos<T> &pos, const std::vector<double>& polynom_a
                          const std::vector<double>& polynom_b,
                          T& real_sum, T& imag_sum) {
 
-  const int n = polynom_b.size();
+  const int n = std::min(polynom_b.size(), polynom_a.size());
   real_sum = polynom_b[n-1];
   imag_sum = polynom_a[n-1];
   for(int i=n-2;i>=0;--i) {
