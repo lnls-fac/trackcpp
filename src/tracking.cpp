@@ -31,12 +31,15 @@
 //            transfer matrix from the start of the lattice to the entrance of that element.
 //    m66:    one-turn transfer matrix
 //
+//    v0:     const term of final map
+//
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
 Status::type track_findm66 (const Accelerator& accelerator,
                             std::vector<Pos<double> >& closed_orbit,
                             std::vector<Matrix>& tm,
-                            Matrix& m66) {
+                            Matrix& m66,
+                            Pos<double>& v0) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
@@ -77,6 +80,9 @@ Status::type track_findm66 (const Accelerator& accelerator,
   m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3]; m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
   m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3]; m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
   m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
+
+  // constant term of the final map
+  v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
 
   return status;
 

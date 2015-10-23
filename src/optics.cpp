@@ -66,6 +66,13 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
   if (status != Status::success) return status;
   if (not closed_flag) closed_orbit.pop_back();
 
+  // std::vector<Pos<double>> closed_orbit0;
+  // if (not accelerator.cavity_on) {
+  //   Pos<double> fp = fixed_point; fp.de = 0;
+  //   Status::type status = track_linepass(accelerator, fp, closed_orbit0, element_offset, lost_plane, true);
+  //   if (status != Status::success) return status;
+  // }
+
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;
   std::cout << "calc_twiss::close_orbit: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
@@ -76,10 +83,21 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
 #endif
 
   // finds accumulated transfer matrices
+
+  // std::vector<Matrix> atm0;
+  // if (not accelerator.cavity_on) {
+  //   status = track_findm66 (accelerator, closed_orbit0, atm0, m66);
+  //   if (status != Status::success) return status;
+  //   if (closed_flag) atm.push_back(atm.back());
+  // }
+
   std::vector<Matrix> atm;
-  status = track_findm66 (accelerator, closed_orbit, atm, m66);
+  Pos<double> v0;
+  status = track_findm66 (accelerator, closed_orbit, atm, m66, v0);
   if (status != Status::success) return status;
   if (closed_flag) atm.push_back(atm.back());
+
+
 
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;
