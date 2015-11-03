@@ -26,12 +26,13 @@
 class Twiss {
 
 public:
+  double spos;
   Pos<double> co;
   Vector etax;
   Vector etay;
   double mux, betax, alphax;
   double muy, betay, alphay;
-  Twiss() : co(std::nan("")),
+  Twiss() : spos(0), co(std::nan("")),
             etax(Vector({std::nan(""),std::nan("")})),
             etay(Vector({std::nan(""),std::nan("")})),
             mux(0), betax(std::nan("")), alphax(std::nan("")),
