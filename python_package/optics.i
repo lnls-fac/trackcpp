@@ -17,6 +17,7 @@
 class Twiss {
 
 public:
+  double spos;
   Pos<double> co;
   Vector etax;
   Vector etay;
