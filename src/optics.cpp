@@ -111,6 +111,7 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
   // initial twiss parameters
   twiss.clear(); twiss.reserve(atm.size());
   if (twiss0.isundef()) { // case of periodic solution
+    twiss0.spos = 0.0;
     // --- beta functions
     double sin_mux = sgn(m66[0][1]) * std::sqrt(-m66[0][1]*m66[1][0]-pow(m66[0][0]-m66[1][1],2)/4.0);
     double sin_muy = sgn(m66[2][3]) * std::sqrt(-m66[2][3]*m66[3][2]-pow(m66[2][2]-m66[3][3],2)/4.0);
@@ -145,7 +146,7 @@ Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed
 
     const Matrix& tm = atm[i];
     Twiss tw;
-
+    tw.spos = twiss.back().spos + accelerator.lattice[i-1].length;
     // --- beta functions
     tw.betax = (std::pow(tm[0][0] * twiss0.betax - tm[0][1] * twiss0.alphax, 2) + pow(tm[0][1], 2)) / twiss0.betax;
     tw.betay = (std::pow(tm[2][2] * twiss0.betay - tm[2][3] * twiss0.alphay, 2) + pow(tm[2][3], 2)) / twiss0.betay;
