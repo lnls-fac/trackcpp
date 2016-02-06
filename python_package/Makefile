@@ -22,6 +22,8 @@ SETUPARGS =
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
 
+.NOTPARALLEL:
+
 all: trackcpp/_trackcpp.so
 
 $(shell $(CXX) -MM $(INTERFACESRCS) > .depend)
