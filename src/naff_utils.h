@@ -9,11 +9,6 @@
 
  ***************************************************************************/
 
-#include <trackcpp/pos.h>
-#include <vector>
-
-/* Frequency Map Analysis */
-void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney);
 
 //void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]);
 
@@ -86,52 +81,56 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 #define HFREE2(variable) {SYSFREE(*variable); SYSFREE(variable);}
 
 struct complexe {
-  double reel,imag;
+    double reel,imag;
 };
+
 typedef struct complexe t_complexe;
 
-/* v0.96 M. GASTINEAU 18/12/98 : ajout */
-/*liste des frequences pour NAF */
 struct list_fenetre_naf {
- double                   dFreqMin; /* frequence minimale */
- double                   dFreqMax; /* frequence maximale */
- int                      iNbTerme; /* nombre de termes a rechercher */
- struct list_fenetre_naf *suivant; /*fenetre suivante */
+    /* v0.96 M. GASTINEAU 18/12/98 : ajout */
+    /*liste des frequences pour NAF */
+    double                   dFreqMin; /* frequence minimale */
+    double                   dFreqMax; /* frequence maximale */
+    int                      iNbTerme; /* nombre de termes a rechercher */
+    struct list_fenetre_naf *suivant; /*fenetre suivante */
 };
+
 /* v0.96 M. GASTINEAU 18/12/98 : fin ajout */
 typedef struct list_fenetre_naf t_list_fenetre_naf; /* v0.96 M. GASTINEAU 18/12/98 : ajout */
 
-/*v0.96 M. GASTINEAU 04/09/98 : ajout pour la gestion de naf */
-/* pour le role de ces champs, cf. modnaff.c */
 struct stnaf {
- /*champ utilise par modnaff.c */
- FILE *NFPRT;
- double EPSM;
- int NTERM,KTABS,NFS;
- int ICPLX,IW,ISEC;
- int NERROR,IPRT;
 
- double *TFS;
- t_complexe *ZAMP;
- t_complexe **ZALP; /*tableau a deux dimensions*/
- t_complexe *ZTABS;
+    /*v0.96 M. GASTINEAU 04/09/98 : ajout pour la gestion de naf */
+    /* pour le role de ces champs, cf. modnaff.c */
 
- double DTOUR,UNIANG,FREFON;
- double XH,T0;
+    /*champ utilise par modnaff.c */
+    FILE *NFPRT;
+    double EPSM;
+    int NTERM,KTABS,NFS;
+    int ICPLX,IW,ISEC;
+    int NERROR,IPRT;
 
- /*autre champ utilise en tant que flag */
- double m_dneps; /*equivaut a DNEPS */
- int m_iNbLineToIgnore; /*nombre de lignes a ignorer en debut du fichier des solutions */
- BOOL m_bFSTAB; /*=TRUE => sauve le tableau ZTABS.*/
- /* v0.96 M. GASTINEAU 06/01/99 : ajout */
- t_list_fenetre_naf *m_pListFen; /*liste des fenetres */
- /* v0.96 M. GASTINEAU 06/01/99 : fin ajout */
+    double *TFS;
+    t_complexe *ZAMP;
+    t_complexe **ZALP; /*tableau a deux dimensions*/
+    t_complexe *ZTABS;
 
- /* Ximenes XRR 2015-08-20, trying to get rid of all global variables */
- double* TWIN;
- double  AF,BF;
+    double DTOUR,UNIANG,FREFON;
+    double XH,T0;
 
+    /*autre champ utilise en tant que flag */
+    double m_dneps; /*equivaut a DNEPS */
+    int m_iNbLineToIgnore; /*nombre de lignes a ignorer en debut du fichier des solutions */
+    BOOL m_bFSTAB; /*=TRUE => sauve le tableau ZTABS.*/
+    /* v0.96 M. GASTINEAU 06/01/99 : ajout */
+    t_list_fenetre_naf *m_pListFen; /*liste des fenetres */
+    /* v0.96 M. GASTINEAU 06/01/99 : fin ajout */
+
+    /* Ximenes XRR 2015-08-20, trying to get rid of all global variables */
+    double* TWIN;
+    double  AF,BF;
 };
+
 typedef struct stnaf t_naf;
 /*v0.96 M. GASTINEAU 04/09/98 : fin ajout */
 
@@ -139,15 +138,13 @@ typedef struct stnaf t_naf;
 /*-----------------*/
 /* public functions*/
 /*-----------------*/
-void naf_initnaf_notab();
-void naf_cleannaf_notab();
-void naf_initnaf(t_naf& g_NAFVariable);
-void naf_cleannaf(t_naf& g_NAFVariable);
-BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS);
-void naf_prtabs(t_naf& g_NAFVariable, int KTABS, t_complexe *ZTABS, int IPAS);
-void naf_smoy(t_naf& g_NAFVariable, t_complexe *ZM);
-
-#endif
+static void naf_initnaf_notab();
+static void naf_cleannaf_notab();
+static void naf_initnaf(t_naf& g_NAFVariable);
+static void naf_cleannaf(t_naf& g_NAFVariable);
+static BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS);
+static void naf_prtabs(t_naf& g_NAFVariable, int KTABS, t_complexe *ZTABS, int IPAS);
+static void naf_smoy(t_naf& g_NAFVariable, t_complexe *ZM);
 
 
 
@@ -313,3 +310,5 @@ t_complexe i_compl_log(t_complexe c1);
 /*-------------------------------------------------------------*/
 /* v0.97 M. GASTINEAU 15/02/99: ajout */
 t_complexe i_compl_log10(t_complexe c1);
+
+#endif

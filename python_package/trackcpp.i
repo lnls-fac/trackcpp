@@ -25,6 +25,7 @@
 #include <trackcpp/tracking.h>
 #include <trackcpp/flat_file.h>
 #include <trackcpp/optics.h>
+#include <trackcpp/naff.h>
 #include "interface.h"
 %}
 
@@ -56,17 +57,16 @@ double get_double_max() {
 
 %}
 
-
 %include "elements.i"
 %include "accelerator.i"
 %include "optics.i"
 %include "linalg.i"
+%include "naff.i"
 
 %include "../include/trackcpp/kicktable.h"
 %include "../include/trackcpp/auxiliary.h"
 %include "../include/trackcpp/pos.h"
 %include "../include/trackcpp/tracking.h"
-//%include "../include/trackcpp/flat_file.h"
 %include "interface.h"
 
 %template(CppDoublePos) Pos<double>;

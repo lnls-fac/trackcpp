@@ -15,7 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <trackcpp/trackcpp.h>
-#include "naff.h"
+#include <trackcpp/naff.h>
+#include "naff_utils.h"
 
 static void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]);
 
@@ -446,22 +447,22 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
 //void naf_cleannaf_notab();
 /*v0.96 M. GASTINEAU 06/10/98 : fin ajout */
 
-void naf_inifre(t_naf& g_NAFVariable);
-void naf_cleannaf(t_naf& g_NAFVariable);
-BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS);
-void naf_prtabs(t_naf& g_NAFVariable, int KTABS, t_complexe *ZTABS, int IPAS);
-void naf_smoy(t_naf& g_NAFVariable, t_complexe *ZM);
-BOOL naf_tessol(double EPS, double *TFSR, t_complexe *ZAMPR);
-void naf_four1(double *DATA /*tableau commencant a l'indice 1 */, int NN, int ISIGN);
-void naf_puiss2(int NT, int *N2);
+static void naf_inifre(t_naf& g_NAFVariable);
+static void naf_cleannaf(t_naf& g_NAFVariable);
+static BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS);
+static void naf_prtabs(t_naf& g_NAFVariable, int KTABS, t_complexe *ZTABS, int IPAS);
+static void naf_smoy(t_naf& g_NAFVariable, t_complexe *ZM);
+static BOOL naf_tessol(double EPS, double *TFSR, t_complexe *ZAMPR);
+static void naf_four1(double *DATA /*tableau commencant a l'indice 1 */, int NN, int ISIGN);
+static void naf_puiss2(int NT, int *N2);
 /*v0.96 M. GASTINEAU 18/12/98 : modification du prototype */
 //void naf_iniwin();*//*remplacee par: */
-void naf_iniwin(t_naf& g_NAFVariable, double *p_pardTWIN);
+static void naf_iniwin(t_naf& g_NAFVariable, double *p_pardTWIN);
 /*v0.96 M. GASTINEAU 18/12/98 : fin modification */
-void delete_list_fenetre_naf(t_list_fenetre_naf *p_pListFenNaf);
-t_list_fenetre_naf *concat_list_fenetre_naf(t_list_fenetre_naf *p_pListFenHead,
+static void delete_list_fenetre_naf(t_list_fenetre_naf *p_pListFenNaf);
+static t_list_fenetre_naf *concat_list_fenetre_naf(t_list_fenetre_naf *p_pListFenHead,
                                             t_list_fenetre_naf *p_pListFenEnd);
-t_list_fenetre_naf *cree_list_fenetre_naf(const double p_dFreqMin, const double p_dFreqMax, const int p_iNbTerm);
+static t_list_fenetre_naf *cree_list_fenetre_naf(const double p_dFreqMin, const double p_dFreqMax, const int p_iNbTerm);
 
 /*!-----------------------------------------------------------------------
 ! VARIABLES PRIVEES
@@ -500,20 +501,21 @@ static BOOL naf_proscaa(t_naf& g_NAFVariable, double F1, double F2, t_complexe *
 static BOOL naf_zardyd(t_complexe *ZT, int N, double H, t_complexe *ZOM);
 static void naf_ztpow2a(int N, int N1, t_complexe *ZTF, double *TW, t_complexe ZA, t_complexe ZAST);
 
-/*!-----------------------------------------------------------------------
-!-----------------------------------------------------------------------
-!           ROUTINES DE NAFF
-!-----------------------------------------------------------------------
-      SUBROUTINE INITNAF
-      IMPLICIT NONE
-!-----------------------------------------------------------------------
-!        INITNAFF
-!  - effectue les initialisations necessaires :  PI,UNIANG,FREFON,EPSM
-!  - alloue les tableaux dynamiques TFS,ZAMP,ZALP,ZTABS,TWIN
-!  - appelle INIWIN
-!-----------------------------------------------------------------------*/
-void naf_initnaf(t_naf& g_NAFVariable) {
-/*!----------------- PREMIERES INITIALISATIONS*/
+
+static void naf_initnaf(t_naf& g_NAFVariable) {
+  /*!-----------------------------------------------------------------------
+  !-----------------------------------------------------------------------
+  !           ROUTINES DE NAFF
+  !-----------------------------------------------------------------------
+        SUBROUTINE INITNAF
+        IMPLICIT NONE
+  !-----------------------------------------------------------------------
+  !        INITNAFF
+  !  - effectue les initialisations necessaires :  PI,UNIANG,FREFON,EPSM
+  !  - alloue les tableaux dynamiques TFS,ZAMP,ZALP,ZTABS,TWIN
+  !  - appelle INIWIN
+  !-----------------------------------------------------------------------*/
+  /*!----------------- PREMIERES INITIALISATIONS*/
       g_NAFVariable.EPSM = DBL_EPSILON;
       /*PI = ATAN2(1.D0,0.D0)*2*/
       g_NAFVariable.UNIANG = g_NAFVariable.DTOUR/(2*M_PI) ;
@@ -528,14 +530,14 @@ void naf_initnaf(t_naf& g_NAFVariable) {
       naf_iniwin(g_NAFVariable, g_NAFVariable.TWIN);
 }/*      end SUBROUTINE INITNAF*/
 
-/*!-----------------------------------------------------------------------
-      subroutine CLEANNAF*/
-/* v0.96 M. GASTINEAU 06/01/99 : ajout de la liberation de la liste des fenetres */
-void naf_cleannaf(t_naf& g_NAFVariable)
-{
-/*!-----------------------------------------------------------------------
-!     desalloue les tableaux dynamiques
-!-----------------------------------------------------------------------*/
+static void naf_cleannaf(t_naf& g_NAFVariable) {
+      /*!-----------------------------------------------------------------------
+            subroutine CLEANNAF*/
+      /* v0.96 M. GASTINEAU 06/01/99 : ajout de la liberation de la liste des fenetres */
+
+      /*!-----------------------------------------------------------------------
+      !     desalloue les tableaux dynamiques
+      !-----------------------------------------------------------------------*/
 
       SYSFREE(g_NAFVariable.TFS);
       SYSFREE(g_NAFVariable.ZAMP);
@@ -548,14 +550,14 @@ void naf_cleannaf(t_naf& g_NAFVariable)
       /* v0.96 M. GASTINEAU 06/01/99 : fin ajout */
 }/*      end  subroutine CLEANNAF  */
 
-/*-----------------------------------------------------------------------*/
-/* fonction identique a naf_initnaf mais :                               */
-/*n'alloue pas de tableau pour ZTABS, TFS et ZAMP.                       */
-/*-----------------------------------------------------------------------*/
-/*v0.96 M. GASTINEAU 06/10/98 : ajout */
-void naf_initnaf_notab(t_naf& g_NAFVariable)
-{
-/*!----------------- PREMIERES INITIALISATIONS*/
+
+void naf_initnaf_notab(t_naf& g_NAFVariable) {
+      /*-----------------------------------------------------------------------*/
+      /* fonction identique a naf_initnaf mais :                               */
+      /*n'alloue pas de tableau pour ZTABS, TFS et ZAMP.                       */
+      /*-----------------------------------------------------------------------*/
+      /*v0.96 M. GASTINEAU 06/10/98 : ajout */
+      /*!----------------- PREMIERES INITIALISATIONS*/
       g_NAFVariable.EPSM = DBL_EPSILON;
       g_NAFVariable.UNIANG = g_NAFVariable.DTOUR/(2*M_PI) ;
       g_NAFVariable.FREFON = g_NAFVariable.DTOUR/(g_NAFVariable.KTABS*g_NAFVariable.XH)	;
@@ -565,54 +567,53 @@ void naf_initnaf_notab(t_naf& g_NAFVariable)
       /*naf_iniwin();*/ naf_iniwin(g_NAFVariable, g_NAFVariable.TWIN);
 }/*      end SUBROUTINE naf_initnaf_notab*/
 
-/*-----------------------------------------------------------------------*/
-/* fonction identique a naf_initnaf mais :                               */
-/*ne libere pas  ZTABS, TFS et ZAMP.                                     */
-/*-----------------------------------------------------------------------*/
-/*v0.96 M. GASTINEAU 06/10/98 : ajout */
-/* v0.96 M. GASTINEAU 06/01/99 : ajout de la liberation de la liste des fenetres */
-void naf_cleannaf_notab(t_naf& g_NAFVariable)
-{
-/*!-----------------------------------------------------------------------
+void naf_cleannaf_notab(t_naf& g_NAFVariable) {
+      /*-----------------------------------------------------------------------*/
+      /* fonction identique a naf_initnaf mais :                               */
+      /*ne libere pas  ZTABS, TFS et ZAMP.                                     */
+      /*-----------------------------------------------------------------------*/
+      /*v0.96 M. GASTINEAU 06/10/98 : ajout */
+      /* v0.96 M. GASTINEAU 06/01/99 : ajout de la liberation de la liste des fenetres */
 
-!     desalloue les tableaux dynamiques
-!-----------------------------------------------------------------------*/
+      /*!-----------------------------------------------------------------------
 
+      !     desalloue les tableaux dynamiques
+      !-----------------------------------------------------------------------*/
       HFREE2(g_NAFVariable.ZALP);
       SYSFREE(g_NAFVariable.TWIN);
       /* v0.96 M. GASTINEAU 06/01/99 : ajout */
       delete_list_fenetre_naf(g_NAFVariable.m_pListFen);
       g_NAFVariable.m_pListFen =NULL;
       /* v0.96 M. GASTINEAU 06/01/99 : fin ajout */
-}/*      end  subroutine naf_initnaf_notab  */
+}     /*      end  subroutine naf_initnaf_notab  */
 
 
-/*!-----------------------------------------------------------------------
-      SUBROUTINE MFTNAF(NBTERM,EPS)*/
-/*v0.97 M. GASTINEAU 26/05/99 : correction bug 0.97/99/05/26/A  pour pas<0 (XH<0) */
-BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS)
-{
-/*!-----------------------------------------------------------------------
-!     MFTNAF
-!                CALCULE UNE APPROXIMATION QUASI PERIODIQUE
-!                DE LA FONCTION TABULEE DANS g_NAFVariable.ZTABS(0:KTABS)
-!
-!     NBTERM               : NOMBRE DE TERMES RECHERCHES (<= NTERM)
-!
-!
-!     EPS                 : PRECISION AVEC LAQUELLE ON RECHERCHE
-!                           LES FREQUENCES
-!
-!-----------------------------------------------------------------------
 
-      IMPLICIT NONE
-! (EPS)
-      integer :: NBTERM
-      REAL (8) :: EPS
-!
-      integer :: I,IFLAG,NUMFR
-      REAL (8) :: TOL,STAREP,FR,A,B,RM
-!-----------------------------------------------------------------------*/
+BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS) {
+      /*!-----------------------------------------------------------------------
+            SUBROUTINE MFTNAF(NBTERM,EPS)*/
+      /*v0.97 M. GASTINEAU 26/05/99 : correction bug 0.97/99/05/26/A  pour pas<0 (XH<0) */
+    /*!-----------------------------------------------------------------------
+    !     MFTNAF
+    !                CALCULE UNE APPROXIMATION QUASI PERIODIQUE
+    !                DE LA FONCTION TABULEE DANS g_NAFVariable.ZTABS(0:KTABS)
+    !
+    !     NBTERM               : NOMBRE DE TERMES RECHERCHES (<= NTERM)
+    !
+    !
+    !     EPS                 : PRECISION AVEC LAQUELLE ON RECHERCHE
+    !                           LES FREQUENCES
+    !
+    !-----------------------------------------------------------------------
+
+          IMPLICIT NONE
+    ! (EPS)
+          integer :: NBTERM
+          REAL (8) :: EPS
+    !
+          integer :: I,IFLAG,NUMFR
+          REAL (8) :: TOL,STAREP,FR,A,B,RM
+    !-----------------------------------------------------------------------*/
       int I, IFLAG, NUMFR = 0;
       double TOL,STAREP,FR,A,B,RM;
 /*v0.96 M. GASTINEAU 14/01/99 : ajout - support des fenetres*/
