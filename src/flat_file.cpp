@@ -39,7 +39,6 @@ static Status::type read_flat_file_trackcpp(std::istream&, Accelerator& accelera
 
 // -- implementation of API --
 
-
 Status::type read_flat_file(std::string& filename, Accelerator& accelerator, bool file_flag) {
   if (file_flag) {
     std::ifstream fp(filename.c_str());
@@ -143,6 +142,8 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
 
 Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator) {
 
+  PassMethodsClass pass_methods;
+
   accelerator.lattice.clear();
 
   Element e;
@@ -217,16 +218,16 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("pass_method") == 0) {
       std::string pass_method; ss >> pass_method;
       bool found_pm = false;
-      for(unsigned int i = 0; i<((unsigned int)PassMethod::pm_nr_pms); ++i) {
-        if (pass_method.compare(pm_dict[i]) == 0) {
+      for(unsigned int i = 0; i<pass_methods.size(); ++i) {
+        if (pass_method.compare(pass_methods[i]) == 0) {
           e.pass_method = i;
-                    if (pass_method.compare("kicktable_pass") == 0) {
-                        Status::type status = add_kicktable(e.fam_name + ".txt", accelerator.kicktables, e.kicktable);
-                if (status != Status::success) {
-                            return status;
-                        } else {
-                        }
-                    }
+          if (pass_method.compare("kicktable_pass") == 0) {
+            Status::type status = add_kicktable(e.fam_name + ".txt", accelerator.kicktables, e.kicktable);
+            if (status != Status::success) {
+              return status;
+            } else {
+            }
+          }
           found_pm = true;
           break;
         }

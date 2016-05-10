@@ -23,6 +23,27 @@
 #include <iostream>
 #include <cmath>
 
+class PassMethodsClass {
+public:
+  PassMethodsClass() {
+    passmethods.push_back("identity_pass");
+    passmethods.push_back("drift_pass");
+    passmethods.push_back("str_mpole_symplectic4_pass");
+    passmethods.push_back("bnd_mpole_symplectic4_pass");
+    passmethods.push_back("corrector_pass");
+    passmethods.push_back("cavity_pass");
+    passmethods.push_back("thinquad_pass");
+    passmethods.push_back("thinsext_pass");
+    passmethods.push_back("kicktable_pass");
+  }
+  int size() const { return passmethods.size(); }
+  std::string operator[](const int i) const { return passmethods[i]; }
+private:
+  std::vector<std::string> passmethods;
+};
+
+
+// this is to be superseede by PassMethodClass
 struct PassMethod {
     enum type {
         pm_identity_pass                  = 0,
@@ -38,7 +59,9 @@ struct PassMethod {
     };
 };
 
+// this is to be superseede by PassMethodClass
 const std::vector<std::string> pm_dict = {
+        // this vector has to have the same number of entries as enum above
         "identity_pass",
         "drift_pass",
         "str_mpole_symplectic4_pass",

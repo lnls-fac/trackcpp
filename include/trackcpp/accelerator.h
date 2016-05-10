@@ -36,7 +36,7 @@ public:
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
-
+  double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
 
 };

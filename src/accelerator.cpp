@@ -13,12 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 #include <trackcpp/accelerator.h>
 #include <trackcpp/auxiliary.h>
 
 Accelerator::Accelerator(const double& energy) {
   this->energy = (energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy;
+}
+
+double Accelerator::get_length() const {
+  double length = 0.0;
+  for(auto i=0; i<lattice.size(); ++i) length += lattice[i].length;
+  return length;
 }
 
 bool Accelerator::operator==(const Accelerator& o) const {
