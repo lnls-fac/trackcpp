@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <trackcpp/trackcpp.h>
+#include <trackcpp/tracking.h>
 #include <trackcpp/auxiliary.h>
 
 
@@ -107,8 +108,8 @@ Status::type track_findorbit6(
   double fixedpoint = light_speed*((1.0*accelerator.harmonic_number)/frf - T0);
 
   // temporary vectors and matrices
-  // std::vector<Pos<double> > co(7,0); // no initial guess
-  std::vector<Pos<double> > co(7,fixed_point_guess);
+  std::vector<Pos<double> > co(7,0);
+  for(auto i=0; i<7; ++i) co[i] = fixed_point_guess;
   std::vector<Pos<double> > co2(7,0);
   std::vector<Pos<double> > D(7,0);
   std::vector<Pos<double> > M(6,0);

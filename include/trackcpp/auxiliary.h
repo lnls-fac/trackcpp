@@ -25,6 +25,16 @@
 
 class PassMethodsClass {
 public:
+  static const int pm_identity_pass                  = 0;
+  static const int pm_drift_pass                     = 1;
+  static const int pm_str_mpole_symplectic4_pass     = 2;
+  static const int pm_bnd_mpole_symplectic4_pass     = 3;
+  static const int pm_corrector_pass                 = 4;
+  static const int pm_cavity_pass                    = 5;
+  static const int pm_thinquad_pass                  = 6;
+  static const int pm_thinsext_pass                  = 7;
+  static const int pm_kicktable_pass                 = 8;
+  static const int pm_nr_pms                         = 9;
   PassMethodsClass() {
     passmethods.push_back("identity_pass");
     passmethods.push_back("drift_pass");
@@ -41,7 +51,6 @@ public:
 private:
   std::vector<std::string> passmethods;
 };
-
 
 // this is to be superseede by PassMethodClass
 struct PassMethod {

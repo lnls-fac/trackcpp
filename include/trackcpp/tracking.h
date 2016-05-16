@@ -121,10 +121,6 @@ Status::type track_linepass (
 		if (trajectory) pos[i] = orig_pos;
 
 		Status::type status = track_elementpass (element, orig_pos, accelerator);
-		//std::cout << element_offset << " " << i << std::endl;
-		//std::cout << i << "  " << double(orig_pos.rx) << " " << double(orig_pos.ry) << std::endl;
-
-		//if (status != Status::success) return status;
 
 		// checks if particle is lost
 		if ((not isfinite(orig_pos.rx)) or
@@ -152,8 +148,6 @@ Status::type track_linepass (
 	}
 
 	lost_plane = Plane::no_plane;
-	//std::cout << "ok" << std::endl;
-
 
 	// stores final particle position at the end of the line
 	pos.push_back(orig_pos);
