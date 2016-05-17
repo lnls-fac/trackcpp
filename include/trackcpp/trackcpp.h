@@ -33,6 +33,9 @@
 #include "multithreads.h"
 #include "linalg.h"
 
+#include <string>
+
 extern bool verbose_on;
+std::string get_timestamp();
 
 #endif
