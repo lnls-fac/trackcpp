@@ -25,7 +25,7 @@
 #include <vector>
 #include <cfloat>
 
-extern void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney);
+extern void naff_traj(const std::vector<Pos<double>>& data, double& tunex, double& tuney);
 static const double tiny_y_amp = 1e-7; // [m]
 
 
@@ -1087,7 +1087,7 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
                             grid[task_id].lost_plane,
                             true);
   //pthread_mutex_lock(thread_data->mutex);
-  if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
+  if (lstatus == Status::success) naff_traj(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
   //pthread_mutex_unlock(thread_data->mutex);
   if (lstatus == Status::success) {
     p = new_pos.back();
@@ -1112,7 +1112,7 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
     //pthread_mutex_unlock(thread_data->mutex);
 
     //pthread_mutex_lock(thread_data->mutex);
-    if (lstatus == Status::success) naff_run(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
+    if (lstatus == Status::success) naff_traj(new_pos, grid[task_id].nux2, grid[task_id].nuy2);
     //pthread_mutex_unlock(thread_data->mutex);
   }
 

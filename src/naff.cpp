@@ -18,21 +18,99 @@
 #include <trackcpp/naff.h>
 #include "naff_utils.h"
 
-static void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]);
+static void Get_NAFF(int nr_ff, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]);
 
-void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney) {
+void naff_traj(const std::vector<Pos<double>>& data, double& tunex, double& tuney) {
 
-  //int nterm = 4;
-  int nterm = 2;
+  //int nr_ff = 4;
+  int nr_ff = 2;
   int nb_freq[2] = {0,0};
   double nux[4], nuy[4];
-  Get_NAFF(nterm, data.size(), data, nux, nuy, nb_freq);
+  Get_NAFF(nr_ff, data.size(), data, nux, nuy, nb_freq);
   // tunex = fabs(nux[0]);
   // tuney = fabs(nuy[0]);
   if (fabs(nux[0])<1e-4) tunex = fabs(nux[1]); else tunex = fabs(nux[0]);
   if (fabs(nuy[0])<1e-4) tuney = fabs(nuy[1]); else tuney = fabs(nuy[0]);
 
+}
 
+
+void naff_general(
+  const std::vector<double>& re,
+  const std::vector<double>& im,
+  int nr_ff,
+  int win,
+  std::vector<double>& ff_out,
+  std::vector<double>& re_out,
+  std::vector<double>& im_out) {
+
+  long r = 0; /* remainder of the euclidian division of ndata by 6 */
+  ff_out.clear(); re_out.clear(); im_out.clear();
+
+  auto ndata = re.size() < im.size() ? re.size() : im.size();
+
+  if ((r = ndata % 6) != 0) {
+    printf("Get_GenNAFF: Warning ndata = %ld, \n", ndata);
+    ndata -= r;
+    printf("New value for NAFF ndata = %ld \n", ndata);
+  }
+
+  t_naf g_NAFVariable;
+
+  g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
+  g_NAFVariable.XH         = M_2_PI;    /* step */  /* value = 1 */
+  g_NAFVariable.T0         = 0.0;       /* time t0 */
+  g_NAFVariable.NTERM      = nr_ff;     /* max term to find */
+  g_NAFVariable.KTABS      = ndata; /* number of data: must be a multiple of 6 */
+  g_NAFVariable.m_pListFen = NULL;      /* no window */
+  g_NAFVariable.TFS        = NULL;      /* will contain frequency */
+  g_NAFVariable.ZAMP       = NULL;      /* will contain amplitude */
+  g_NAFVariable.ZTABS      = NULL;      /* will contain data to analyze */
+
+  /****************************************************/
+  /*               internal use in naf                */
+  g_NAFVariable.NERROR            = 0;
+  g_NAFVariable.ICPLX             = 1;
+  g_NAFVariable.IPRT              = 0;     /* 1 for diagnostics */
+  g_NAFVariable.NFPRT             = stdout; /* NULL   */
+  g_NAFVariable.NFS               = 0;
+  g_NAFVariable.IW                = win;
+  g_NAFVariable.ISEC              = 1;
+  g_NAFVariable.EPSM              = 2.2204e-16;
+  g_NAFVariable.UNIANG            = 0;
+  g_NAFVariable.FREFON            = 0;
+  g_NAFVariable.ZALP              = NULL;
+  g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
+  g_NAFVariable.m_dneps           = 1.E100;
+  g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
+  /*             end of interl use in naf             */
+  /****************************************************/
+
+  g_NAFVariable.TWIN = NULL; /* XRR - used to be a global variable set initially to NULL */
+
+  /* NAFF initialization */
+  naf_initnaf(g_NAFVariable);
+
+  /* fills up complexe vector for NAFF analysis */
+  for(auto i = 0; i < ndata; i++) {
+    g_NAFVariable.ZTABS[i].reel = re[i]; /* x  */
+    g_NAFVariable.ZTABS[i].imag = im[i]; /* xp */
+  }
+
+  /* Get out the mean value */
+  // naf_smoy(g_NAFVariable, g_NAFVariable.ZTABS);
+  // naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, (nr_ff>20)?nr_ff:20);
+  naf_mftnaf(g_NAFVariable, nr_ff,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
+
+  /* fill up H-frequency vector */
+  for (auto i = 1; i <= g_NAFVariable.NFS; i++) {
+    ff_out[i-1] = g_NAFVariable.TFS[i];
+    re_out[i-1] = g_NAFVariable.ZAMP[i].reel;
+    im_out[i-1] = g_NAFVariable.ZAMP[i].imag;
+  }
+
+  /* free out memory used by NAFF */
+  naf_cleannaf(g_NAFVariable);
 }
 
 
@@ -56,7 +134,7 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 //  ***************************************************************************/
 
 /****************************************************************************/
-/* void Get_NAFF(int nterm, long ndata, double T[DIM][NTURN],
+/* void Get_NAFF(int nr_ff, long ndata, double T[DIM][NTURN],
               double *fx, double *fz, int nb_freq[2])
 
    Purpose:
@@ -64,7 +142,7 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
        using NAFF Algorithm ((c) Laskar, IMCCE)
 
    Input:
-       nterm number of frequencies to look for
+       nr_ff number of frequencies to look for
              if not multiple of 6, truncated to lower value
        ndata size of the data to analyse
        T     6D vector to analyse
@@ -92,9 +170,9 @@ void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney
 ****************************************************************************/
 /* Frequency Map Analysis */
 /* Analyse en Frequence */
-//void Get_NAFF(int nterm, long ndata, double Tab[DIM][NTURN],
+//void Get_NAFF(int nr_ff, long ndata, double Tab[DIM][NTURN],
 //              double *fx, double *fz, int nb_freq[2])
-void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]) {
+void Get_NAFF(int nr_ff, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]) {
   /* Test whether ndata is divisible by 6 -- for NAFF -- */
   /* Otherwise truncate ndata to lower value */
   long r = 0; /* remainder of the euclidian division of ndata by 6 */
@@ -111,7 +189,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   // g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
   // g_NAFVariable.XH         = M_2_PI;    /* step */
   // g_NAFVariable.T0         = 0.0;       /* time t0 */
-  // g_NAFVariable.NTERM      = nterm;     /* max term to find */
+  // g_NAFVariable.NTERM      = nr_ff;     /* max term to find */
   // g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */
   // g_NAFVariable.m_pListFen = NULL;      /* no window */
   // g_NAFVariable.TFS        = NULL;      /* will contain frequency */
@@ -141,7 +219,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
   g_NAFVariable.XH         = M_2_PI;    /* step */  /* value = 1 */
   g_NAFVariable.T0         = 0.0;       /* time t0 */
-  g_NAFVariable.NTERM      = nterm;     /* max term to find */
+  g_NAFVariable.NTERM      = nr_ff;     /* max term to find */
   g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */
   g_NAFVariable.m_pListFen = NULL;      /* no window */
   g_NAFVariable.TFS        = NULL;      /* will contain frequency */
@@ -187,7 +265,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
 
   naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, 20);
 
-  naf_mftnaf(g_NAFVariable, nterm,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
+  naf_mftnaf(g_NAFVariable, nr_ff,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
 
   /* fill up H-frequency vector */
   for (i = 1; i <= g_NAFVariable.NFS; i++)  {
@@ -218,7 +296,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
     g_NAFVariable.ZTABS[i].imag = Tab[i].py;  /*zp */
   }
 
-  naf_mftnaf(g_NAFVariable, nterm,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
+  naf_mftnaf(g_NAFVariable, nr_ff,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
 
   /* fills up V-frequency vector */
   for (i = 1; i <= g_NAFVariable.NFS; i++) {
@@ -242,6 +320,7 @@ void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double
   /* free out memory used by NAFF */
   naf_cleannaf(g_NAFVariable);
 }
+
 
 /***************************************************************************
                           modnaff.c  -  description

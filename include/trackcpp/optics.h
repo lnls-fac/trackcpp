@@ -51,4 +51,5 @@ Status::type calc_twiss(const Accelerator& accelerator,
                         Twiss twiss0 = Twiss(),
                         bool closed_flag = false);
 
+
 #endif

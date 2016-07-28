@@ -5,6 +5,13 @@
 #include <vector>
 
 /* Frequency Map Analysis */
-void naff_run(const std::vector<Pos<double>>& data, double& tunex, double& tuney);
+void naff_traj(const std::vector<Pos<double>>& data, double& tunex, double& tuney);
+void naff_general(const std::vector<double>& re,
+                  const std::vector<double>& im,
+                  int nr_ff,
+                  int win,
+                  std::vector<double>& ff_out,
+                  std::vector<double>& re_out,
+                  std::vector<double>& im_out);
 
 #endif

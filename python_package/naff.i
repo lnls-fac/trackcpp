@@ -14,4 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-void naff_run(const std::vector<Pos<double> >& data, double& tunex, double& tuney);
+void naff_traj(const std::vector<Pos<double> >& data, double& tunex, double& tuney);

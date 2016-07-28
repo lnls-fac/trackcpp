@@ -25,27 +25,47 @@ double get_magnetic_rigidity(const double energy) {
 }
 
 
-std::ostream& operator<< (std::ostream &out, const Twiss& tw) {
-  char buffer[255];
-  sprintf(buffer,  "%+.4e", tw.etax[0]); out << buffer;  // 1
-  sprintf(buffer, " %+.4e", tw.etax[1]); out << buffer;  // 2
-  sprintf(buffer, " %+.4e", tw.mux); out << buffer;      // 3
-  sprintf(buffer, " %+.4e", tw.betax); out << buffer;    // 4
-  sprintf(buffer, " %+.4e", tw.alphax); out << buffer;   // 5
-  sprintf(buffer, " %+.4e", tw.etay[0]); out << buffer;  // 6
-  sprintf(buffer, " %+.4e", tw.etay[1]); out << buffer;  // 7
-  sprintf(buffer, " %+.4e", tw.muy); out << buffer;      // 8
-  sprintf(buffer, " %+.4e", tw.betay); out << buffer;    // 9
-  sprintf(buffer, " %+.4e", tw.alphay); out << buffer;   // 10
-  return out;
-}
+// std::ostream& operator<< (std::ostream &out, const Twiss& tw) {
+//   char buffer[255];
+//   std::cout << "aqui" << std::endl;
+//
+//   out << "rx    :"; sprintf(buffer,  "%+.4e, ", tw.co.rx); out << buffer;
+//   out << "ry    :"; sprintf(buffer,  "%+.4e, ", tw.co.ry); out << buffer;
+//   out << std::endl;
+//   out << "px    :"; sprintf(buffer,  "%+.4e, ", tw.co.px); out << buffer;
+//   out << "py    :"; sprintf(buffer,  "%+.4e, ", tw.co.py); out << buffer;
+//   out << std::endl;
+//   out << "de    :"; sprintf(buffer,  "%+.4e, ", tw.co.de); out << buffer;
+//   out << "dl    :"; sprintf(buffer,  "%+.4e, ", tw.co.dl); out << buffer;
+//   out << std::endl;
+//   out << "etax  :"; sprintf(buffer,  "%+.4e, ", tw.etax[0]); out << buffer;
+//   out << "etay  :"; sprintf(buffer,  "%+.4e, ", tw.etay[0]); out << buffer;
+//   out << std::endl;
+//   out << "etalx :"; sprintf(buffer,  "%+.4e, ", tw.etax[0]); out << buffer;
+//   out << "etaly :"; sprintf(buffer,  "%+.4e, ", tw.etay[0]); out << buffer;
+//   out << std::endl;
+//   out << "mux   :"; sprintf(buffer,  "%+.4e, ", tw.mux); out << buffer;
+//   out << "muy   :"; sprintf(buffer,  "%+.4e, ", tw.muy); out << buffer;
+//   out << std::endl;
+//   out << "betax :"; sprintf(buffer,  "%+.4e, ", tw.betax); out << buffer;
+//   out << "betay :"; sprintf(buffer,  "%+.4e, ", tw.betay); out << buffer;
+//   out << std::endl;
+//   out << "alphax:"; sprintf(buffer,  "%+.4e, ", tw.alphax); out << buffer;
+//   out << "alphay:"; sprintf(buffer,  "%+.4e  ", tw.alphay); out << buffer;
+//   return out;
+// }
 
 //#define TIMEIT
 #ifdef TIMEIT
 #include <chrono>
 #endif
 
-Status::type calc_twiss(const Accelerator& accelerator, const Pos<double>& fixed_point, Matrix& m66, std::vector<Twiss>& twiss, Twiss twiss0, bool closed_flag) {
+Status::type calc_twiss(const Accelerator& accelerator,
+                        const Pos<double>& fixed_point,
+                        Matrix& m66,
+                        std::vector<Twiss>& twiss,
+                        Twiss twiss0,
+                        bool closed_flag) {
 
 #ifdef TIMEIT
   auto start = std::chrono::steady_clock::now();
