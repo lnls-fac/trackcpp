@@ -18,22 +18,60 @@
 #include <trackcpp/naff.h>
 #include "naff_utils.h"
 
-static void Get_NAFF(int nr_ff, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]);
+static void Get_NAFF(const std::vector<Pos<double>>& Tab, int nr_ff, int win, double *fx, double *fz);
+static void naff_init(t_naf& g_NAFVariable, int nr_ff, int win, bool is_complex, long n_interval);
+
+void naff_init(t_naf& g_NAFVariable, int nr_ff, int win, bool is_complex, long n_interval){
+
+  /*Created before naf_initnaf*/
+  g_NAFVariable.DTOUR      = M_2_PI;   /* size of one "cadran" */
+  g_NAFVariable.KTABS      = n_interval; /* number of intervals between data (equal ndata-1): must be a multiple of 6. */
+  g_NAFVariable.XH         = M_2_PI;   /* time interval between data. if 1, frequencies go from -pi to pi, if 2pi frequencies go from -0.5 to 0.5 */
+  g_NAFVariable.NTERM      = nr_ff;    /* max term to find */
+  g_NAFVariable.IW         = win;      /* type of window to use. 0 means no window , 1 means hanning*/
+  g_NAFVariable.T0         = 0.0;      /* initial time t0. Necessary to get the phase correctly*/
+  g_NAFVariable.ICPLX      = is_complex; /* 0 se a função é real, 1 se não*/
+  g_NAFVariable.ISEC       = 1;        /* Flag defining use of secant method: 0 don't use, 1 use*/
+  g_NAFVariable.NFPRT      = stdout;     /* Where to print the results : stdout or NULL   */
+  g_NAFVariable.IPRT       = 0;        /* type of Printing: -1 nothing, O Error Messages, 1  Results, 2 (DEBUG) */
+  /* Calculated by naf_initnaf*/
+  g_NAFVariable.UNIANG     = 0;
+  g_NAFVariable.FREFON     = 0;
+  g_NAFVariable.EPSM       = 0;
+  /*Filled after naf_initnaf*/
+  g_NAFVariable.ZTABS      = NULL;     /* will contain data to analyze */
+  /*Returned by NAFF*/
+  g_NAFVariable.TFS        = NULL;     /* will contain frequency */
+  g_NAFVariable.ZAMP       = NULL;     /* will contain amplitude and phase*/
+  g_NAFVariable.NFS        = 0;        /* Number of frequencies found by NAFF */
+  /****************************************************/
+  /*               internal use in naf                */
+  g_NAFVariable.NERROR            = 0;
+  g_NAFVariable.TWIN              = NULL; /* will contain the window */ /*XRR - used to be a global variable set initially to NULL */
+  g_NAFVariable.ZALP              = NULL;   /* will contain transformation matrix to the orthgonal basis */
+  g_NAFVariable.m_pListFen        = NULL;   /* no window */
+  g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
+  g_NAFVariable.m_dneps           = 1.E100;
+  g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
+  /*             end of interl use in naf             */
+  /****************************************************/
+  /* NAFF initialization */
+  naf_initnaf(g_NAFVariable);
+}
 
 void naff_traj(const std::vector<Pos<double>>& data, double& tunex, double& tuney) {
 
   //int nr_ff = 4;
-  int nr_ff = 2;
-  int nb_freq[2] = {0,0};
-  double nux[4], nuy[4];
-  Get_NAFF(nr_ff, data.size(), data, nux, nuy, nb_freq);
+  const int nr_ff = 2;
+  int win = 1;
+  double nux[nr_ff], nuy[nr_ff];
+  Get_NAFF(data,nr_ff, win, nux, nuy);
   // tunex = fabs(nux[0]);
   // tuney = fabs(nuy[0]);
   if (fabs(nux[0])<1e-4) tunex = fabs(nux[1]); else tunex = fabs(nux[0]);
   if (fabs(nuy[0])<1e-4) tuney = fabs(nuy[1]); else tuney = fabs(nuy[0]);
 
 }
-
 
 void naff_general(
   const std::vector<double>& re,
@@ -44,62 +82,36 @@ void naff_general(
   std::vector<double>& re_out,
   std::vector<double>& im_out) {
 
-  long r = 0; /* remainder of the euclidian division of ndata by 6 */
-  ff_out.clear(); re_out.clear(); im_out.clear();
+  bool is_complex = false;
+  long r = 0; /* remainder of the euclidian division of n_interval by 6 */
 
   auto ndata = re.size() < im.size() ? re.size() : im.size();
+  auto n_interval = ndata - 1; /* number of data - 1 */
 
-  if ((r = ndata % 6) != 0) {
-    printf("Get_GenNAFF: Warning ndata = %ld, \n", ndata);
-    ndata -= r;
-    printf("New value for NAFF ndata = %ld \n", ndata);
+  if ((r = n_interval % 6) != 0) {
+    printf("Get_GenNAFF: Warning n_interval = %ld, \n", n_interval);
+    n_interval -= r;
+    printf("New value for NAFF n_interval = %ld \n", n_interval);
   }
 
+  /* check if function is real */
+  for (auto j = 0; j <= n_interval; j++){
+      if (im[j] != 0.0) {is_complex = true; break;}
+  }
+
+  /* Creates and initialize the NAFVariable */
   t_naf g_NAFVariable;
-
-  g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
-  g_NAFVariable.XH         = M_2_PI;    /* step */  /* value = 1 */
-  g_NAFVariable.T0         = 0.0;       /* time t0 */
-  g_NAFVariable.NTERM      = nr_ff;     /* max term to find */
-  g_NAFVariable.KTABS      = ndata; /* number of data: must be a multiple of 6 */
-  g_NAFVariable.m_pListFen = NULL;      /* no window */
-  g_NAFVariable.TFS        = NULL;      /* will contain frequency */
-  g_NAFVariable.ZAMP       = NULL;      /* will contain amplitude */
-  g_NAFVariable.ZTABS      = NULL;      /* will contain data to analyze */
-
-  /****************************************************/
-  /*               internal use in naf                */
-  g_NAFVariable.NERROR            = 0;
-  g_NAFVariable.ICPLX             = 1;
-  g_NAFVariable.IPRT              = 0;     /* 1 for diagnostics */
-  g_NAFVariable.NFPRT             = stdout; /* NULL   */
-  g_NAFVariable.NFS               = 0;
-  g_NAFVariable.IW                = win;
-  g_NAFVariable.ISEC              = 1;
-  g_NAFVariable.EPSM              = 2.2204e-16;
-  g_NAFVariable.UNIANG            = 0;
-  g_NAFVariable.FREFON            = 0;
-  g_NAFVariable.ZALP              = NULL;
-  g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
-  g_NAFVariable.m_dneps           = 1.E100;
-  g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
-  /*             end of interl use in naf             */
-  /****************************************************/
-
-  g_NAFVariable.TWIN = NULL; /* XRR - used to be a global variable set initially to NULL */
-
-  /* NAFF initialization */
-  naf_initnaf(g_NAFVariable);
+  naff_init(g_NAFVariable,nr_ff, win, is_complex, n_interval);
 
   /* fills up complexe vector for NAFF analysis */
-  for(auto i = 0; i < ndata; i++) {
-    g_NAFVariable.ZTABS[i].reel = re[i]; /* x  */
-    g_NAFVariable.ZTABS[i].imag = im[i]; /* xp */
+  for (auto i = 0; i <= n_interval; i++) {
+    g_NAFVariable.ZTABS[i].reel = re[i];
+    g_NAFVariable.ZTABS[i].imag = im[i];
   }
 
   /* Get out the mean value */
-  // naf_smoy(g_NAFVariable, g_NAFVariable.ZTABS);
-  // naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, (nr_ff>20)?nr_ff:20);
+  //naf_smoy(g_NAFVariable, g_NAFVariable.ZTABS);
+  // naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, (nr_ff>20)?nr_ff:20); /* this function only prints stuff...*/
   naf_mftnaf(g_NAFVariable, nr_ff,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
 
   /* fill up H-frequency vector */
@@ -117,10 +129,9 @@ void naff_general(
 // ******************************************************************************
 // * -- Functions below this line have been created by Laskar/L.Nadolski/etc -- *
 // *                                                                            *
-// * -- and modified by Ximenes R. Resende                                      *
+// * -- and modified by Ximenes R. Resende   and Fernando H. de Sá              *
 // *                                                                            *
 // ******************************************************************************
-
 
 // ***************************************************************************
 //                              -------------------
@@ -134,8 +145,8 @@ void naff_general(
 //  ***************************************************************************/
 
 /****************************************************************************/
-/* void Get_NAFF(int nr_ff, long ndata, double T[DIM][NTURN],
-              double *fx, double *fz, int nb_freq[2])
+/* void Get_NAFF(double T[DIM][NTURN], int nr_ff, int win,
+              double *fx, double *fz)
 
    Purpose:
        Compute quasiperiodic approximation of a phase space trajectory
@@ -144,21 +155,15 @@ void naff_general(
    Input:
        nr_ff number of frequencies to look for
              if not multiple of 6, truncated to lower value
-       ndata size of the data to analyse
+       n_interval number of intervals beteen data = ndata -1
        T     6D vector to analyse
 
    Output:
        fx frequencies found in the H-plane
        fz frequencies found in the V-plane
-       nb_freq number of frequencies found out in each plane
 
    Return:
        none
-
-   Global variables:
-       g_NAFVariable  see modnaff.c
-       M_2_PI defined in math.h
-       trace ON or TRUE  for debugging
 
    Specific functions:
        naf_initnaf, naf_cleannaf
@@ -170,101 +175,35 @@ void naff_general(
 ****************************************************************************/
 /* Frequency Map Analysis */
 /* Analyse en Frequence */
-//void Get_NAFF(int nr_ff, long ndata, double Tab[DIM][NTURN],
-//              double *fx, double *fz, int nb_freq[2])
-void Get_NAFF(int nr_ff, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]) {
-  /* Test whether ndata is divisible by 6 -- for NAFF -- */
-  /* Otherwise truncate ndata to lower value */
-  long r = 0; /* remainder of the euclidian division of ndata by 6 */
+void Get_NAFF(const std::vector<Pos<double>>& Tab, int nr_ff, int win, double *fx, double *fz) {
+  /* Test whether n_interval is divisible by 6 -- for NAFF -- */
+  /* Otherwise truncate n_interval to lower value */
+  long r = 0; /* remainder of the euclidian division of n_interval by 6 */
   int i;
+  bool is_real = false;
+  long n_interval = Tab.size() - 1;
 
-  if ((r = ndata % 6) != 0) {
-    printf("Get_NAFF: Warning ndata = %ld, \n", ndata);
-    ndata -= r;
-    printf("New value for NAFF ndata = %ld \n", ndata);
+  if ((r = n_interval % 6) != 0) {
+    printf("Get_NAFF: Warning n_interval = %ld, \n", n_interval);
+    n_interval -= r;
+    printf("New value for NAFF n_interval = %ld \n", n_interval);
   }
 
+  /* Creates and initialize the NAFVariable */
   t_naf g_NAFVariable;
-
-  // g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
-  // g_NAFVariable.XH         = M_2_PI;    /* step */
-  // g_NAFVariable.T0         = 0.0;       /* time t0 */
-  // g_NAFVariable.NTERM      = nr_ff;     /* max term to find */
-  // g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */
-  // g_NAFVariable.m_pListFen = NULL;      /* no window */
-  // g_NAFVariable.TFS        = NULL;      /* will contain frequency */
-  // g_NAFVariable.ZAMP       = NULL;      /* will contain amplitude */
-  // g_NAFVariable.ZTABS      = NULL;      /* will contain data to analyze */
-  //
-  // /****************************************************/
-  // /*               internal use in naf                */
-  // g_NAFVariable.NERROR            = 0;
-  // g_NAFVariable.ICPLX             = 1;
-  // g_NAFVariable.IPRT              = 0;     /* 1 for diagnostics */
-  // g_NAFVariable.NFPRT             = stdout; /* NULL   */
-  // g_NAFVariable.NFS               = 0;
-  // g_NAFVariable.IW                = 1;
-  // g_NAFVariable.ISEC              = 1;
-  // g_NAFVariable.EPSM              = 0;
-  // g_NAFVariable.UNIANG            = 0;
-  // g_NAFVariable.FREFON            = 0;
-  // g_NAFVariable.ZALP              = NULL;
-  // g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
-  // g_NAFVariable.m_dneps           = 1.e10;
-  // g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
-  // /*             end of interl use in naf             */
-  // /****************************************************/
-
-
-  g_NAFVariable.DTOUR      = M_2_PI;    /* size of one "cadran" */
-  g_NAFVariable.XH         = M_2_PI;    /* step */  /* value = 1 */
-  g_NAFVariable.T0         = 0.0;       /* time t0 */
-  g_NAFVariable.NTERM      = nr_ff;     /* max term to find */
-  g_NAFVariable.KTABS      = ndata;     /* number of data: must be a multiple of 6 */
-  g_NAFVariable.m_pListFen = NULL;      /* no window */
-  g_NAFVariable.TFS        = NULL;      /* will contain frequency */
-  g_NAFVariable.ZAMP       = NULL;      /* will contain amplitude */
-  g_NAFVariable.ZTABS      = NULL;      /* will contain data to analyze */
-
-  /****************************************************/
-  /*               internal use in naf                */
-  g_NAFVariable.NERROR            = 0;
-  g_NAFVariable.ICPLX             = 1;
-  g_NAFVariable.IPRT              = 0;     /* 1 for diagnostics */
-  g_NAFVariable.NFPRT             = stdout; /* NULL   */
-  g_NAFVariable.NFS               = 0;
-  g_NAFVariable.IW                = 1;
-  g_NAFVariable.ISEC              = 1;
-  g_NAFVariable.EPSM              = 2.2204e-16;
-  g_NAFVariable.UNIANG            = 0;
-  g_NAFVariable.FREFON            = 0;
-  g_NAFVariable.ZALP              = NULL;
-  g_NAFVariable.m_iNbLineToIgnore = 1;      /* unused */
-  g_NAFVariable.m_dneps           = 1.E100;
-  g_NAFVariable.m_bFSTAB          = FALSE;  /* unused */
-  /*             end of interl use in naf             */
-  /****************************************************/
-
-  g_NAFVariable.TWIN = NULL; /* XRR */
-
-  /* NAFF initialization */
-  naf_initnaf(g_NAFVariable);
+  naff_init(g_NAFVariable,nr_ff, win, is_real, n_interval);
 
   /**********************/
   /* Analyse in H-plane */
   /**********************/
-
   /* fills up complexe vector for NAFF analysis */
-  for(i = 0; i < ndata; i++) {
+  for(i = 0; i <= n_interval; i++) {
     g_NAFVariable.ZTABS[i].reel = Tab[i].rx; /* x  */
     g_NAFVariable.ZTABS[i].imag = Tab[i].px; /* xp */
   }
-
   /* Get out the mean value */
   naf_smoy(g_NAFVariable, g_NAFVariable.ZTABS);
-
-  naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, 20);
-
+  // naf_prtabs(g_NAFVariable, g_NAFVariable.KTABS,g_NAFVariable.ZTABS, 20); /* this function only prints stuff...*/
   naf_mftnaf(g_NAFVariable, nr_ff,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
 
   /* fill up H-frequency vector */
@@ -272,50 +211,20 @@ void Get_NAFF(int nr_ff, long ndata, const std::vector<Pos<double>>& Tab, double
     fx[i-1] = g_NAFVariable.TFS[i];
   }
 
-  nb_freq[0] = g_NAFVariable.NFS; /* nb of frequencies found out by NAFF */
-
-  // if (trace)   /* print out results */
-  // {
-  //   printf("(x,x') phase space: NFS=%d\n",g_NAFVariable.NFS);
-  //   for (i = 1; i <= g_NAFVariable.NFS; i++) {
-  //     printf("AMPL=%15.8E+i*%15.8E abs(AMPL)=%15.8E arg(AMPL)=%15.8E FREQ=%15.8E\n",
-  //             g_NAFVariable.ZAMP[i].reel,g_NAFVariable.ZAMP[i].imag,
-  //             i_compl_module(g_NAFVariable.ZAMP[i]),
-  //             i_compl_angle(g_NAFVariable.ZAMP[i]),
-  //             g_NAFVariable.TFS[i]);
-  //   }
-  // }
-
   /**********************/
   /* Analyse in V-plane */
   /**********************/
-
   /* fill up complexe vector for NAFF analysis */
-  for (i = 0; i < ndata; i++) {
+  for (i = 0; i <= n_interval; i++) {
     g_NAFVariable.ZTABS[i].reel = Tab[i].ry;  /* z */
     g_NAFVariable.ZTABS[i].imag = Tab[i].py;  /*zp */
   }
-
   naf_mftnaf(g_NAFVariable, nr_ff,fabs(g_NAFVariable.FREFON)/g_NAFVariable.m_dneps);
 
   /* fills up V-frequency vector */
   for (i = 1; i <= g_NAFVariable.NFS; i++) {
     fz[i-1] =  g_NAFVariable.TFS[i];
   }
-
-  nb_freq[1] = g_NAFVariable.NFS; /* nb of frequencies found out by NAFF */
-
-  // if (trace)    /* print out results */
-  // {
-  //   printf("(z,z') phase space: NFS=%d\n",g_NAFVariable.NFS);
-  //   for (i = 1; i <= g_NAFVariable.NFS; i++) {
-  //     printf("AMPL=%15.8E+i*%15.8E abs(AMPL)=%15.8E arg(AMPL)=%15.8E FREQ=%15.8E\n",
-  //             g_NAFVariable.ZAMP[i].reel,g_NAFVariable.ZAMP[i].imag,
-  //             i_compl_module(g_NAFVariable.ZAMP[i]),
-  //             i_compl_angle(g_NAFVariable.ZAMP[i]),
-  //             g_NAFVariable.TFS[i]);
-  //   }
-  // }
 
   /* free out memory used by NAFF */
   naf_cleannaf(g_NAFVariable);

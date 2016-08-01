@@ -9,10 +9,6 @@
 
  ***************************************************************************/
 
-
-//void Get_NAFF(int nterm, long ndata, const std::vector<Pos<double>>& Tab, double *fx, double *fz, int nb_freq[2]);
-
-
 /***************************************************************************
                           modnaff.h  -  description
                              -------------------

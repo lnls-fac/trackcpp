@@ -1078,6 +1078,7 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
 
   std::vector<Pos<double>> new_pos;
   Status::type lstatus = Status::success;
+  new_pos.push_back(p);
   lstatus = track_ringpass (*thread_accelerator,
                             p,
                             new_pos,
@@ -1097,6 +1098,7 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
     //pthread_mutex_unlock(thread_data->mutex);
 
     std::vector<Pos<double>> new_pos;
+    new_pos.push_back(p);
     lstatus = track_ringpass (*thread_accelerator,
                               p,
                               new_pos,
