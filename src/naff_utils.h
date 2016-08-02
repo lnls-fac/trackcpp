@@ -131,19 +131,6 @@ typedef struct stnaf t_naf;
 /*v0.96 M. GASTINEAU 04/09/98 : fin ajout */
 
 
-/*-----------------*/
-/* public functions*/
-/*-----------------*/
-static void naf_initnaf_notab();
-static void naf_cleannaf_notab();
-static void naf_initnaf(t_naf& g_NAFVariable);
-static void naf_cleannaf(t_naf& g_NAFVariable);
-static BOOL naf_mftnaf(t_naf& g_NAFVariable, int NBTERM, double EPS);
-static void naf_prtabs(t_naf& g_NAFVariable, int KTABS, t_complexe *ZTABS, int IPAS);
-static void naf_smoy(t_naf& g_NAFVariable, t_complexe *ZM);
-
-
-
 /***************************************************************************
                           complexe.h  -  description
                              -------------------

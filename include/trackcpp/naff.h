@@ -8,6 +8,7 @@
 void naff_traj(const std::vector<Pos<double>>& data, double& tunex, double& tuney);
 void naff_general(const std::vector<double>& re,
                   const std::vector<double>& im,
+                  bool is_real,
                   int nr_ff,
                   int win,
                   std::vector<double>& ff_out,
