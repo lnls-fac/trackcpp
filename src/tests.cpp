@@ -521,9 +521,9 @@ int test_matrix_inversion() {
   Matrix m4(6); m4.eye();
   Matrix m5; m5.linear_combination(1,m4,-1,m3);
 
-  std::cout << "M:" << std::endl; m1.print();
-  std::cout << "inv(M):" << std::endl; m2.print();
-  std::cout << "M*inv(M)-1:" << std::endl; m5.print();
+  std::cout << "M:" << std::endl; m1._print();
+  std::cout << "inv(M):" << std::endl; m2._print();
+  std::cout << "M*inv(M)-1:" << std::endl; m5._print();
 
 
   // //matrix_multiplication(m3,m1,m2);
@@ -533,7 +533,7 @@ int test_matrix_inversion() {
   // }
   //
   // std::cout << "inv_m:" << std::endl;
-  // m3.print();
+  // m3._print();
 
 }
 

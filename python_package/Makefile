@@ -2,13 +2,12 @@
 #### COMPILATION OPTIONS ####
 C = gcc
 CXX = g++
+SWIG = swig3.0
 MACHINE = -m64
 OPT_FLAG = -O3
-SOURCES_I =     trackcpp.i \
-                elements.i \
-								optics.i
+SOURCES_I =     trackcpp.i
 WRAPPEROBJS =   trackcpp_wrap.o
-INTERFACEOBJS = interface.o 
+INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
@@ -33,7 +32,7 @@ trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
 	$(CXX) -shared -Wl,--whole-archive $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
-	swig -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
+	$(SWIG) -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: all
 	$(PYTHON) setup.py install $(SETUPARGS)
@@ -45,7 +44,6 @@ clean:
 	-rm -rf *.o trackcpp/*.so *_wrap.cxx trackcpp/__pycache__ trackcpp/trackcpp.py build dist trackcpp.egg-info
 
 $(INTERFACESRCS): $(INTERFACEHDRS)
-
 
 %.o: %.cpp
 	$(CXX) -c $(CPPFLAGS) $(INC) $< -o $@

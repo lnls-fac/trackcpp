@@ -33,7 +33,7 @@ public:
     Vector(const unsigned int size = 0) : std::vector<double>(size, 0) {}
     Vector(const std::vector<double>& v) : std::vector<double>(v) {}
     Vector& multiplication(const Matrix& m, const Vector& b);
-    void print() const;
+    void _print() const;
 };
 
 class Matrix : public std::vector<std::vector<double> > {
@@ -52,7 +52,7 @@ public:
   Matrix& getMy(Matrix& s) const;
   Matrix& inverse_symplectic(int size=-1, unsigned int r=0, unsigned int c=0);
   Matrix& inverse(int size=-1, unsigned int r=0, unsigned int c=0);
-  void print() const;
+  void _print() const;
 };
 
 
