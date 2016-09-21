@@ -14,7 +14,7 @@ OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
 
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas -L../build -ltrackcpp
-INC = -I/usr/include/python3.4 -I../include
+INC = -I/usr/include/python3.4 -I/usr/include/python3.5 -I../include
 PYTHON = python3
 SETUPARGS =
 
