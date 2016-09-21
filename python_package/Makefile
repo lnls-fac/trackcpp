@@ -9,12 +9,14 @@ SOURCES_I =     trackcpp.i
 WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
+PV := $(shell python3 --version | cut -f2 --delimiter=.)
+PYTHON_VERSION = python3.$(PV)
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
 
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas -L../build -ltrackcpp
-INC = -I/usr/include/python3.4 -I/usr/include/python3.5 -I../include
+INC = -I/usr/include/python3.4 -I/usr/include/python3.5 -I../include -I/usr/include/$(PYTHON_VERSION)
 PYTHON = python3
 SETUPARGS =
 
