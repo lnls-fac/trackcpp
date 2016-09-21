@@ -61,13 +61,13 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   getline(fp, str);   // label 'START'
   for(unsigned int i=0; i<this->x_nrpts; ++i) {
     double posx; fp >> posx;
-    if (isnan(x_min) or posx < x_min) x_min = posx;
-    if (isnan(x_max) or posx > x_max) x_max = posx;
+    if (std::isnan(x_min) or posx < x_min) x_min = posx;
+    if (std::isnan(x_max) or posx > x_max) x_max = posx;
   }
   for(int j=y_nrpts-1; j>=0; --j) {
     double posy; fp >> posy;
-    if (isnan(y_min) or posy < y_min) y_min = posy;
-    if (isnan(y_max) or posy > y_max) y_max = posy;
+    if (std::isnan(y_min) or posy < y_min) y_min = posy;
+    if (std::isnan(y_max) or posy > y_max) y_max = posy;
     for(unsigned int i=0; i<x_nrpts; ++i) fp >> x_kick[this->get_idx(i,j)];
   }
   getline(fp, str);   // advances to new line
