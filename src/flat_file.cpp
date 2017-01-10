@@ -114,6 +114,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.fint_out != 0) { fp << std::setw(pw) << "fint_out" << e.fint_out << '\n'; }
     if (e.voltage != 0) { fp << std::setw(pw) << "voltage" << e.voltage << '\n'; }
     if (e.frequency != 0) { fp << std::setw(pw) << "frequency" << e.frequency << '\n'; }
+    if (e.phase_lag != 0) { fp << std::setw(pw) << "phase_lag" << e.phase_lag << '\n'; }
     if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
     if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
     if (has_t_vector(e.t_in)) write_6d_vector(fp, "t_in", e.t_in);
@@ -199,6 +200,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("fint_out")    == 0) { ss >> e.fint_out;  continue; }
     if (cmd.compare("voltage")     == 0) { ss >> e.voltage;   continue; }
     if (cmd.compare("frequency")   == 0) { ss >> e.frequency; continue; }
+    if (cmd.compare("phase_lag")   == 0) { ss >> e.phase_lag; continue; }
     if (cmd.compare("angle_in")    == 0) { ss >> e.angle_in;  continue; }
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
     if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i];  continue; }

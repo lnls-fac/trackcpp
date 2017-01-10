@@ -33,7 +33,7 @@ public:
 //    angle(0), angle_in(0), angle_out(0),
 //    gap(0), fint_in(0), fint_out(0),
 //    thin_KL(0), thin_SL(0),
-//    frequency(0), voltage(0),
+//    frequency(0), voltage(0), phase_lag(0),
 //    polynom_a(default_polynom), polynom_b(default_polynom),
 //    hmax(DBL_MAX), vmax(DBL_MAX)
 
@@ -57,6 +57,7 @@ public:
   double        thin_SL     = 0;  // [1/m²]
   double        frequency   = 0;  // [Hz]
   double        voltage     = 0;  // [V]
+  double        phase_lag   = 0;  // [rad]
 
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
@@ -89,7 +90,7 @@ public:
                              const double& K_ = 0, const double& S_ = 0, const int nr_steps_ = 20);
   static Element quadrupole (const std::string& fam_name_, const double& length_, const double& K_, const int nr_steps_ = 10);
   static Element sextupole  (const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
-  static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_);
+  static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_);
 
   bool operator==(const Element& o) const;
   bool operator!=(const Element& o) const { return !(*this == o); };
@@ -107,6 +108,6 @@ void initialize_rbend(Element& element, const double& angle, const double& angle
             const double& K, const double& S, const int nr_steps);
 void initialize_quadrupole(Element& element, const double& K, const int& nr_steps);
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
-void initialize_rfcavity(Element& element, const double& frequency, const double& voltage);
+void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
 
 #endif

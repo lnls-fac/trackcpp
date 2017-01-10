@@ -70,7 +70,7 @@ Element corrector_wrapper(const std::string& fam_name_, const double& length_, c
 Element drift_wrapper(const std::string& fam_name_, const double& length_);
 Element quadrupole_wrapper(const std::string& fam_name_, const double& length_, const double& K_, const int nr_steps_ = 1);
 Element sextupole_wrapper(const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 1);
-Element rfcavity_wrapper(const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_);
+Element rfcavity_wrapper(const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag);
 Element rbend_wrapper(const std::string& fam_name_, const double& length_,
                       const double& angle_, const double& angle_in_, const double& angle_out_,
                       const double& gap_, const double& fint_in_, const double& fint_out_,

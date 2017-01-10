@@ -109,9 +109,9 @@ Element Element::rbend (const std::string& fam_name_, const double& length_,
   return e;
 }
 
-Element Element::rfcavity (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_) {
+Element Element::rfcavity (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_) {
   Element e = Element(fam_name_, length_);
-    initialize_rfcavity(e, frequency_, voltage_);
+    initialize_rfcavity(e, frequency_, voltage_, phase_lag_);
   return e;
 }
 
@@ -157,6 +157,7 @@ bool Element::operator==(const Element& o) const {
     if (this->thin_SL != o.thin_SL) return false;
     if (this->frequency != o.frequency) return false;
     if (this->voltage != o.voltage) return false;
+    if (this->phase_lag != o.phase_lag) return false;
     if (this->polynom_a != o.polynom_a) return false;
     if (this->polynom_b != o.polynom_b) return false;
     for(unsigned int i=0; i<6; ++i) {
@@ -195,6 +196,7 @@ std::ostream& operator<< (std::ostream &out, const Element& el) {
   print_polynom(        out,                "polynom_b     : ", el.polynom_b);
   if (el.frequency != 0)out << std::endl << "frequency     : " << el.frequency;
   if (el.voltage != 0)  out << std::endl << "voltage       : " << el.voltage;
+  if (el.phase_lag != 0)out << std::endl << "phase_lag     : " << el.phase_lag;
   return out;
 }
 
@@ -241,8 +243,9 @@ void initialize_sextupole(Element &element, const double &S, const int &nr_steps
     element.nr_steps = nr_steps;
 }
 
-void initialize_rfcavity(Element &element, const double &frequency, const double &voltage) {
+void initialize_rfcavity(Element &element, const double &frequency, const double &voltage, const double &phase_lag) {
     element.pass_method = PassMethod::pm_cavity_pass;
     element.frequency = frequency;
     element.voltage = voltage;
+    element.phase_lag = phase_lag;
 }

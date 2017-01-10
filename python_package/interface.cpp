@@ -97,8 +97,8 @@ Element sextupole_wrapper(const std::string &fam_name_, const double &length_, c
     return Element::sextupole(fam_name_, length_, S_, nr_steps_);
 }
 
-Element rfcavity_wrapper(const std::string &fam_name_, const double &length_, const double &frequency_, const double &voltage_) {
-    return Element::rfcavity(fam_name_, length_, frequency_, voltage_);
+Element rfcavity_wrapper(const std::string &fam_name_, const double &length_, const double &frequency_, const double &voltage_, const double &phase_lag_) {
+    return Element::rfcavity(fam_name_, length_, frequency_, voltage_, phase_lag_);
 }
 
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag) {
