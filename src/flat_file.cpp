@@ -156,7 +156,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     //std::cout << line << std::endl;
     line_count++;
     std::cout << line_count << ": " << line << std::endl;
-    std::cout.flush();
+    std::cout << std::flush;
     std::istringstream ss(line);
     std::string cmd;
     ss >> cmd;
