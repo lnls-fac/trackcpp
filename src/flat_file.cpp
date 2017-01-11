@@ -272,8 +272,8 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       continue;
     }
     if (line.size()<2) continue;
+    std::cout << line_count << ": " << line << std::endl;
     return Status::flat_file_error;
-    //std::cout << line_count << ": " << line << std::endl;
   }
 
   if (e.fam_name.compare("") != 0) {
