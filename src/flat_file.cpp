@@ -155,8 +155,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
   while (std::getline(fp, line)) {
     //std::cout << line << std::endl;
     line_count++;
-    std::cout << line_count << ": " << line << std::endl;
-    std::cout << std::flush;
+    // std::cout << line_count << ": " << line << std::endl;
     std::istringstream ss(line);
     std::string cmd;
     ss >> cmd;
@@ -274,7 +273,6 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       continue;
     }
     if (line.size()<2) continue;
-    std::cout << line_count << ": " << line << std::endl;
     return Status::flat_file_error;
   }
 
