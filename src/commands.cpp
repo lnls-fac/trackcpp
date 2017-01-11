@@ -171,6 +171,7 @@ int cmd_dynap_ex(const std::vector<std::string>& args) {
     std::cerr << "dynap_ex: flat file not found!" << std::endl;
     return EXIT_FAILURE;
   }
+  std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
   // builds accelerator
   accelerator.energy = ring_energy;
@@ -362,7 +363,8 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
     std::cerr << args[1] << ": flat file not found!" << std::endl;
     return EXIT_FAILURE;
   }
-
+  std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
+  
   // builds accelerator
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
