@@ -43,6 +43,7 @@ namespace std {
     %template(CppDoubleMatrix) vector< vector<double> >;
     %template(CppDoubleMatrixVector) vector< vector< vector<double> > >;
     %template(CppTwissVector) vector<Twiss>;
+    %template(CppMatrixVector) vector< Matrix >;
 }
 
 %inline %{
