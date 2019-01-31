@@ -152,7 +152,11 @@ int sgn(T val) {
 	if (val >= 0) return 1; else return -1;
 }
 
-bool isfinite(const double& v);
+
+#if __GNUC__ < 7
+  bool isfinite(const double& v);
+#endif
+
 std::string get_timestamp();
 
 //typedef double Vector4[4];
