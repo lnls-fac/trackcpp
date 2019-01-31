@@ -28,6 +28,8 @@
 #include "elements.h"
 #include "pos.h"
 #include "auxiliary.h"
+#include "tpsa.h"
+#include <cmath>
 
 // constants for 4th-order symplectic integrator
 #define DRIFT1 ( 0.6756035959798286638e00)
