@@ -153,7 +153,7 @@ int sgn(T val) {
 }
 
 
-#if __GNUC__ < 7
+#if __GNUC__ < 6
   bool isfinite(const double& v);
 #endif
 
