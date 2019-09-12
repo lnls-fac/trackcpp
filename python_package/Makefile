@@ -9,15 +9,14 @@ SOURCES_I =     trackcpp.i
 WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
-PV := $(shell python3 --version | cut -f2 --delimiter=.)
-PYTHON_VERSION = python3.$(PV)
+PYTHON_INCLUDES := $(shell python-sirius-config --includes)
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
 
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas -L../build -ltrackcpp
-INC = -I../include -I/usr/include/$(PYTHON_VERSION) -I/usr/local/include/$(PYTHON_VERSION)m
-PYTHON = python3
+INC = -I../include $(PYTHON_INCLUDES)
+PYTHON = python-sirius
 SETUPARGS =
 
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
