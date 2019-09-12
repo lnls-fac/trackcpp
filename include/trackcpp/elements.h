@@ -73,6 +73,7 @@ public:
 
   // default constructor (builds a drift-type element)
   Element(const std::string& fam_name_ = "", const double& length_ = 0);
+  Element(const Element &) = default;
 
   static const std::vector<double> default_polynom;
 
