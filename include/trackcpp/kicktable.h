@@ -42,6 +42,8 @@ public:
   std::vector<double> x_kick,  y_kick;
 
   Kicktable(const std::string& filename_ = "");
+  Kicktable(const Kicktable &) = default;
+
   Status::type load_from_file(const std::string& filename_);
   unsigned int get_idx(unsigned int ix, unsigned int iy) const { return iy*x_nrpts+ix; }
   double       get_x(unsigned int ix) const { return x_min + ix * (x_max - x_min) / (x_nrpts - 1.0); }
