@@ -274,9 +274,9 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
-    drift(pos, l1);
+    drift<T>(pos, l1);
     strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
-    drift(pos, l2);
+    drift<T>(pos, l2);
     strthinkick<T>(pos, k2, polynom_a, polynom_b, accelerator);
     drift<T>(pos, l2);
     strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
