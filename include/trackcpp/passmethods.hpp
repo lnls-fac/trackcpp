@@ -246,7 +246,6 @@ void local_2_global(Pos<T> &pos, const Element &elem) {
   translate_pos(pos, elem.t_out);
 }
 
-
 template <typename T>
 Status::type pm_identity_pass(Pos<T> &pos, const Element &elem,
                               const Accelerator& accelerator) {
@@ -317,7 +316,6 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   return Status::success;
 }
 
-
 template <typename T>
 Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
                                const Accelerator& accelerator) {
@@ -348,7 +346,6 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
   local_2_global(pos, elem);
   return Status::success;
 }
-
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
