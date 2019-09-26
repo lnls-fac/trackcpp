@@ -17,6 +17,7 @@
 #include <trackcpp/flat_file.h>
 #include <trackcpp/elements.h>
 #include <trackcpp/auxiliary.h>
+#include <trackcpp/linalg.h>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -28,8 +29,10 @@ static bool read_boolean_string(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
 static bool has_t_vector(const double* t);
 static bool has_r_matrix(const double* r);
+static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
+static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
 static void synchronize_polynomials(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
@@ -135,6 +138,14 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
       write_6d_vector(fp, "de|r_out", &e.r_out[6*4]);
       write_6d_vector(fp, "dl|r_out", &e.r_out[6*5]);
     }
+    if (has_matrix66(e.matrix66)) {
+      write_6d_vector(fp, "rx|matrix66", e.matrix66[0]);
+      write_6d_vector(fp, "px|matrix66", e.matrix66[1]);
+      write_6d_vector(fp, "ry|matrix66", e.matrix66[2]);
+      write_6d_vector(fp, "py|matrix66", e.matrix66[3]);
+      write_6d_vector(fp, "de|matrix66", e.matrix66[4]);
+      write_6d_vector(fp, "dl|matrix66", e.matrix66[5]);
+    }
 
     fp << '\n';
   }
@@ -218,6 +229,12 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("py|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[3*6+i]; continue; }
     if (cmd.compare("de|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[4*6+i]; continue; }
     if (cmd.compare("dl|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[5*6+i]; continue; }
+    if (cmd.compare("rx|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[0][i]; continue; }
+    if (cmd.compare("px|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[1][i]; continue; }
+    if (cmd.compare("ry|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[2][i]; continue; }
+    if (cmd.compare("py|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[3][i]; continue; }
+    if (cmd.compare("de|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[4][i]; continue; }
+    if (cmd.compare("dl|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[5][i]; continue; }
     if (cmd.compare("pass_method") == 0) {
       std::string pass_method; ss >> pass_method;
       bool found_pm = false;
@@ -454,6 +471,16 @@ static bool has_r_matrix(const double* r) {
   return false;
 }
 
+static bool has_matrix66(const Matrix& m) {
+  for (int i=0; i<6; ++i)
+    for (int j=0; j<6; ++j)
+      if ((i != j) & (m[i][j] != 0.0))
+        return true;
+      else if ((i == j) & (m[i][j] != 1.0))
+        return true;
+  return false;
+}
+
 static bool has_polynom(const std::vector<double>& p) {
   for (int i=0; i<p.size(); ++i)
     if (p[i] != 0)
@@ -463,6 +490,13 @@ static bool has_polynom(const std::vector<double>& p) {
 }
 
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t) {
+  fp << std::setw(pw) << label;
+  for (int i=0; i<6; ++i)
+    fp << t[i] << "  ";
+  fp << '\n';
+}
+
+static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t) {
   fp << std::setw(pw) << label;
   for (int i=0; i<6; ++i)
     fp << t[i] << "  ";

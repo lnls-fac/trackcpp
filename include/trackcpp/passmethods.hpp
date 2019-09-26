@@ -29,6 +29,7 @@
 #include "pos.h"
 #include "auxiliary.h"
 #include "tpsa.h"
+#include "linalg.h"
 #include <cmath>
 
 // constants for 4th-order symplectic integrator
@@ -119,6 +120,21 @@ Status::type kicktablethinkick(Pos<T>& pos, const Kicktable* kicktable,
     }
   }
   return status;
+}
+
+template <typename T>
+void matthinkick(Pos<T> &pos, const Matrix &m) {
+
+  T rx = pos.rx, px = pos.px;
+  T ry = pos.ry, py = pos.py;
+  T de = pos.de, dl = pos.dl;
+
+  pos.rx = m[0][0]*rx+m[0][1]*px+m[0][2]*ry+m[0][3]*py+m[0][4]*de+m[0][5]*dl;
+  pos.px = m[1][0]*rx+m[1][1]*px+m[1][2]*ry+m[1][3]*py+m[1][4]*de+m[1][5]*dl;
+  pos.ry = m[2][0]*rx+m[2][1]*px+m[2][2]*ry+m[2][3]*py+m[2][4]*de+m[2][5]*dl;
+  pos.py = m[3][0]*rx+m[3][1]*px+m[3][2]*ry+m[3][3]*py+m[3][4]*de+m[3][5]*dl;
+  pos.de = m[4][0]*rx+m[4][1]*px+m[4][2]*ry+m[4][3]*py+m[4][4]*de+m[4][5]*dl;
+  pos.dl = m[5][0]*rx+m[5][1]*px+m[5][2]*ry+m[5][3]*py+m[5][4]*de+m[5][5]*dl;
 }
 
 template <typename T>
@@ -230,7 +246,6 @@ void local_2_global(Pos<T> &pos, const Element &elem) {
   translate_pos(pos, elem.t_out);
 }
 
-
 template <typename T>
 Status::type pm_identity_pass(Pos<T> &pos, const Element &elem,
                               const Accelerator& accelerator) {
@@ -259,9 +274,9 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
-    drift(pos, l1);
+    drift<T>(pos, l1);
     strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
-    drift(pos, l2);
+    drift<T>(pos, l2);
     strthinkick<T>(pos, k2, polynom_a, polynom_b, accelerator);
     drift<T>(pos, l2);
     strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
@@ -301,7 +316,6 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   return Status::success;
 }
 
-
 template <typename T>
 Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
                                const Accelerator& accelerator) {
@@ -332,7 +346,6 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
   local_2_global(pos, elem);
   return Status::success;
 }
-
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
@@ -408,6 +421,37 @@ Status::type pm_kicktable_pass(Pos<T> &pos, const Element &elem,
   local_2_global(pos, elem);
 
   return status;
+}
+
+template <typename T>
+Status::type pm_matrix_pass(Pos<T> &pos, const Element &elem,
+                            const Accelerator& accelerator) {
+
+  global_2_local(pos, elem);
+  if (elem.length > 0) {
+    double sl = elem.length / float(elem.nr_steps);
+    double l1 = sl * DRIFT1;
+    double l2 = sl * DRIFT2;
+    double k1 = KICK1 / float(elem.nr_steps);
+    double k2 = KICK2 / float(elem.nr_steps);
+    Matrix mat1 = elem.matrix66;
+    Matrix mat2 = elem.matrix66;
+    multiply_transf_matrix66(mat1, k1);
+    multiply_transf_matrix66(mat2, k2);
+    for(unsigned int i=0; i<elem.nr_steps; ++i) {
+      drift<T>(pos, l1);
+      matthinkick<T>(pos, mat1);
+      drift<T>(pos, l2);
+      matthinkick<T>(pos, mat2);
+      drift<T>(pos, l2);
+      matthinkick<T>(pos, mat1);
+      drift<T>(pos, l1);
+    }
+  } else {
+    matthinkick<T>(pos, elem.matrix66);
+  }
+  local_2_global(pos, elem);
+  return Status::success;
 }
 
 #undef DRIFT1

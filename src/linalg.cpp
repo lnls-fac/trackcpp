@@ -284,3 +284,15 @@ Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<d
   gsl_permutation_free(p);
   return X;
 }
+
+void multiply_transf_matrix66(Matrix &m, const double k1) {
+  for(unsigned int i=0; i<m.size(); ++i)
+    for(unsigned int j=0; j<m[i].size(); ++j)
+    if (i==j){
+      m[i][j] -= 1;
+      m[i][j] *= k1;
+      m[i][j] += 1;
+    } else {
+      m[i][j] *= k1;
+    }
+}

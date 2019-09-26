@@ -19,6 +19,7 @@
 
 #include "kicktable.h"
 #include "auxiliary.h"
+#include "linalg.h"
 #include <vector>
 #include <string>
 #include <fstream>
@@ -61,8 +62,9 @@ public:
 
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
+  Matrix              matrix66 = Matrix(6);
 
-  const Kicktable*    kicktable   = nullptr;
+  const Kicktable*    kicktable = nullptr;
 
   double              t_in[6],  t_out[6];
   double              r_in[36], r_out[36];
@@ -84,6 +86,7 @@ public:
   static Element vcorrector (const std::string& fam_name_, const double& length_, const double& vkick_);
   static Element corrector  (const std::string& fam_name_, const double& length_, const double& hkick_, const double& vkick_);
   static Element drift      (const std::string& fam_name_, const double& length_);
+  static Element matrix     (const std::string& fam_name_, const double& length_);
   static Element rbend      (const std::string& fam_name_, const double& length_,
                              const double& angle_, const double& angle_in_ = 0, const double& angle_out_ = 0,
                              const double& gap_ = 0, const double& fint_in_ = 0, const double& fint_out_ = 0,
@@ -103,6 +106,7 @@ public:
 void initialize_marker(Element& element);
 void initialize_corrector(Element& element, const double& hkick, const double& vkick);
 void initialize_drift(Element& element);
+void initialize_matrix(Element &element);
 void initialize_rbend(Element& element, const double& angle, const double& angle_in, const double& angle_out,
             const double& gap, const double& fint_in, const double& fint_out,
             const std::vector<double>& polynom_a, const std::vector<double>& polynom_b,
