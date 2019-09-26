@@ -62,7 +62,7 @@ public:
 
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
-  Matrix              matrix = Matrix(6);
+  Matrix              matrix66 = Matrix(6);
 
   const Kicktable*    kicktable = nullptr;
 
@@ -86,7 +86,7 @@ public:
   static Element vcorrector (const std::string& fam_name_, const double& length_, const double& vkick_);
   static Element corrector  (const std::string& fam_name_, const double& length_, const double& hkick_, const double& vkick_);
   static Element drift      (const std::string& fam_name_, const double& length_);
-  static Element matrix_pass(const std::string& fam_name_, const double& length_);
+  static Element matrix     (const std::string& fam_name_, const double& length_);
   static Element rbend      (const std::string& fam_name_, const double& length_,
                              const double& angle_, const double& angle_in_ = 0, const double& angle_out_ = 0,
                              const double& gap_ = 0, const double& fint_in_ = 0, const double& fint_out_ = 0,

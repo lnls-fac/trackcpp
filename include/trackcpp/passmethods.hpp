@@ -434,8 +434,8 @@ Status::type pm_matrix_pass(Pos<T> &pos, const Element &elem,
     double l2 = sl * DRIFT2;
     double k1 = KICK1 / float(elem.nr_steps);
     double k2 = KICK2 / float(elem.nr_steps);
-    Matrix mat1 = elem.matrix;
-    Matrix mat2 = elem.matrix;
+    Matrix mat1 = elem.matrix66;
+    Matrix mat2 = elem.matrix66;
     multiply_transf_matrix66(mat1, k1);
     multiply_transf_matrix66(mat2, k2);
     for(unsigned int i=0; i<elem.nr_steps; ++i) {
@@ -448,7 +448,7 @@ Status::type pm_matrix_pass(Pos<T> &pos, const Element &elem,
       drift<T>(pos, l1);
     }
   } else {
-    matthinkick<T>(pos, elem.matrix);
+    matthinkick<T>(pos, elem.matrix66);
   }
   local_2_global(pos, elem);
   return Status::success;

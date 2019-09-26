@@ -29,7 +29,7 @@ static bool read_boolean_string(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
 static bool has_t_vector(const double* t);
 static bool has_r_matrix(const double* r);
-static bool has_matrix(const Matrix& r);
+static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
@@ -138,13 +138,13 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
       write_6d_vector(fp, "de|r_out", &e.r_out[6*4]);
       write_6d_vector(fp, "dl|r_out", &e.r_out[6*5]);
     }
-    if (has_matrix(e.matrix)) {
-      write_6d_vector(fp, "rx|matrix", e.matrix[0]);
-      write_6d_vector(fp, "px|matrix", e.matrix[1]);
-      write_6d_vector(fp, "ry|matrix", e.matrix[2]);
-      write_6d_vector(fp, "py|matrix", e.matrix[3]);
-      write_6d_vector(fp, "de|matrix", e.matrix[4]);
-      write_6d_vector(fp, "dl|matrix", e.matrix[5]);
+    if (has_matrix66(e.matrix66)) {
+      write_6d_vector(fp, "rx|matrix66", e.matrix66[0]);
+      write_6d_vector(fp, "px|matrix66", e.matrix66[1]);
+      write_6d_vector(fp, "ry|matrix66", e.matrix66[2]);
+      write_6d_vector(fp, "py|matrix66", e.matrix66[3]);
+      write_6d_vector(fp, "de|matrix66", e.matrix66[4]);
+      write_6d_vector(fp, "dl|matrix66", e.matrix66[5]);
     }
 
     fp << '\n';
@@ -229,12 +229,12 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("py|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[3*6+i]; continue; }
     if (cmd.compare("de|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[4*6+i]; continue; }
     if (cmd.compare("dl|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[5*6+i]; continue; }
-    if (cmd.compare("rx|matrix")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix[0][i]; continue; }
-    if (cmd.compare("px|matrix")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix[1][i]; continue; }
-    if (cmd.compare("ry|matrix")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix[2][i]; continue; }
-    if (cmd.compare("py|matrix")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix[3][i]; continue; }
-    if (cmd.compare("de|matrix")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix[4][i]; continue; }
-    if (cmd.compare("dl|matrix")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix[5][i]; continue; }
+    if (cmd.compare("rx|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[0][i]; continue; }
+    if (cmd.compare("px|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[1][i]; continue; }
+    if (cmd.compare("ry|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[2][i]; continue; }
+    if (cmd.compare("py|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[3][i]; continue; }
+    if (cmd.compare("de|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[4][i]; continue; }
+    if (cmd.compare("dl|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[5][i]; continue; }
     if (cmd.compare("pass_method") == 0) {
       std::string pass_method; ss >> pass_method;
       bool found_pm = false;
@@ -471,7 +471,7 @@ static bool has_r_matrix(const double* r) {
   return false;
 }
 
-static bool has_matrix(const Matrix& m) {
+static bool has_matrix66(const Matrix& m) {
   for (int i=0; i<6; ++i)
     for (int j=0; j<6; ++j)
       if ((i != j) & (m[i][j] != 0.0))

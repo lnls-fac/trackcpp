@@ -81,8 +81,8 @@ Element drift_wrapper(const std::string &fam_name_, const double &length_) {
     return Element::drift(fam_name_, length_);
 }
 
-Element matrix_pass_wrapper(const std::string &fam_name_, const double &length_) {
-    return Element::matrix_pass(fam_name_, length_);
+Element matrix_wrapper(const std::string &fam_name_, const double &length_) {
+    return Element::matrix(fam_name_, length_);
 }
 
 Element rbend_wrapper(const std::string& fam_name_, const double& length_,

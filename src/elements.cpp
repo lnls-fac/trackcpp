@@ -34,7 +34,7 @@ Element::Element(const std::string& fam_name_, const double& length_) :
       }
     }
   }
-  matrix.eye();
+  matrix66.eye();
 }
 
 const std::string& Element::get_pass_method() {
@@ -69,7 +69,7 @@ Element Element::drift (const std::string& fam_name_, const double& length_) {
   return e;
 }
 
-Element Element::matrix_pass(const std::string& fam_name_, const double& length_) {
+Element Element::matrix(const std::string& fam_name_, const double& length_) {
   Element e = Element(fam_name_, length_);
     initialize_matrix(e);
   return e;
@@ -166,8 +166,8 @@ bool Element::operator==(const Element& o) const {
     if (this->phase_lag != o.phase_lag) return false;
     if (this->polynom_a != o.polynom_a) return false;
     if (this->polynom_b != o.polynom_b) return false;
-    const Matrix& m = this->matrix;
-    const Matrix& mo = o.matrix;
+    const Matrix& m = this->matrix66;
+    const Matrix& mo = o.matrix66;
     for(unsigned int i=0; i<m.size(); ++i){
       for(unsigned int j=0; j<m[i].size(); ++j)
         if (m[i][j] != mo[i][j]) return false;
