@@ -34,7 +34,7 @@ Element::Element(const std::string& fam_name_, const double& length_) :
       }
     }
   }
-
+  matrix.eye();
 }
 
 const std::string& Element::get_pass_method() {
@@ -66,6 +66,12 @@ Element Element::bpm (const std::string& fam_name_) {
 Element Element::drift (const std::string& fam_name_, const double& length_) {
   Element e = Element(fam_name_, length_);
     initialize_drift(e);
+  return e;
+}
+
+Element Element::matrix_pass(const std::string& fam_name_, const double& length_) {
+  Element e = Element(fam_name_, length_);
+    initialize_matrix(e);
   return e;
 }
 
@@ -160,6 +166,12 @@ bool Element::operator==(const Element& o) const {
     if (this->phase_lag != o.phase_lag) return false;
     if (this->polynom_a != o.polynom_a) return false;
     if (this->polynom_b != o.polynom_b) return false;
+    const Matrix& m = this->matrix;
+    const Matrix& mo = o.matrix;
+    for(unsigned int i=0; i<m.size(); ++i){
+      for(unsigned int j=0; j<m[i].size(); ++j)
+        if (m[i][j] != mo[i][j]) return false;
+    }
     for(unsigned int i=0; i<6; ++i) {
       if (this->t_in[i] != o.t_in[i]) return false;
       if (this->t_out[i] != o.t_out[i]) return false;
@@ -212,6 +224,10 @@ void initialize_corrector(Element &element, const double &hkick, const double &v
 
 void initialize_drift(Element &element) {
     element.pass_method = PassMethod::pm_drift_pass;
+}
+
+void initialize_matrix(Element &element) {
+    element.pass_method = PassMethod::pm_matrix_pass;
 }
 
 void initialize_rbend(Element& element, const double& angle, const double& angle_in, const double& angle_out, const double& gap, const double& fint_in, const double& fint_out, const std::vector<double>& polynom_a, const std::vector<double>& polynom_b, const double& K, const double& S, const int nr_steps) {

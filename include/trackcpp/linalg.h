@@ -68,4 +68,6 @@ void matrix6_set_identity_posvec(std::vector<Pos<T> >& m, const T& a = 1) {
   m[0].rx = m[1].px = m[2].ry = m[3].py = m[4].de = m[5].dl = a;
 }
 
+void multiply_transf_matrix66(Matrix &m, const double k1);
+
 #endif

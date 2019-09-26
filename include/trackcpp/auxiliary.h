@@ -34,7 +34,8 @@ public:
   static const int pm_thinquad_pass                  = 6;
   static const int pm_thinsext_pass                  = 7;
   static const int pm_kicktable_pass                 = 8;
-  static const int pm_nr_pms                         = 9;
+  static const int pm_matrix_pass                    = 9;
+  static const int pm_nr_pms                         = 10;
   PassMethodsClass() {
     passmethods.push_back("identity_pass");
     passmethods.push_back("drift_pass");
@@ -45,6 +46,7 @@ public:
     passmethods.push_back("thinquad_pass");
     passmethods.push_back("thinsext_pass");
     passmethods.push_back("kicktable_pass");
+    passmethods.push_back("matrix_pass");
   }
   int size() const { return passmethods.size(); }
   std::string operator[](const int i) const { return passmethods[i]; }
@@ -64,7 +66,8 @@ struct PassMethod {
         pm_thinquad_pass                  = 6,
         pm_thinsext_pass                  = 7,
         pm_kicktable_pass                 = 8,
-        pm_nr_pms                         = 9
+        pm_matrix_pass                    = 9,
+        pm_nr_pms                         = 10,
     };
 };
 
@@ -79,7 +82,8 @@ const std::vector<std::string> pm_dict = {
         "cavity_pass",
         "thinquad_pass",
         "thinsext_pass",
-        "kicktable_pass"
+        "kicktable_pass",
+        "matrix_pass"
 };
 
 struct Status {
