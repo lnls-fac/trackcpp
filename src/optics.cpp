@@ -84,7 +84,6 @@ Status::type calc_twiss(const Accelerator& accelerator,
   unsigned int element_offset = 0;
   Status::type status = track_linepass(accelerator, fp, closed_orbit, element_offset, lost_plane, true);
   if (status != Status::success) return status;
-  if (not closed_flag) closed_orbit.pop_back();
 
 
 #ifdef TIMEIT
@@ -100,8 +99,6 @@ Status::type calc_twiss(const Accelerator& accelerator,
   Pos<double> v0;
   status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0);
   if (status != Status::success) return status;
-  if (not closed_flag) atm.pop_back();
-
 
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;
@@ -155,7 +152,12 @@ Status::type calc_twiss(const Accelerator& accelerator,
     Status::type status = track_linepass(accelerator, fpp, codp, element_offset, lost_plane, true);
     if (status != Status::success) return status;
   }
-  if (not closed_flag) codp.pop_back();
+
+  if (not closed_flag) {
+    closed_orbit.pop_back();
+    atm.pop_back();
+    codp.pop_back();
+  }
 
   twiss.push_back(twiss0);
 
@@ -205,7 +207,6 @@ Status::type calc_twiss(const Accelerator& accelerator,
 
     twiss.push_back(tw);
   }
-
 
   // unwraps betatron phases
   std::vector<double> jumpx(twiss.size(),0);
