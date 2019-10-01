@@ -24,12 +24,12 @@
 // returns a vector with 6-d transfer matrices, one for each element
 //
 // inputs:
-//    accelerator:   structure representing the accelerator
-//    closed_orbit:  Pos vector representing calculated closed orbit.
+//    accelerator:  Structure representing the accelerator
+//    fixed_point:  Pos representing calculated fixed_point.
 //
 // outputs:
 //    tm:     vector of Matrix6 elements. Each component represents the accumulated
-//            transfer matrix from the start of the lattice to the entrance of that element.
+//            transfer matrix from the start of the lattice to the entrance of that element. The last element is the m66 of the line.
 //    m66:    one-turn transfer matrix
 //
 //    v0:     const term of final map
@@ -37,7 +37,7 @@
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
 Status::type track_findm66 (const Accelerator& accelerator,
-                            std::vector<Pos<double> >& closed_orbit,
+                            const Pos<double>& fixed_point,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
                             Pos<double>& v0) {
@@ -45,22 +45,18 @@ Status::type track_findm66 (const Accelerator& accelerator,
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
 
-  std::vector<double> row0 = {0,0,0,0,0,0};
+  Pos<double> fp = fixed_point;
 
   // case no closed_orbit has been defined
-  if (closed_orbit.size() != lattice.size()) {
-    closed_orbit.clear();
-    for(unsigned int i=0; i<lattice.size(); ++i) {
-      closed_orbit.push_back(Pos<double>(0,0,0,0,0,0));
-    }
-  }
+  if (std::isnan(fp.rx)) fp = Pos<double>(0,0,0,0,0,0);
+
 
   Pos<Tpsa<6,1> > map;
-  map.rx = Tpsa<6,1>(closed_orbit[0].rx, 0); map.px = Tpsa<6,1>(closed_orbit[0].px, 1);
-  map.ry = Tpsa<6,1>(closed_orbit[0].ry, 2); map.py = Tpsa<6,1>(closed_orbit[0].py, 3);
-  map.de = Tpsa<6,1>(closed_orbit[0].de, 4); map.dl = Tpsa<6,1>(closed_orbit[0].dl, 5);
+  map.rx = Tpsa<6,1>(fp.rx, 0); map.px = Tpsa<6,1>(fp.px, 1);
+  map.ry = Tpsa<6,1>(fp.ry, 2); map.py = Tpsa<6,1>(fp.py, 3);
+  map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
-  tm.clear(); tm.resize(lattice.size(), Matrix(6));
+  tm.clear(); tm.resize(lattice.size()+1, Matrix(6));
   for(unsigned int i=0; i<lattice.size(); ++i) {
     Matrix& m = tm[i];
     m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
@@ -81,6 +77,8 @@ Status::type track_findm66 (const Accelerator& accelerator,
   m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3]; m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
   m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3]; m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
   m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
+
+  tm[lattice.size()] = m66;
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];

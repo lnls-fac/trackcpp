@@ -64,8 +64,7 @@ Status::type calc_twiss(const Accelerator& accelerator,
                         const Pos<double>& fixed_point,
                         Matrix& m66,
                         std::vector<Twiss>& twiss,
-                        Twiss twiss0,
-                        bool closed_flag) {
+                        Twiss twiss0) {
 
 #ifdef TIMEIT
   auto start = std::chrono::steady_clock::now();
@@ -84,14 +83,7 @@ Status::type calc_twiss(const Accelerator& accelerator,
   unsigned int element_offset = 0;
   Status::type status = track_linepass(accelerator, fp, closed_orbit, element_offset, lost_plane, true);
   if (status != Status::success) return status;
-  if (not closed_flag) closed_orbit.pop_back();
 
-  // std::vector<Pos<double>> closed_orbit0;
-  // if (not accelerator.cavity_on) {
-  //   Pos<double> fp = fixed_point; fp.de = 0;
-  //   Status::type status = track_linepass(accelerator, fp, closed_orbit0, element_offset, lost_plane, true);
-  //   if (status != Status::success) return status;
-  // }
 
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;
@@ -102,22 +94,10 @@ Status::type calc_twiss(const Accelerator& accelerator,
   start = std::chrono::steady_clock::now();
 #endif
 
-  // finds accumulated transfer matrices
-
-  // std::vector<Matrix> atm0;
-  // if (not accelerator.cavity_on) {
-  //   status = track_findm66 (accelerator, closed_orbit0, atm0, m66);
-  //   if (status != Status::success) return status;
-  //   if (closed_flag) atm.push_back(atm.back());
-  // }
-
   std::vector<Matrix> atm;
   Pos<double> v0;
-  status = track_findm66 (accelerator, closed_orbit, atm, m66, v0);
+  status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0);
   if (status != Status::success) return status;
-  if (closed_flag) atm.push_back(atm.back());
-
-
 
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;
@@ -127,6 +107,11 @@ Status::type calc_twiss(const Accelerator& accelerator,
 #ifdef TIMEIT
   start = std::chrono::steady_clock::now();
 #endif
+
+  const double dpp = 1e-8;
+  Pos<double> fpp = fixed_point;
+  fpp.de += dpp;
+  std::vector<Pos<double>> codp;
 
   // initial twiss parameters
   twiss.clear(); twiss.reserve(atm.size());
@@ -141,15 +126,32 @@ Status::type calc_twiss(const Accelerator& accelerator,
     twiss0.betay  =  m66[2][3]/sin_muy;
     // --- closed orbit
     twiss0.co = closed_orbit[0];
-    // --- dispersion function based on eta = (1 - M)^(-1) D
-    Vector Dx({m66[0][4], m66[1][4]});
-    Vector Dy({m66[2][4], m66[3][4]});
-    Matrix eye2({{1,0},{0,1}});
-    Matrix mx; m66.getM(mx, 2, 2, 0, 0); mx.linear_combination(1.0,eye2,-1.0,mx); mx.inverse();
-    Matrix my; m66.getM(my, 2, 2, 2, 2); my.linear_combination(1.0,eye2,-1.0,my); my.inverse();
-    twiss0.etax.multiplication(mx, Dx);
-    twiss0.etay.multiplication(my, Dy);
+
+    // // --- dispersion function based on eta = (1 - M)^(-1) D
+    // Vector Dx({m66[0][4], m66[1][4]});
+    // Vector Dy({m66[2][4], m66[3][4]});
+    // Matrix eye2({{1,0},{0,1}});
+    // Matrix mx; m66.getM(mx, 2, 2, 0, 0); mx.linear_combination(1.0,eye2,-1.0,mx); mx.inverse();
+    // Matrix my; m66.getM(my, 2, 2, 2, 2); my.linear_combination(1.0,eye2,-1.0,my); my.inverse();
+    // twiss0.etax.multiplication(mx, Dx);
+    // twiss0.etay.multiplication(my, Dy);
+
+    // Dispersion Function based on tracking:
+    Status::type status = track_findorbit4(accelerator, codp, fpp);
+    if (status != Status::success) return status;
+    twiss0.etax[0] = (codp[0].rx - closed_orbit[0].rx) / dpp;
+    twiss0.etax[1] = (codp[0].px - closed_orbit[0].px) / dpp;
+    twiss0.etay[0] = (codp[0].ry - closed_orbit[0].ry) / dpp;
+    twiss0.etay[1] = (codp[0].py - closed_orbit[0].py) / dpp;
+  } else {
+    fpp.rx += twiss0.etax[0] * dpp;
+    fpp.px += twiss0.etax[1] * dpp;
+    fpp.ry += twiss0.etay[0] * dpp;
+    fpp.py += twiss0.etay[1] * dpp;
+    Status::type status = track_linepass(accelerator, fpp, codp, element_offset, lost_plane, true);
+    if (status != Status::success) return status;
   }
+
   twiss.push_back(twiss0);
 
 #ifdef TIMEIT
@@ -178,20 +180,25 @@ Status::type calc_twiss(const Accelerator& accelerator,
     // --- closed orbit
     tw.co = closed_orbit[i];
 
-    // --- dispersion function
-    Matrix t1(atm[i-1]); t1.inverse();
-    Matrix T; T.multiplication(atm[i],t1);
-    Vector Dx({T[0][4], T[1][4]});
-    Vector Dy({T[2][4], T[3][4]});
-    Matrix mx; T.getMx(mx);
-    Matrix my; T.getMy(my);
-    tw.etax.multiplication(mx, twiss[i-1].etax);
-    tw.etay.multiplication(my, twiss[i-1].etay);
-    tw.etax = Dx + tw.etax.multiplication(mx, twiss[i-1].etax);
-    tw.etay = Dy + tw.etay.multiplication(my, twiss[i-1].etay);
+    // // --- dispersion function based on propagation
+    // Matrix t1(atm[i-1]); t1.inverse();
+    // Matrix T; T.multiplication(atm[i],t1);
+    // Vector Dx({T[0][4], T[1][4]});
+    // Vector Dy({T[2][4], T[3][4]});
+    // Matrix mx; T.getMx(mx);
+    // Matrix my; T.getMy(my);
+    // tw.etax.multiplication(mx, twiss[i-1].etax);
+    // tw.etay.multiplication(my, twiss[i-1].etay);
+    // tw.etax = Dx + tw.etax.multiplication(mx, twiss[i-1].etax);
+    // tw.etay = Dy + tw.etay.multiplication(my, twiss[i-1].etay);
+
+    // Dispersion Function based on tracking
+    tw.etax[0] = (codp[i].rx - closed_orbit[i].rx) / dpp;
+    tw.etax[1] = (codp[i].px - closed_orbit[i].px) / dpp;
+    tw.etay[0] = (codp[i].ry - closed_orbit[i].ry) / dpp;
+    tw.etay[1] = (codp[i].py - closed_orbit[i].py) / dpp;
 
     twiss.push_back(tw);
-
   }
 
   // unwraps betatron phases
