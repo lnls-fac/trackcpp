@@ -48,8 +48,7 @@ Status::type calc_twiss(const Accelerator& accelerator,
                         const Pos<double>& fixed_point,
                         Matrix& m66,
                         std::vector<Twiss>& twiss,
-                        Twiss twiss0 = Twiss(),
-                        bool closed_flag = false);
+                        Twiss twiss0 = Twiss());
 
 
 #endif

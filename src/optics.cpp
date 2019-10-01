@@ -64,8 +64,7 @@ Status::type calc_twiss(const Accelerator& accelerator,
                         const Pos<double>& fixed_point,
                         Matrix& m66,
                         std::vector<Twiss>& twiss,
-                        Twiss twiss0,
-                        bool closed_flag) {
+                        Twiss twiss0) {
 
 #ifdef TIMEIT
   auto start = std::chrono::steady_clock::now();
@@ -151,12 +150,6 @@ Status::type calc_twiss(const Accelerator& accelerator,
     fpp.py += twiss0.etay[1] * dpp;
     Status::type status = track_linepass(accelerator, fpp, codp, element_offset, lost_plane, true);
     if (status != Status::success) return status;
-  }
-
-  if (not closed_flag) {
-    closed_orbit.pop_back();
-    atm.pop_back();
-    codp.pop_back();
   }
 
   twiss.push_back(twiss0);
