@@ -29,7 +29,7 @@ Status::type track_elementpass_wrapper (
 
 Status::type track_linepass_wrapper(
         const Accelerator &accelerator,
-        Pos<double> &orig_pos,
+        std::vector< Pos<double> >& orig_pos,
         std::vector< Pos<double> >& pos,
         LinePassArgs& args) {
     return track_linepass(accelerator,
@@ -37,7 +37,8 @@ Status::type track_linepass_wrapper(
                           pos,
                           args.element_offset,
                           args.lost_plane,
-                          args.trajectory);
+                          args.lost_element,
+                          args.indices);
 }
 
 Status::type track_ringpass_wrapper (
