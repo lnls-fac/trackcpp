@@ -110,13 +110,13 @@ Status::type track_linepass (
 	int nr_elements  = line.size();
 
 	//pos.clear(); other functions assume pos is not clearedin linepass!
-	pos.push_back(nan_pos);
 	if (trajectory) {
 		pos.reserve(nr_elements+1);
 		for(int i=0; i<nr_elements; ++i) {
 			pos.push_back(nan_pos);
 		}
 	}
+	pos.push_back(nan_pos);
 
 	for(int i=0; i<nr_elements; ++i) {
 
