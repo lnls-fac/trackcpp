@@ -110,7 +110,9 @@ Status::type track_linepass (
 	int nr_elements  = line.size();
 
 	//pos.clear(); other functions assume pos is not clearedin linepass!
+	pos.push_back(nan_pos);
 	if (trajectory) {
+		pos.reserve(nr_elements+1);
 		for(int i=0; i<nr_elements; ++i) {
 			pos.push_back(nan_pos);
 		}
@@ -130,7 +132,6 @@ Status::type track_linepass (
 			((accelerator.vchamber_on) and
 			 ((orig_pos.rx < element.hmin) or
 			 (orig_pos.rx >  element.hmax)))) {
-			pos.push_back(nan_pos);
 			lost_plane   = Plane::x;
 			return (status == Status::success) ? Status::particle_lost : status;
 		}
@@ -138,7 +139,6 @@ Status::type track_linepass (
 			((accelerator.vchamber_on) and
 			 ((orig_pos.ry < element.vmin) or
 			 (orig_pos.ry >  element.vmax)))) {
-			pos.push_back(nan_pos);
 			lost_plane = Plane::y;
 			return (status == Status::success) ? Status::particle_lost : status;
 		}
@@ -153,10 +153,9 @@ Status::type track_linepass (
 	lost_plane = Plane::no_plane;
 
 	// stores final particle position at the end of the line
-	pos.push_back(orig_pos);
+	pos[pos.size()-1] = orig_pos;
 
 	return status;
-
 }
 
 // ringpass
