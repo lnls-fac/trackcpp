@@ -189,22 +189,28 @@ Status::type track_ringpass (
 
 	Status::type status  = Status::success;
 	std::vector<Pos<T> > final_pos;
+	const Pos<T> nan_pos(nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
+
+	if (trajectory) {
+		pos.reserve(nr_turns+1);
+		for(int i=0; i<nr_turns; ++i) {
+			pos.push_back(nan_pos);
+		}
+	}
+	pos.push_back(nan_pos);
 
 	for(lost_turn=0; lost_turn<nr_turns; ++lost_turn) {
+
+		// stores trajectory at beggining of each turn
+		if (trajectory) pos[lost_turn] = orig_pos;
+
 		if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false)) != Status::success) {
 			return status;
 		}
-		if (trajectory) {
-			pos.push_back(orig_pos);
-		}
 	}
+	pos[pos.size()-1] = orig_pos;
 
-	if (not trajectory) {
-		// stores only final position if trajectory is not requested
-		pos.push_back(orig_pos);
-	}
 	return status;
 }
-
 
 #endif
