@@ -175,15 +175,14 @@ Status::type track_linepass (
 //		RETURN:			status do tracking (see 'auxiliary.h')
 
 
-
 template <typename T>
 Status::type track_ringpass (
 		const Accelerator& accelerator,
 		Pos<T> &orig_pos,
-		std::vector<Pos<T> > &pos,
+		std::vector<Pos<T> >& pos,
 		const unsigned int nr_turns,
-		unsigned int &lost_turn,
-		unsigned int &element_offset,
+		unsigned int& lost_turn,
+		unsigned int& element_offset,
 		Plane::type& lost_plane,
 		bool trajectory) {
 
@@ -193,9 +192,7 @@ Status::type track_ringpass (
 
 	if (trajectory) {
 		pos.reserve(nr_turns+1);
-		for(int i=0; i<nr_turns; ++i) {
-			pos.push_back(nan_pos);
-		}
+		for(int i=0; i<nr_turns; ++i) pos.push_back(nan_pos);
 	}
 	pos.push_back(nan_pos);
 
@@ -207,9 +204,56 @@ Status::type track_ringpass (
 		if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false)) != Status::success) {
 			return status;
 		}
+		final_pos.clear();
 	}
 	pos[pos.size()-1] = orig_pos;
 
+	return status;
+}
+
+
+template <typename T>
+Status::type track_ringpass (
+		const Accelerator& accelerator,
+		std::vector<Pos<T> > &orig_pos,
+		std::vector<Pos<T> > &pos,
+		const unsigned int nr_turns,
+		std::vector<unsigned int > &lost_turn,
+		unsigned int element_offset,
+		std::vector<unsigned int >& lost_plane,
+		std::vector<unsigned int >& lost_element,
+		bool trajectory) {
+
+	Status::type status  = Status::success;
+	Status::type status2  = Status::success;
+	std::vector<Pos<T> > final_pos;
+	unsigned int lt;
+	Plane::type lp;
+
+	if (trajectory) pos.reserve((nr_turns + 1) * orig_pos.size());
+    else pos.reserve(orig_pos.size());
+	lost_turn.reserve(orig_pos.size());
+	lost_plane.reserve(orig_pos.size());
+	lost_element.reserve(orig_pos.size());
+
+	for(unsigned int i=0; i<orig_pos.size(); ++i) {
+		unsigned int le = element_offset;
+
+		status2 = track_ringpass (
+			accelerator, orig_pos[i], final_pos, nr_turns,
+			lt, le, lp, trajectory);
+
+		if (status2 != Status::success) status = status2;
+
+		lost_turn.push_back(lt);
+		lost_plane.push_back(lp);
+		lost_element.push_back(le);
+		for (auto&& p: final_pos){
+			pos.push_back(p);
+		}
+		final_pos.clear();
+
+	}
 	return status;
 }
 

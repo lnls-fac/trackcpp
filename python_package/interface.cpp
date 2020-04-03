@@ -42,7 +42,7 @@ Status::type track_linepass_wrapper(
 
 Status::type track_ringpass_wrapper (
         const Accelerator& accelerator,
-        Pos<double> &orig_pos,
+        std::vector< Pos<double> >& orig_pos,
         std::vector< Pos<double> >& pos,
         RingPassArgs& args) {
     return track_ringpass(accelerator,
@@ -52,6 +52,7 @@ Status::type track_ringpass_wrapper (
                           args.lost_turn,
                           args.element_offset,
                           args.lost_plane,
+                          args.lost_element,
                           args.trajectory);
 }
 
