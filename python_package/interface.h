@@ -49,7 +49,7 @@ public:
 
 Status::type track_elementpass_wrapper (
         const Element& el,
-        Pos<double> &orig_pos,
+        std::vector< Pos<double> >& orig_pos,
         const Accelerator& accelerator);
 
 Status::type track_linepass_wrapper (

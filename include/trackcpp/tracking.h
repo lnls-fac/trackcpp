@@ -32,6 +32,7 @@ Status::type track_findorbit6(const Accelerator& accelerator, std::vector<Pos<do
 Pos<double>  linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<double>& b);
 Pos<double>  linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<double>& b);
 
+
 template <typename T>
 Status::type track_elementpass (
 		     const Element& el,                 // element through which to track particle
@@ -78,6 +79,23 @@ Status::type track_elementpass (
 	return status;
 
 }
+
+template <typename T>
+Status::type track_elementpass (
+		     const Element& el,  // element through which to track particle
+		     std::vector<Pos<T> >& orig_pos,  // initial electron coordinates
+		     const Accelerator& accelerator) {
+
+	Status::type status  = Status::success;
+
+	for(auto&& pos: orig_pos) {
+		Status::type status2 = track_elementpass(el, pos, accelerator);
+		if (status2 != Status::success) status = status2;
+	}
+	return status;
+}
+
+
 
 // linepass
 // --------
