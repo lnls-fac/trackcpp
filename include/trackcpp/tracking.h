@@ -189,6 +189,43 @@ Status::type track_linepass (
 }
 
 
+template <typename T>
+Status::type track_linepass (
+		const Accelerator& accelerator,
+		std::vector<Pos<T> > &orig_pos,
+		std::vector<Pos<T> > &pos,
+		unsigned int element_offset,
+		std::vector<unsigned int >& lost_plane,
+		std::vector<unsigned int >& lost_element,
+		std::vector<unsigned int >& indices) {
+
+	int nr_elements = accelerator.lattice.size();
+	Status::type status  = Status::success;
+	Status::type status2  = Status::success;
+	std::vector<Pos<T> > final_pos;
+	Plane::type lp;
+
+	pos.reserve(indices.size() * orig_pos.size());
+    lost_plane.reserve(orig_pos.size());
+	lost_element.reserve(orig_pos.size());
+
+	for(unsigned int i=0; i<orig_pos.size(); ++i) {
+		unsigned int le = element_offset;
+
+		status2 = track_linepass (
+			accelerator, orig_pos[i], final_pos, le, lp, indices);
+
+		if (status2 != Status::success) status = status2;
+
+		lost_plane.push_back(lp);
+		lost_element.push_back(le);
+		for (auto&& p: final_pos) pos.push_back(p);
+		final_pos.clear();
+	}
+	return status;
+}
+
+
 // ringpass
 // --------
 // tracks particles around a ring
@@ -244,43 +281,6 @@ Status::type track_ringpass (
 
 
 template <typename T>
-Status::type track_linepass (
-		const Accelerator& accelerator,
-		std::vector<Pos<T> > &orig_pos,
-		std::vector<Pos<T> > &pos,
-		unsigned int element_offset,
-		std::vector<unsigned int >& lost_plane,
-		std::vector<unsigned int >& lost_element,
-		std::vector<unsigned int >& indices) {
-
-	int nr_elements = accelerator.lattice.size();
-	Status::type status  = Status::success;
-	Status::type status2  = Status::success;
-	std::vector<Pos<T> > final_pos;
-	Plane::type lp;
-
-	pos.reserve(indices.size() * orig_pos.size());
-    lost_plane.reserve(orig_pos.size());
-	lost_element.reserve(orig_pos.size());
-
-	for(unsigned int i=0; i<orig_pos.size(); ++i) {
-		unsigned int le = element_offset;
-
-		status2 = track_linepass (
-			accelerator, orig_pos[i], final_pos, le, lp, indices);
-
-		if (status2 != Status::success) status = status2;
-
-		lost_plane.push_back(lp);
-		lost_element.push_back(le);
-		for (auto&& p: final_pos) pos.push_back(p);
-		final_pos.clear();
-	}
-	return status;
-}
-
-
-template <typename T>
 Status::type track_ringpass (
 		const Accelerator& accelerator,
 		std::vector<Pos<T> > &orig_pos,
@@ -307,7 +307,7 @@ Status::type track_ringpass (
 	for(unsigned int i=0; i<orig_pos.size(); ++i) {
 		unsigned int le = element_offset;
 
-		status2 = track_ringpass (
+		status2 = track_ringpass(
 			accelerator, orig_pos[i], final_pos, nr_turns,
 			lt, le, lp, trajectory);
 
@@ -316,7 +316,7 @@ Status::type track_ringpass (
 		lost_turn.push_back(lt);
 		lost_plane.push_back(lp);
 		lost_element.push_back(le);
-		for (auto&& p: final_pos)pos.push_back(p);
+		for (auto&& p: final_pos) pos.push_back(p);
 		final_pos.clear();
 	}
 	return status;
