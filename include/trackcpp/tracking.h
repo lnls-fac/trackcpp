@@ -280,7 +280,7 @@ Status::type track_ringpass (
 	for(lost_turn=0; lost_turn<nr_turns; ++lost_turn) {
 
 		// stores trajectory at beggining of each turn
-		if (trajectory) pos[lost_turn] = orig_pos;
+		if (trajectory) pos.push_back(orig_pos);
 
 		if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false)) != Status::success) {
 			// fill last of vector with nans
@@ -291,7 +291,7 @@ Status::type track_ringpass (
 		}
 		final_pos.clear();
 	}
-	pos[pos.size()-1] = orig_pos;
+	pos.push_back(orig_pos);
 
 	return status;
 }
