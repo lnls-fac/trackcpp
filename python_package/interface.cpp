@@ -20,41 +20,91 @@
 
 Status::type track_elementpass_wrapper (
          const Element& el,
-         std::vector< Pos<double> >& orig_pos,
+         double *pos, int n1, int n2,
          const Accelerator& accelerator) {
-         return track_elementpass (el,
-                                   orig_pos,
-                                   accelerator);
+
+    std::vector<Pos<double> > post;
+
+    post.reserve(n2);
+    for (unsigned int i=0; i<n2; ++i){
+        post.emplace_back(
+            pos[0*n2 + i], pos[1*n2 + i],
+            pos[2*n2 + i], pos[3*n2 + i],
+            pos[4*n2 + i], pos[5*n2 + i]);
+    }
+    Status::type status = track_elementpass(
+        el, post, accelerator);
+
+    for (unsigned int i=0; i<post.size(); ++i){
+        pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
+        pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;
+        pos[4*n2 + i] = post[i].de; pos[5*n2 + i] = post[i].dl;
+    }
+    return status;
 }
 
 Status::type track_linepass_wrapper(
         const Accelerator &accelerator,
-        std::vector< Pos<double> >& orig_pos,
-        std::vector< Pos<double> >& pos,
+        double *orig_pos, int ni1, int ni2,
+        double *pos, int n1, int n2,
         LinePassArgs& args) {
-    return track_linepass(accelerator,
-                          orig_pos,
-                          pos,
+
+    std::vector<Pos<double> > post;
+    std::vector<Pos<double> > orig_post;
+
+    orig_post.reserve(ni2);
+    for (unsigned int i=0; i<ni2; ++i){
+        orig_post.emplace_back(
+            orig_pos[0*ni2 + i], orig_pos[1*ni2 + i],
+            orig_pos[2*ni2 + i], orig_pos[3*ni2 + i],
+            orig_pos[4*ni2 + i], orig_pos[5*ni2 + i]);
+    }
+    Status::type status = track_linepass(accelerator,
+                          orig_post,
+                          post,
                           args.element_offset,
                           args.lost_plane,
                           args.lost_element,
                           args.indices);
+    for (unsigned int i=0; i<post.size(); ++i){
+        pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
+        pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;
+        pos[4*n2 + i] = post[i].de; pos[5*n2 + i] = post[i].dl;
+    }
+    return status;
 }
 
 Status::type track_ringpass_wrapper (
         const Accelerator& accelerator,
-        std::vector< Pos<double> >& orig_pos,
-        std::vector< Pos<double> >& pos,
+        double *orig_pos, int ni1, int ni2,
+        double *pos, int n1, int n2,
         RingPassArgs& args) {
-    return track_ringpass(accelerator,
-                          orig_pos,
-                          pos,
+
+    std::vector<Pos<double> > post;
+    std::vector<Pos<double> > orig_post;
+
+    orig_post.reserve(ni2);
+    for (unsigned int i=0; i<ni2; ++i){
+        orig_post.emplace_back(
+            pos[0*ni2 + i], pos[1*ni2 + i],
+            pos[2*ni2 + i], pos[3*ni2 + i],
+            pos[4*ni2 + i], pos[5*ni2 + i]);
+    }
+    Status::type status = track_ringpass(accelerator,
+                          orig_post,
+                          post,
                           args.nr_turns,
                           args.lost_turn,
                           args.element_offset,
                           args.lost_plane,
                           args.lost_element,
                           args.trajectory);
+    for (unsigned int i=0; i<post.size(); ++i){
+        pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
+        pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;
+        pos[4*n2 + i] = post[i].de; pos[5*n2 + i] = post[i].dl;
+    }
+    return status;
 }
 
 

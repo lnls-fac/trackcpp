@@ -49,19 +49,19 @@ public:
 
 Status::type track_elementpass_wrapper (
         const Element& el,
-        std::vector< Pos<double> >& orig_pos,
+        double *pos, int n1, int n2,
         const Accelerator& accelerator);
 
 Status::type track_linepass_wrapper (
         const Accelerator& accelerator,
-        std::vector< Pos<double> >& orig_pos,
-        std::vector< Pos<double> >& pos,
+        double *orig_pos, int ni1, int ni2,
+        double *pos, int n1, int n2,
         LinePassArgs& args);
 
 Status::type track_ringpass_wrapper (
         const Accelerator& accelerator,
-        std::vector< Pos<double> >& orig_pos,
-        std::vector< Pos<double> >& pos,
+        double *orig_pos, int ni1, int ni2,
+        double *pos, int n1, int n2,
         RingPassArgs& args);
 
 Element marker_wrapper(const std::string& fam_name_);
