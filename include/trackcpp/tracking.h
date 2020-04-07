@@ -125,7 +125,6 @@ Status::type track_linepass (
 	lost_plane = Plane::no_plane;
 
 	const std::vector<Element>& line = accelerator.lattice;
-	const Pos<T> nan_pos(nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
 	int nr_elements  = line.size();
 
 	//pos.clear(); other functions assume pos is not clearedin linepass!
@@ -135,7 +134,7 @@ Status::type track_linepass (
 	std::vector<bool> indcs;
 	indcs.reserve(nr_elements+1);
 	for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
-	for (auto&& i: indices) indcs[i] = true;
+	for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
 
 	for(int i=0; i<nr_elements; ++i) {
 
@@ -150,35 +149,32 @@ Status::type track_linepass (
 		if ((not isfinite(orig_pos.rx)) or
 			((accelerator.vchamber_on) and
 			 ((orig_pos.rx < element.hmin) or
-			 (orig_pos.rx >  element.hmax)))) {
+			  (orig_pos.rx >  element.hmax)))) {
 			lost_plane = Plane::x;
 			status = Status::particle_lost;
-			break;
-		}
-		if ((not isfinite(orig_pos.ry)) or
-			((accelerator.vchamber_on) and
-			 ((orig_pos.ry < element.vmin) or
-			 (orig_pos.ry >  element.vmax)))) {
+		}else if ((not isfinite(orig_pos.ry)) or
+				 ((accelerator.vchamber_on) and
+			 	  ((orig_pos.ry < element.vmin) or
+			 	   (orig_pos.ry >  element.vmax)))) {
 			lost_plane = Plane::y;
 			status = Status::particle_lost;
-			break;
 		}
 
-		if (status != Status::success) return status;
-
+		if (status != Status::success) {
+			// fill rest of vector with nans
+			for(int ii=i+1; ii<=nr_elements; ++ii) {
+				if (indcs[ii]) pos.emplace_back(
+					nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
+			}
+			return status;
+		}
 		// moves to next element index
 		element_offset = (element_offset + 1) % nr_elements;
-
 	}
 
 	// stores final particle position at the end of the line
-	if (indcs[nr_elements]){
-		if (status == Status::success){
-			pos.push_back(orig_pos);
-		}else{
-			pos.push_back(nan_pos);
-		}
-	}
+	if (indcs[nr_elements]) pos.push_back(orig_pos);
+
 	return (status == Status::success) ? status: Status::particle_lost;
 }
 
@@ -283,10 +279,14 @@ Status::type track_ringpass (
 		if (trajectory) pos.push_back(orig_pos);
 
 		if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false)) != Status::success) {
+
 			// fill last of vector with nans
-			const Pos<T> nan_pos(
+			pos.emplace_back(
 				nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
-			for(int i=lost_turn+1; i<=nr_turns; ++i) pos.push_back(nan_pos);
+			if (trajectory) for(int i=lost_turn+1; i<nr_turns; ++i) {
+					pos.emplace_back(
+						nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
+				}
 			return status;
 		}
 		final_pos.clear();
