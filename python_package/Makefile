@@ -33,6 +33,8 @@ trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
 	$(CXX) -shared -Wl,--whole-archive $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
+	[ -f ./numpy.i ] && echo "numpy.i already here, good" || \
+	wget https://raw.githubusercontent.com/numpy/numpy/v1.18.0/tools/swig/numpy.i
 	$(SWIG) -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: all

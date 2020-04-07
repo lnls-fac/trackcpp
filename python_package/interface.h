@@ -27,15 +27,17 @@
 
 struct LinePassArgs {
     unsigned int element_offset;
-    Plane::type  lost_plane;
-    bool         trajectory;
+    std::vector< unsigned int > indices;
+    std::vector< unsigned int > lost_plane;
+    std::vector< unsigned int > lost_element;
 };
 
 struct RingPassArgs : public LinePassArgs {
     unsigned int nr_turns;
-    unsigned int lost_turn;
+    std::vector< unsigned int > lost_turn;
     unsigned int element_offset;
-    Plane::type  lost_plane;
+    std::vector< unsigned int > lost_plane;
+    std::vector< unsigned int > lost_element;
     unsigned int trajectory;
 };
 
@@ -47,19 +49,19 @@ public:
 
 Status::type track_elementpass_wrapper (
         const Element& el,
-        Pos<double> &orig_pos,
+        double *pos, int n1, int n2,
         const Accelerator& accelerator);
 
 Status::type track_linepass_wrapper (
         const Accelerator& accelerator,
-        Pos<double>& orig_pos,
-        std::vector< Pos<double> >& pos,
+        double *orig_pos, int ni1, int ni2,
+        double *pos, int n1, int n2,
         LinePassArgs& args);
 
 Status::type track_ringpass_wrapper (
         const Accelerator& accelerator,
-        Pos<double> &orig_pos,
-        std::vector< Pos<double> >& pos,
+        double *orig_pos, int ni1, int ni2,
+        double *pos, int n1, int n2,
         RingPassArgs& args);
 
 Element marker_wrapper(const std::string& fam_name_);

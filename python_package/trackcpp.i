@@ -17,6 +17,7 @@
 %module trackcpp
 
 %{
+#define SWIG_FILE_WITH_INIT
 #include <trackcpp/elements.h>
 #include <trackcpp/kicktable.h>
 #include <trackcpp/auxiliary.h>
@@ -38,6 +39,7 @@
 namespace std {
     %template(CppStringVector) vector<string>;
     %template(CppDoubleVector) vector<double>;
+    %template(CppUnsigIntVector) vector<unsigned int>;
     %template(CppElementVector) vector<Element>;
     %template(CppDoublePosVector) vector< Pos<double> >;
     %template(CppDoubleMatrix) vector< vector<double> >;
@@ -58,6 +60,17 @@ double get_double_max() {
 }
 
 %}
+
+%include "numpy.i"
+
+%init %{
+    import_array();
+%}
+
+%apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
+    (double* orig_pos, int ni1, int ni2)}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
+    (double* pos, int n1, int n2)}
 
 %include "../include/trackcpp/elements.h"
 %include "../include/trackcpp/kicktable.h"
