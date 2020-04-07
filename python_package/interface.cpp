@@ -86,9 +86,9 @@ Status::type track_ringpass_wrapper (
     orig_post.reserve(ni2);
     for (unsigned int i=0; i<ni2; ++i){
         orig_post.emplace_back(
-            pos[0*ni2 + i], pos[1*ni2 + i],
-            pos[2*ni2 + i], pos[3*ni2 + i],
-            pos[4*ni2 + i], pos[5*ni2 + i]);
+            orig_pos[0*ni2 + i], orig_pos[1*ni2 + i],
+            orig_pos[2*ni2 + i], orig_pos[3*ni2 + i],
+            orig_pos[4*ni2 + i], orig_pos[5*ni2 + i]);
     }
     Status::type status = track_ringpass(accelerator,
                           orig_post,
