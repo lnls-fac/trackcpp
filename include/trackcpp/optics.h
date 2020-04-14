@@ -37,6 +37,7 @@ public:
             etay(Vector({std::nan(""),std::nan("")})),
             mux(0), betax(std::nan("")), alphax(std::nan("")),
             muy(0), betay(std::nan("")), alphay(std::nan("")) {}
+  Twiss(const Twiss &) = default;
 
   bool isundef() const { return std::isnan(this->betax); }
 
