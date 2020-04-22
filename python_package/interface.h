@@ -84,6 +84,14 @@ Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerat
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag = true);
 
 
+Status::type track_findm66_wrapper(
+    const Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
+    double *m66, int n1_m66, int n2_m66,
+    Pos<double>& v0, std::vector<unsigned int >& indices);
+
+
 void naff_general_wrapper(
     double *re_in, int n1_re_in, int n2_re_in,
     double *im_in, int n1_im_in, int n2_im_in,

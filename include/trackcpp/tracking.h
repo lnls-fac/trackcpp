@@ -24,13 +24,31 @@
 #include "linalg.h"
 #include <vector>
 #include <limits>
+#include <utility>
 #include <cmath>
 
-Status::type track_findm66(const Accelerator& accelerator, const Pos<double>& fixed_point, std::vector<Matrix>& tm, Matrix& m66, Pos<double>& v0);
-Status::type track_findorbit4(const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, const Pos<double>& fixed_point_guess = Pos<double>(0));
-Status::type track_findorbit6(const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit, const Pos<double>& fixed_point_guess = Pos<double>(0));
-Pos<double>  linalg_solve4_posvec(const std::vector<Pos<double> >& M, const Pos<double>& b);
-Pos<double>  linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<double>& b);
+Status::type track_findm66(
+	const Accelerator& accelerator, const Pos<double>& fixed_point,
+	std::vector<Matrix>& tm, Matrix& m66, Pos<double>& v0);
+
+Status::type track_findm66(
+	const Accelerator& accelerator, const Pos<double>& fixed_point,
+	std::vector<Matrix>& tm, Matrix& m66, Pos<double>& v0,
+	std::vector<unsigned int >& indices);
+
+Status::type track_findorbit4(
+	const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit,
+	const Pos<double>& fixed_point_guess = Pos<double>(0));
+
+Status::type track_findorbit6(
+	const Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit,
+	const Pos<double>& fixed_point_guess = Pos<double>(0));
+
+Pos<double>  linalg_solve4_posvec(
+	const std::vector<Pos<double> >& M, const Pos<double>& b);
+
+Pos<double>  linalg_solve6_posvec(
+	const std::vector<Pos<double> >& M, const Pos<double>& b);
 
 
 template <typename T>
@@ -238,6 +256,44 @@ Status::type track_linepass (
 	}
 	return status;
 }
+
+// template <typename T>
+// Status::type track_linepass (
+// 		const Accelerator& accelerator,
+// 		std::vector<Pos<T> > &orig_pos,
+// 		std::vector<Pos<T> > &pos,
+// 		unsigned int element_offset,
+// 		std::vector<unsigned int >& lost_plane,
+// 		std::vector<unsigned int >& lost_element,
+// 		std::vector<unsigned int >& indices) {
+
+// 	Status::type status  = Status::success;
+// 	Status::type status2  = Status::success;
+// 	std::vector<Pos<T> > final_pos;
+// 	Plane::type lp;
+
+// 	int nr_trh = pos.size()
+
+// 	pos.reserve(indices.size() * orig_pos.size());
+//     lost_plane.reserve(orig_pos.size());
+// 	lost_element.reserve(orig_pos.size());
+
+// 	for(unsigned int i=0; i<orig_pos.size(); ++i) {
+// 		unsigned int le = element_offset;
+
+// 		status2 = track_linepass (
+// 			accelerator, orig_pos[i], final_pos, le, lp, indices);
+
+// 		if (status2 != Status::success) status = status2;
+
+// 		lost_plane.push_back(lp);
+// 		lost_element.push_back(le);
+// 		for (auto&& p: final_pos) pos.push_back(p);
+// 		final_pos.clear();
+// 	}
+// 	return status;
+// }
+
 
 
 // ringpass

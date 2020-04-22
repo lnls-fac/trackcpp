@@ -166,6 +166,32 @@ Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerat
 }
 
 
+Status::type track_findm66_wrapper(
+    const Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
+    double *m66, int n1_m66, int n2_m66,
+    Pos<double>& v0,
+    std::vector<unsigned int >& indices) {
+
+    std::vector<Matrix> vec_tm;
+    Matrix vec_m66;
+
+    Status::type status = track_findm66(
+        accelerator, fixed_point, vec_tm, vec_m66, v0, indices);
+
+    for (unsigned int i=0; i<vec_tm.size(); ++i){
+        Matrix& m = vec_tm[i];
+        for (unsigned int j=0; j<n2_tm; ++j)
+            for (unsigned int k=0; k<n3_tm; ++k)
+                cumul_tm[(i*n2_tm + j)*n3_tm + k] = m[j][k];
+        }
+    for (unsigned int i=0; i<n1_m66; ++i)
+        for (unsigned int j=0; j<n2_m66; ++j)
+            m66[i*n2_m66 + j] = vec_m66[i][j];
+}
+
+
 void naff_general_wrapper(
     double *re_in, int n1_re_in, int n2_re_in,
     double *im_in, int n1_im_in, int n2_im_in,

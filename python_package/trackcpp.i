@@ -73,6 +73,12 @@ double get_double_max() {
 %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
     (double* pos, int n1, int n2)}
 
+//For find_m66
+%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
+    (double *cumul_tm, int n1_tm, int n2_tm, int n3_tm)}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
+    (double *m66, int n1_m66, int n2_m66)}
+
 // For naff_general
 %apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
     (double* re_in, int n1_re_in, int n2_re_in)}
