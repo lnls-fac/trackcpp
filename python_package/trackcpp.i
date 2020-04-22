@@ -67,10 +67,24 @@ double get_double_max() {
     import_array();
 %}
 
+// For ringpass and linepass
 %apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
     (double* orig_pos, int ni1, int ni2)}
 %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
     (double* pos, int n1, int n2)}
+
+// For naff_general
+%apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
+    (double* re_in, int n1_re_in, int n2_re_in)}
+%apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
+    (double* im_in, int n1_im_in, int n2_im_in)}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
+    (double *ff_out, int n1_ff_out, int n2_ff_out)}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
+    (double *re_out, int n1_re_out, int n2_re_out)}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
+    (double *im_out, int n1_im_out, int n2_im_out)}
+
 
 %include "../include/trackcpp/elements.h"
 %include "../include/trackcpp/kicktable.h"
