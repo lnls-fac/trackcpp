@@ -40,7 +40,8 @@ Status::type track_findm66 (const Accelerator& accelerator,
                             const Pos<double>& fixed_point,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
-                            Pos<double>& v0) {
+                            Pos<double>& v0,
+                            std::vector<unsigned int >& indices) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
@@ -50,35 +51,55 @@ Status::type track_findm66 (const Accelerator& accelerator,
   // case no closed_orbit has been defined
   if (std::isnan(fp.rx)) fp = Pos<double>(0,0,0,0,0,0);
 
+  int nr_elements  = lattice.size();
+	std::vector<bool> indcs;
+	indcs.reserve(nr_elements+1);
+	for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
+	for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
 
   Pos<Tpsa<6,1> > map;
   map.rx = Tpsa<6,1>(fp.rx, 0); map.px = Tpsa<6,1>(fp.px, 1);
   map.ry = Tpsa<6,1>(fp.ry, 2); map.py = Tpsa<6,1>(fp.py, 3);
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
-  tm.clear(); tm.resize(lattice.size()+1, Matrix(6));
+  tm.clear(); tm.reserve(indices.size());
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    Matrix& m = tm[i];
-    m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
-    m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
-    m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
-    m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3]; m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
-    m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3]; m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
-    m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
+    if (indcs[i]){
+      Matrix m (6);
+      m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3];
+      m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
+      m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3];
+      m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
+      m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3];
+      m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
+      m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3];
+      m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
+      m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3];
+      m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
+      m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3];
+      m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
+    tm.push_back(std::move(m));
+    }
     // track through element
     if ((status = track_elementpass (lattice[i], map, accelerator)) != Status::success) return status;
   }
 
   m66 = Matrix(6);
   Matrix& m = m66;
-  m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3]; m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
-  m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3]; m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
-  m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3]; m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
-  m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3]; m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
-  m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3]; m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
-  m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3]; m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
+  m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3];
+  m[0][3] = map.rx.c[4]; m[0][4] = map.rx.c[5]; m[0][5] = map.rx.c[6];
+  m[1][0] = map.px.c[1]; m[1][1] = map.px.c[2]; m[1][2] = map.px.c[3];
+  m[1][3] = map.px.c[4]; m[1][4] = map.px.c[5]; m[1][5] = map.px.c[6];
+  m[2][0] = map.ry.c[1]; m[2][1] = map.ry.c[2]; m[2][2] = map.ry.c[3];
+  m[2][3] = map.ry.c[4]; m[2][4] = map.ry.c[5]; m[2][5] = map.ry.c[6];
+  m[3][0] = map.py.c[1]; m[3][1] = map.py.c[2]; m[3][2] = map.py.c[3];
+  m[3][3] = map.py.c[4]; m[3][4] = map.py.c[5]; m[3][5] = map.py.c[6];
+  m[4][0] = map.de.c[1]; m[4][1] = map.de.c[2]; m[4][2] = map.de.c[3];
+  m[4][3] = map.de.c[4]; m[4][4] = map.de.c[5]; m[4][5] = map.de.c[6];
+  m[5][0] = map.dl.c[1]; m[5][1] = map.dl.c[2]; m[5][2] = map.dl.c[3];
+  m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
 
-  tm[lattice.size()] = m66;
+  if (indcs[lattice.size()]) tm.push_back(m66);
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
@@ -86,6 +107,23 @@ Status::type track_findm66 (const Accelerator& accelerator,
   return status;
 
 }
+
+
+Status::type track_findm66 (const Accelerator& accelerator,
+                            const Pos<double>& fixed_point,
+                            std::vector<Matrix>& tm,
+                            Matrix& m66,
+                            Pos<double>& v0) {
+
+  std::vector<unsigned int> indices;
+  unsigned int nr_elements = accelerator.lattice.size();
+
+  indices.reserve(nr_elements + 1);
+	for (unsigned int i=0; i<=nr_elements; ++i) indices.push_back(i);
+
+	return track_findm66 (accelerator, fixed_point, tm, m66, v0, indices);
+}
+
 
 Status::type track_findorbit6(
     const Accelerator& accelerator,

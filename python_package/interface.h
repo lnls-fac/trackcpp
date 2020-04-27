@@ -24,6 +24,7 @@
 #include <trackcpp/auxiliary.h>
 #include <trackcpp/tracking.h>
 #include <trackcpp/pos.h>
+#include <trackcpp/naff.h>
 
 struct LinePassArgs {
     unsigned int element_offset;
@@ -81,5 +82,22 @@ Element rbend_wrapper(const std::string& fam_name_, const double& length_,
                       const double& K_, const double& S_);
 Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerator, bool file_flag = true);
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag = true);
+
+
+Status::type track_findm66_wrapper(
+    const Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
+    double *m66, int n1_m66, int n2_m66,
+    Pos<double>& v0, std::vector<unsigned int >& indices);
+
+
+void naff_general_wrapper(
+    double *re_in, int n1_re_in, int n2_re_in,
+    double *im_in, int n1_im_in, int n2_im_in,
+    bool is_real, int nr_ff, int win,
+    double *ff_out, int n1_ff_out, int n2_ff_out,
+    double *re_out, int n1_re_out, int n2_re_out,
+    double *im_out, int n1_im_out, int n2_im_out);
 
 #endif // INTERFACE_H
