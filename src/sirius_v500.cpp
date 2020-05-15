@@ -159,7 +159,7 @@ void sirius_v500(std::vector<Element>& the_ring) {
     Element sf2      = Element::sextupole("sf2", 0.150000, sf2_strength);
 
     //""" --- rf cavity --- """
-    Element cav = Element::rfcavity("cav", 0, 500e6, 2.5e6);
+    Element cav = Element::rfcavity("cav", 0, 500e6, 2.5e6, 0.0);
 
     //""" lines """
     std::vector<Element> insa   = { dia1, mida, dia2, crhv, cv, d12, ch, d12, sa2, d12, mon, d12, qaf, d23, qad, d17, sa1, d17};
