@@ -69,3 +69,6 @@ test:
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) -c $(CFLAGS) $(INC) -I./$(SRCDIR) $< -o $@;
+
+clean:
+	rm -rf *.o test-kickmap

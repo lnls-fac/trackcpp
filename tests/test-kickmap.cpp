@@ -16,9 +16,12 @@ void sirius_model(std::vector<Element>& the_ring) {
     Element qf = Element::quadrupole("qf",  0.500, +1.0);
 	Element qd = Element::quadrupole("qd",  0.500, -1.0);
 
+    Element epu = Element::kickmap("epu", "test_kicktable.txt", 1);
+
     the_ring.clear();
     the_ring.push_back(d10);
     the_ring.push_back(qf);
+    the_ring.push_back(epu);
     the_ring.push_back(d10);
     the_ring.push_back(qd);
 
@@ -36,13 +39,22 @@ int main() {
     Twiss twiss0;
     Status::type status;
 
-    accelerator.energy = 3e9;
+    accelerator.energy = 2.99792462e9;
     accelerator.harmonic_number = 864;
     accelerator.cavity_on = true;
     accelerator.radiation_on = true;
     accelerator.vchamber_on = true;
 
+
     sirius_model(accelerator.lattice);
+
+    // return 0;
+
+    fixed_point.rx = 0.001;
+    std::cout << fixed_point << std::endl;
+    track_elementpass(accelerator.lattice[2], fixed_point, accelerator);
+    std::cout << fixed_point << std::endl;
+    return 0;
 
     status = calc_twiss(accelerator, fixed_point, m66, twiss, twiss0);
     std::cout << status << std::endl;
