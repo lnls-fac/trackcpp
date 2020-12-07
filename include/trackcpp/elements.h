@@ -95,6 +95,7 @@ public:
   static Element quadrupole (const std::string& fam_name_, const double& length_, const double& K_, const int nr_steps_ = 10);
   static Element sextupole  (const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
   static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_);
+  static Element kickmap    (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_ = 20);
 
   bool operator==(const Element& o) const;
   bool operator!=(const Element& o) const { return !(*this == o); };
@@ -114,5 +115,6 @@ void initialize_rbend(Element& element, const double& angle, const double& angle
 void initialize_quadrupole(Element& element, const double& K, const int& nr_steps);
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
 void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
+void initialize_kickmap(Element &element, const int &nr_steps, const Kicktable& kicktable);
 
 #endif

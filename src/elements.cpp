@@ -16,7 +16,12 @@
 
 #include <trackcpp/auxiliary.h>
 #include <trackcpp/elements.h>
+#include <trackcpp/kicktable.h>
 #include <cfloat>
+
+std::vector<std::string> kicktable_fname;
+std::vector<Kicktable> kicktable_list;
+
 
 const std::vector<double> Element::default_polynom = std::vector<double>(3,0);
 
@@ -121,6 +126,23 @@ Element Element::rfcavity (const std::string& fam_name_, const double& length_, 
   return e;
 }
 
+Element Element::kickmap (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_) {
+
+  // add new kicktable to global list, if necessary.
+  int i;
+  for(i=0; i<kicktable_fname.size(); ++i)
+    if (kicktable_fname[i] == kicktable_fname_) break;
+  if (i == kicktable_fname.size()) {
+    kicktable_fname.push_back(kicktable_fname_);
+    kicktable_list.push_back(Kicktable(kicktable_fname_));
+    i = kicktable_fname.size() - 1;
+  }
+
+  const Kicktable& kicktable = kicktable_list[i];
+  Element e = Element(fam_name_, kicktable.length);
+    initialize_kickmap(e, nr_steps_, kicktable);
+  return e;
+}
 
 
 void print_polynom(std::ostream& out, const std::string& label, const std::vector<double>& polynom) {
@@ -264,4 +286,10 @@ void initialize_rfcavity(Element &element, const double &frequency, const double
     element.frequency = frequency;
     element.voltage = voltage;
     element.phase_lag = phase_lag;
+}
+
+void initialize_kickmap(Element &element, const int &nr_steps, const Kicktable& kicktable) {
+    element.pass_method = PassMethod::pm_kicktable_pass;
+    element.nr_steps = nr_steps;
+    element.kicktable = &kicktable;
 }

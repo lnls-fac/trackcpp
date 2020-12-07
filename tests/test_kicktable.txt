@@ -1,0 +1,23 @@
+# Author : Radia User
+#
+# Total Length of Longitudinal Interval [m]
+2.0
+# Number of Horizontal Points
+3
+# Number of Vertical Points
+2
+# Total Horizontal 2nd Order Kick [T2m2]
+START
+                -1.00000e-02  +0.00000e-00  +1.00000e-02
+   1.00000e-02   1.00000e-00   1.00000e-00   1.00000e-00
+  -1.00000e-02   1.00000e-00   1.00000e-00   1.00000e-00
+# Total Vertical 2nd Order Kick [T2m2]
+START
+                -1.00000e-02  +0.00000e-00  +1.00000e-02
+   1.00000e-02   0.00000e-00   0.00000e-00   0.00000e-00
+  -1.00000e-02   0.00000e-00   0.00000e-00   0.00000e-00
+# Total Longitudinally Integrated Squared Transverse Magnetic Field [T2m]
+START
+                -1.00000e-02  +0.00000e-00  +1.00000e-02
+   1.00000e-02   0.00000e-00   0.00000e-00   0.00000e-00
+  -1.00000e-02   0.00000e-00   0.00000e-00   0.00000e-00

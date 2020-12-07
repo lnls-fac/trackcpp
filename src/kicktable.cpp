@@ -35,7 +35,10 @@ Kicktable::Kicktable(const std::string& filename_) :
 Status::type Kicktable::load_from_file(const std::string& filename_) {
 
   std::ifstream fp(filename_);
-  if (fp.fail()) return Status::file_not_found;
+  if (fp.fail()) {
+    std::cout << "Could not find kicktable file " << filename_ << "!" << std::endl;
+    return Status::file_not_found;
+  }
   this->filename = filename_;
 
   std::string str;

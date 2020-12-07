@@ -157,6 +157,10 @@ Element rfcavity_wrapper(const std::string &fam_name_, const double &length_, co
     return Element::rfcavity(fam_name_, length_, frequency_, voltage_, phase_lag_);
 }
 
+Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kicktable_fname_, const int nr_steps_) {
+    return Element::kickmap(fam_name_, kicktable_fname_, nr_steps_);
+}
+
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag) {
   return read_flat_file(fname.data, accelerator, file_flag);
 }
