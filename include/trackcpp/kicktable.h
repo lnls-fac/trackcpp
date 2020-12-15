@@ -45,7 +45,8 @@ public:
   Kicktable(const std::string& filename_ = "", const double& rescale_length = 1.0, const double& rescale_kicks = 1.0);
   Kicktable(const Kicktable &) = default;
 
-  Status::type load_from_file(const std::string& filename_, const double& rescale_length, const double& rescale_kicks);
+  Status::type load_from_file(const std::string& filename_);
+
   unsigned int get_idx(unsigned int ix, unsigned int iy) const { return iy*x_nrpts+ix; }
   double       get_x(unsigned int ix) const { return x_min + ix * (x_max - x_min) / (x_nrpts - 1.0); }
   double       get_y(unsigned int iy) const { return y_min + iy * (y_max - y_min) / (y_nrpts - 1.0); }

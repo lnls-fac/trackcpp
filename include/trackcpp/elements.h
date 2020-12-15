@@ -115,6 +115,6 @@ void initialize_rbend(Element& element, const double& angle, const double& angle
 void initialize_quadrupole(Element& element, const double& K, const int& nr_steps);
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
 void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
-void initialize_kickmap(Element& element, const int& nr_steps, const double& rescale_length, const double& rescale_kicks, const Kicktable& kicktable);
+void initialize_kickmap(Element& element, const int& nr_steps, const Kicktable& kicktable);
 
 #endif

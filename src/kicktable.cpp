@@ -28,12 +28,12 @@ Kicktable::Kicktable(const std::string& filename_, const double& rescale_length_
   y_min(nan("")), y_max(nan("")) {
 
   if (filename_ != "") {
-    this->load_from_file(filename_, rescale_length_, rescale_kicks_);
+    this->load_from_file(filename_);
   }
 
 }
 
-Status::type Kicktable::load_from_file(const std::string& filename_, const double& rescale_length_, const double& rescale_kicks_) {
+Status::type Kicktable::load_from_file(const std::string& filename_) {
 
   std::ifstream fp(filename_);
   if (fp.fail()) {
@@ -48,7 +48,8 @@ Status::type Kicktable::load_from_file(const std::string& filename_, const doubl
   getline(fp, str);   // name of kicktable line
   getline(fp, str);   // author line
   getline(fp, str);   // label 'ID length[m]'
-  fp >> this->length * this->rescale_length; // length of element
+  fp >> this->length; // length of element
+  this->length *= this->rescale_length;
   getline(fp, str);   // advances to new line
   getline(fp, str);   // label 'number of horizontal points'
   fp >> this->x_nrpts;      // number of horizontal points
@@ -76,7 +77,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_, const doubl
     if (std::isnan(y_max) or posy > y_max) y_max = posy;
     for(unsigned int i=0; i<x_nrpts; ++i) {
       fp >> kick;
-      x_kick[this->get_idx(i,j)] = kick * self->rescale_kicks;
+      x_kick[this->get_idx(i,j)] = kick * this->rescale_kicks;
     }
   }
   getline(fp, str);   // advances to new line
@@ -89,7 +90,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_, const doubl
     double posy; fp >> posy;
     for(unsigned int i=0; i<x_nrpts; ++i) {
       fp >> kick;
-      y_kick[this->get_idx(i,j)] = kick * self->rescale_kicks;
+      y_kick[this->get_idx(i,j)] = kick * this->rescale_kicks;
     }
   }
 
