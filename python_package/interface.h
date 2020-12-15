@@ -75,7 +75,7 @@ Element matrix_wrapper(const std::string& fam_name_, const double& length_);
 Element quadrupole_wrapper(const std::string& fam_name_, const double& length_, const double& K_, const int nr_steps_ = 10);
 Element sextupole_wrapper(const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
 Element rfcavity_wrapper(const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag);
-Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kicktable_fname_, const int nr_steps_ = 20);
+Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kicktable_fname_, const int nr_steps_ = 20, const double& rescale_length = 1.0, const double& rescale_kicks = 1.0);
 Element rbend_wrapper(const std::string& fam_name_, const double& length_,
                       const double& angle_, const double& angle_in_, const double& angle_out_,
                       const double& gap_, const double& fint_in_, const double& fint_out_,
