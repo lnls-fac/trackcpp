@@ -196,6 +196,35 @@ Status::type track_findm66_wrapper(
 }
 
 
+Status::type track_diffusionmatrix_wrapper(
+    const Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
+    double *bdiffmats, int n1_bd, int n2_bd, int n3_bd){
+
+    std::vector<Matrix> vec_tm;
+    std::vector<Matrix> vec_bd;
+
+    for (unsigned int i=0; i<n1_tm; ++i){
+        Matrix m (6);
+        for (unsigned int j=0; j<n2_tm; ++j)
+            for (unsigned int k=0; k<n3_tm; ++k)
+                m[j][k] = cumul_tm[(i*n2_tm + j)*n3_tm + k];
+        vec_tm.emplace_back(m);
+    }
+
+    Status::type status = track_diffusionmatrix(
+                accelerator, fixed_point, vec_tm, vec_bd);
+
+    for (unsigned int i=0; i<vec_tm.size(); ++i){
+        Matrix& m = vec_bd[i];
+        for (unsigned int j=0; j<n2_tm; ++j)
+            for (unsigned int k=0; k<n3_tm; ++k)
+                bdiffmats[(i*n2_tm + j)*n3_tm + k] = m[j][k];
+    }
+}
+
+
 void naff_general_wrapper(
     double *re_in, int n1_re_in, int n2_re_in,
     double *im_in, int n1_im_in, int n2_im_in,

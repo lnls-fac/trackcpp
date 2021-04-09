@@ -23,6 +23,7 @@
 #include <trackcpp/elements.h>
 #include <trackcpp/auxiliary.h>
 #include <trackcpp/tracking.h>
+#include <trackcpp/diffusion_matrix.h>
 #include <trackcpp/pos.h>
 #include <trackcpp/naff.h>
 
@@ -91,6 +92,13 @@ Status::type track_findm66_wrapper(
     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
     double *m66, int n1_m66, int n2_m66,
     Pos<double>& v0, std::vector<unsigned int >& indices);
+
+
+Status::type track_diffusionmatrix_wrapper(
+    const Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    double *elem_tm, int n1_tm, int n2_tm, int n3_tm,
+    double *bdiffmats, int n1_bd, int n2_bd, int n3_bd);
 
 
 void naff_general_wrapper(
