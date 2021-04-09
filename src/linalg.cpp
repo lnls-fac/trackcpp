@@ -27,6 +27,7 @@ Vector& Vector::multiplication(const Matrix& m, const Vector& b) {
   return v;
 }
 
+
 void    Vector::_print() const {
   const Vector& m = *this;
   for(unsigned int i=0; i<m.size(); ++i) printf("%+.4e ", m[i]);
@@ -102,6 +103,16 @@ Matrix& Matrix::multiplication(const Matrix& m1, const Matrix& m2) {
       for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
   }
   return m;
+}
+
+Matrix& Matrix::sandwichme_with_matrix(const Matrix& m1){
+  Matrix m (6);
+  Matrix& m2 = *this;
+
+  m.multiplication(m1, m2);
+  m2.multiplication(m1, m.transpose());
+  m2.transpose();
+  return m2;
 }
 
 Matrix& Matrix::getM(Matrix& s, int nr, int nc, unsigned int r, unsigned int c) const {
