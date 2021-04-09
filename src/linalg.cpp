@@ -296,6 +296,54 @@ Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<d
   return X;
 }
 
+// Solve sylvester equation:
+// AX + XB = C
+// where A, X, B and C are nxn matrices.
+// The algortithm vectorizes it transforming into:
+// Mx = c
+// with x and c being the vectorization of X and C and
+// M = a + b
+// where a and b are n^2xn^2 matrices,
+// resulting from the vectorization process.
+Matrix linalg_solve_sylvester(const Matrix& A, const Matrix& B, const Matrix& C) {
+
+  gsl_matrix* a = gsl_matrix_alloc(36, 36);
+  gsl_matrix* m = gsl_matrix_alloc(36, 36);
+  gsl_vector* c = gsl_vector_alloc(36);
+  gsl_vector* x = gsl_vector_alloc(36);
+  gsl_permutation* p = gsl_permutation_alloc(36);
+  int s;
+  Matrix X (6);
+
+  for (unsigned int i=0; i<6; ++i)
+    for (unsigned int j=0; j<6; ++j){
+      gsl_vector_set(c, j + 6*i, C[i][j]);
+
+      for (unsigned int k=0; k<6; ++k){
+        // set a accoring to AX multiplication:
+        gsl_matrix_set(a, 6*i+k, 6*j+k, A[i][j]);
+        // set M accoring to XB multiplication:
+        gsl_matrix_set(m, 6*k+i, 6*k+j, B[j][i]);
+      }
+    }
+  gsl_matrix_add(m, a);
+
+  gsl_linalg_LU_decomp(m, p, &s);
+  gsl_linalg_LU_solve(m, p, c, x);
+
+  for (unsigned int i=0; i<6; ++i)
+    for (unsigned int j=0; j<6; ++j)
+      X[i][j] = gsl_vector_get(x, j + 6*i);
+
+
+  gsl_matrix_free(a);
+  gsl_matrix_free(m);
+  gsl_vector_free(c);
+  gsl_vector_free(x);
+  gsl_permutation_free(p);
+  return X;
+}
+
 void multiply_transf_matrix66(Matrix &m, const double k1) {
   for(unsigned int i=0; i<m.size(); ++i)
     for(unsigned int j=0; j<m[i].size(); ++j)
