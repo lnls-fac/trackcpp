@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Trackcpp passmethods are based on SLAC Andrei Terebilo AT version 1.3
+// <http://www.slac.stanford.edu/grp/ssrl/spear/at/>.
+
 #include <trackcpp/diffusion_matrix.h>
 
 // NOTE: I don't understand this pass method.
@@ -58,7 +61,7 @@ void edge_fringe_b(Pos<double>& pos, Matrix& bdiff, const double& irho,
 
 void drift_propagate(Pos<double>& pos, Matrix& bdiff, double L){
 
-	Matrix drift (6);
+  Matrix drift (6);
   drift.eye(1);
 
   double ptot = 1 + pos.de;
@@ -100,7 +103,7 @@ void thinkick_symplectic(const Pos<double>& pos, Matrix& bdiff,
     re_sum = re_tmp;
   }
 
-	Matrix m66 (6);
+  Matrix m66 (6);
   m66.eye(1);
   m66[1][0] = -frac*re_sum;
   m66[1][2] = frac*im_sum;
@@ -127,7 +130,7 @@ void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
   const double& xl = pos.px / p_norm;
   const double& yl = pos.py / p_norm;
 
-  // recursively calculate the local transvrese magnetic field
+  // recursively calculate the local transverse magnetic field
   // re_sum = irho*By/B0
   // im_sum = irho*Bx/B0
   for(int i=max_order-1; i>=0; --i){

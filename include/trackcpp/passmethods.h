@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Trackcpp passmethods are based on SLAC Andrei Terebilo AT version 1.3
+// <http://www.slac.stanford.edu/grp/ssrl/spear/at/>.
+
 #ifndef _PASS_METHODS_H
 #define _PASS_METHODS_H
 

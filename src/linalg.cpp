@@ -27,7 +27,6 @@ Vector& Vector::multiplication(const Matrix& m, const Vector& b) {
   return v;
 }
 
-
 void    Vector::_print() const {
   const Vector& m = *this;
   for(unsigned int i=0; i<m.size(); ++i) printf("%+.4e ", m[i]);
