@@ -46,6 +46,8 @@ public:
   Matrix& transpose(int size = -1, unsigned int r=0, unsigned int c=0);
   Matrix& linear_combination(const double& a1, const Matrix& m1, const double& a2, const Matrix& m2);
   Matrix& multiplication(const Matrix& m1, const Matrix& m2);
+  Matrix& multiply_left(const Matrix& m1);
+  Matrix& multiply_right(const Matrix& m2);
   Matrix& sandwichme_with_matrix(const Matrix& m1);
   Matrix& getM(Matrix& s, int nr, int nc, unsigned int r=0, unsigned int c=0) const;
   Matrix& setM(Matrix& s, int nr, int nc, unsigned int r=0, unsigned int c=0);

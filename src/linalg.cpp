@@ -92,25 +92,52 @@ Matrix& Matrix::linear_combination(const double& a1, const Matrix& m1, const dou
 
 Matrix& Matrix::multiplication(const Matrix& m1, const Matrix& m2) {
   Matrix& m = *this;
-  unsigned int nr = m1.size();
-  unsigned int nc = m2[0].size();
+  const unsigned int nr = m1.size();
+  const unsigned int nc = m2[0].size();
   m.clear();
   for(unsigned int i=0; i<nr; ++i) {
-    Vector v(std::vector<double>(nc,0));
-    m.push_back(v);
+    m.push_back(std::vector<double>(nc, 0.0));
     for(unsigned int j=0; j<nc; ++j)
       for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
   }
   return m;
 }
 
-Matrix& Matrix::sandwichme_with_matrix(const Matrix& m1){
-  Matrix m (6);
+// Calculate this <-- m1 * this
+Matrix& Matrix::multiply_left(const Matrix& m1) {
   Matrix& m2 = *this;
+  const unsigned int nr = m1.size();
+  const unsigned int nc = m2[0].size();
+  Matrix m (nr);
+  for(unsigned int i=0; i<nr; ++i) {
+    for(unsigned int j=0; j<nc; ++j)
+      for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
+  }
+  std::swap(m, m2);
+  return m2;
+}
 
-  m.multiplication(m1, m2);
-  m2.multiplication(m1, m.transpose());
-  m2.transpose();
+// Calculate this <-- this * m2
+Matrix& Matrix::multiply_right(const Matrix& m2) {
+  Matrix& m1 = *this;
+  const unsigned int nr = m1.size();
+  const unsigned int nc = m2[0].size();
+  Matrix m (nr);
+  for(unsigned int i=0; i<nr; ++i) {
+    for(unsigned int j=0; j<nc; ++j)
+      for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
+  }
+  std::swap(m, m1);
+  return m1;
+}
+
+// Calculate this <-- m1 * this * m1^t
+Matrix& Matrix::sandwichme_with_matrix(const Matrix& m1){
+  Matrix& m2 = *this;
+  Matrix m = m1;
+
+  m2.multiply_left(m1);
+  m2.multiply_right(m.transpose());
   return m2;
 }
 
