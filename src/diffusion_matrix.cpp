@@ -243,20 +243,20 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
   const int nr_elements  = lattice.size();
 	std::vector<bool> indcs;
 
-  bmat.clear(); bmat.reserve(nr_elements);
+  bmat.clear(); bmat.reserve(nr_elements+1);
   Matrix bdiff (6);
+  bmat.push_back(bdiff);
   for(unsigned int i=0; i<nr_elements; ++i) {
     const Element& ele = lattice[i];
     if (ele.pass_method == PassMethod::pm_str_mpole_symplectic4_pass)
       propagate_b_diff(ele, fp, energy, radon, bdiff);
     else if (ele.pass_method == PassMethod::pm_bnd_mpole_symplectic4_pass)
       propagate_b_diff(ele, fp, energy, radon, bdiff);
-    else {
+    else
       bdiff.sandwichme_with_matrix(tm[i]);
-      // track through element
-      track_elementpass (ele, fp, accelerator);
-    }
     bmat.push_back(bdiff);
+    // track through element
+    track_elementpass (ele, fp, accelerator);
   }
   return status;
 }

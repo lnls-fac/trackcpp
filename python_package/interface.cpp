@@ -216,11 +216,11 @@ Status::type track_diffusionmatrix_wrapper(
     Status::type status = track_diffusionmatrix(
                 accelerator, fixed_point, vec_tm, vec_bd);
 
-    for (unsigned int i=0; i<vec_tm.size(); ++i){
+    for (unsigned int i=0; i<n1_bd; ++i){
         Matrix& m = vec_bd[i];
-        for (unsigned int j=0; j<n2_tm; ++j)
-            for (unsigned int k=0; k<n3_tm; ++k)
-                bdiffmats[(i*n2_tm + j)*n3_tm + k] = m[j][k];
+        for (unsigned int j=0; j<n2_bd; ++j)
+            for (unsigned int k=0; k<n3_bd; ++k)
+                bdiffmats[(i*n2_bd + j)*n3_bd + k] = m[j][k];
     }
 }
 
