@@ -135,7 +135,6 @@ Matrix& Matrix::multiply_right(const Matrix& m2) {
 Matrix& Matrix::sandwichme_with_matrix(const Matrix& m1){
   Matrix& m2 = *this;
   Matrix m = m1;
-
   m2.multiply_left(m1);
   m2.multiply_right(m.transpose());
   return m2;

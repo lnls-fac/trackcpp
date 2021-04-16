@@ -185,7 +185,7 @@ Status::type track_findm66_wrapper(
         accelerator, fixed_point, vec_tm, vec_m66, v0, indices);
 
     for (unsigned int i=0; i<vec_tm.size(); ++i){
-        Matrix& m = vec_tm[i];
+        const Matrix& m = vec_tm[i];
         for (unsigned int j=0; j<n2_tm; ++j)
             for (unsigned int k=0; k<n3_tm; ++k)
                 cumul_tm[(i*n2_tm + j)*n3_tm + k] = m[j][k];
@@ -217,7 +217,7 @@ Status::type track_diffusionmatrix_wrapper(
                 accelerator, fixed_point, vec_tm, vec_bd);
 
     for (unsigned int i=0; i<n1_bd; ++i){
-        Matrix& m = vec_bd[i];
+        const Matrix& m = vec_bd[i];
         for (unsigned int j=0; j<n2_bd; ++j)
             for (unsigned int k=0; k<n3_bd; ++k)
                 bdiffmats[(i*n2_bd + j)*n3_bd + k] = m[j][k];
