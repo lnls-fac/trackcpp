@@ -14,14 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Trackcpp passmethods are based on SLAC Andrei Terebilo AT version 1.3
+// <http://www.slac.stanford.edu/grp/ssrl/spear/at/>.
+
 #ifndef _PASS_METHOD_AT_H
 #define _PASS_METHOD_AT_H
 
 // Obs: these are a c++ implementation of the AT passmethods.
 //      apart from discrepancies between math library implementations and TWOPI,CGAMMA constants
 //      these passmethods agree with AT passmethods up to machine 64-bit precision.
-
-#define ATCOMPATIBLE 1
 
 #include "passmethods.h"
 #include "accelerator.h"
@@ -31,21 +32,6 @@
 #include "tpsa.h"
 #include "linalg.h"
 #include <cmath>
-
-// constants for 4th-order symplectic integrator
-#define DRIFT1 ( 0.6756035959798286638e00)
-#define DRIFT2 (-0.1756035959798286639e00)
-#define KICK1  ( 0.1351207191959657328e01)
-#define KICK2  (-0.1702414383919314656e01)
-
-#ifdef ATCOMPATIBLE
-  #define TWOPI   6.28318530717959 // AT implementation of 2*PI...
-  #define CGAMMA  8.846056192e-05  // AT implementation
-#else
-  //#define TWOPI   2*M_PI
-  //static const double CGAMMA = 4*M_PI*electron_radius/pow(electron_rest_energy/electron_charge/1e9,3)/3;
-#endif
-
 
 template <typename T> inline T SQR(const T& X) { return X*X; }
 template <typename T> inline T POW3(const T& X) { return X*X*X; }
@@ -453,13 +439,5 @@ Status::type pm_matrix_pass(Pos<T> &pos, const Element &elem,
   local_2_global(pos, elem);
   return Status::success;
 }
-
-#undef DRIFT1
-#undef DRIFT2
-#undef KICK1
-#undef KICK2
-#undef SQR
-#undef TWOPI
-#undef CGAMMA
 
 #endif

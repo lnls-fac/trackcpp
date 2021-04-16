@@ -92,16 +92,52 @@ Matrix& Matrix::linear_combination(const double& a1, const Matrix& m1, const dou
 
 Matrix& Matrix::multiplication(const Matrix& m1, const Matrix& m2) {
   Matrix& m = *this;
-  unsigned int nr = m1.size();
-  unsigned int nc = m2[0].size();
+  const unsigned int nr = m1.size();
+  const unsigned int nc = m2[0].size();
   m.clear();
   for(unsigned int i=0; i<nr; ++i) {
-    Vector v(std::vector<double>(nc,0));
-    m.push_back(v);
+    m.push_back(std::vector<double>(nc, 0.0));
     for(unsigned int j=0; j<nc; ++j)
       for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
   }
   return m;
+}
+
+// Calculate this <-- m1 * this
+Matrix& Matrix::multiply_left(const Matrix& m1) {
+  Matrix& m2 = *this;
+  const unsigned int nr = m1.size();
+  const unsigned int nc = m2[0].size();
+  Matrix m (nr);
+  for(unsigned int i=0; i<nr; ++i) {
+    for(unsigned int j=0; j<nc; ++j)
+      for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
+  }
+  std::swap(m, m2);
+  return m2;
+}
+
+// Calculate this <-- this * m2
+Matrix& Matrix::multiply_right(const Matrix& m2) {
+  Matrix& m1 = *this;
+  const unsigned int nr = m1.size();
+  const unsigned int nc = m2[0].size();
+  Matrix m (nr);
+  for(unsigned int i=0; i<nr; ++i) {
+    for(unsigned int j=0; j<nc; ++j)
+      for(unsigned int k=0; k<m2.size(); ++k) m[i][j] += m1[i][k] * m2[k][j];
+  }
+  std::swap(m, m1);
+  return m1;
+}
+
+// Calculate this <-- m1 * this * m1^t
+Matrix& Matrix::sandwichme_with_matrix(const Matrix& m1){
+  Matrix& m2 = *this;
+  Matrix m = m1;
+  m2.multiply_left(m1);
+  m2.multiply_right(m.transpose());
+  return m2;
 }
 
 Matrix& Matrix::getM(Matrix& s, int nr, int nc, unsigned int r, unsigned int c) const {
@@ -280,6 +316,54 @@ Pos<double> linalg_solve6_posvec(const std::vector<Pos<double> >& M, const Pos<d
 
   gsl_matrix_free(m);
   gsl_vector_free(b);
+  gsl_vector_free(x);
+  gsl_permutation_free(p);
+  return X;
+}
+
+// Solve sylvester equation:
+// AX + XB = C
+// where A, X, B and C are nxn matrices.
+// The algortithm vectorizes it transforming into:
+// Mx = c
+// with x and c being the vectorization of X and C and
+// M = a + b
+// where a and b are n^2xn^2 matrices,
+// resulting from the vectorization process.
+Matrix linalg_solve_sylvester(const Matrix& A, const Matrix& B, const Matrix& C) {
+
+  gsl_matrix* a = gsl_matrix_alloc(36, 36);
+  gsl_matrix* m = gsl_matrix_alloc(36, 36);
+  gsl_vector* c = gsl_vector_alloc(36);
+  gsl_vector* x = gsl_vector_alloc(36);
+  gsl_permutation* p = gsl_permutation_alloc(36);
+  int s;
+  Matrix X (6);
+
+  for (unsigned int i=0; i<6; ++i)
+    for (unsigned int j=0; j<6; ++j){
+      gsl_vector_set(c, j + 6*i, C[i][j]);
+
+      for (unsigned int k=0; k<6; ++k){
+        // set a accoring to AX multiplication:
+        gsl_matrix_set(a, 6*i+k, 6*j+k, A[i][j]);
+        // set M accoring to XB multiplication:
+        gsl_matrix_set(m, 6*k+i, 6*k+j, B[j][i]);
+      }
+    }
+  gsl_matrix_add(m, a);
+
+  gsl_linalg_LU_decomp(m, p, &s);
+  gsl_linalg_LU_solve(m, p, c, x);
+
+  for (unsigned int i=0; i<6; ++i)
+    for (unsigned int j=0; j<6; ++j)
+      X[i][j] = gsl_vector_get(x, j + 6*i);
+
+
+  gsl_matrix_free(a);
+  gsl_matrix_free(m);
+  gsl_vector_free(c);
   gsl_vector_free(x);
   gsl_permutation_free(p);
   return X;
