@@ -19,20 +19,6 @@
 
 #include <trackcpp/diffusion_matrix.h>
 
-// constants for 4th-order symplectic integrator
-#define DRIFT1 ( 0.6756035959798286638e00)
-#define DRIFT2 (-0.1756035959798286639e00)
-#define KICK1  ( 0.1351207191959657328e01)
-#define KICK2  (-0.1702414383919314656e01)
-
-// Physical constants used in the calculations
-#define TWOPI (6.28318530717959)
-#define CGAMMA (8.846056192e-05)  // [m]/[GeV^3] Ref[1] (4.1)
-#define M0C2 (5.10999060e5)  // Electron rest mass [eV]
-#define LAMBDABAR (3.86159323e-13)  // Compton wavelength/2pi [m]
-#define CER (2.81794092e-15)  // Classical electron radius [m]
-#define CU (1.323094366892892)  // 55/(24*sqrt(3)) factor
-
 // NOTE: I don't understand this pass method.
 // There is a discrepancy between edge_fringe from the dipole
 // pass method and this one.
@@ -274,14 +260,3 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
   }
   return status;
 }
-
-#undef DRIFT1
-#undef DRIFT2
-#undef KICK1
-#undef KICK2
-#undef TWOPI
-#undef CGAMMA
-#undef M0C2
-#undef LAMBDABAR
-#undef CER
-#undef CU
