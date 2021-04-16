@@ -26,6 +26,7 @@
 #include <trackcpp/tracking.h>
 #include <trackcpp/flat_file.h>
 #include <trackcpp/optics.h>
+#include <trackcpp/diffusion_matrix.h>
 #include <trackcpp/naff.h>
 #include <trackcpp/linalg.h>
 #include "interface.h"
@@ -73,9 +74,13 @@ double get_double_max() {
 %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
     (double* pos, int n1, int n2)}
 
-//For find_m66
+//For find_m66 and diffusion_matrix
 %apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
     (double *cumul_tm, int n1_tm, int n2_tm, int n3_tm)}
+%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
+    (double *elem_tm, int n1_tm, int n2_tm, int n3_tm)}
+%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
+    (double *bdiffmats, int n1_bd, int n2_bd, int n3_bd)}
 %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
     (double *m66, int n1_m66, int n2_m66)}
 
@@ -99,6 +104,7 @@ double get_double_max() {
 %include "../include/trackcpp/pos.h"
 %include "../include/trackcpp/tracking.h"
 %include "../include/trackcpp/optics.h"
+%include "../include/trackcpp/diffusion_matrix.h"
 %include "../include/trackcpp/naff.h"
 %include "../include/trackcpp/linalg.h"
 %include "interface.h"

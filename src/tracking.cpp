@@ -205,7 +205,6 @@ Status::type track_findorbit6(
   unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
-  closed_orbit.pop_back(); // eliminates last element which is the same as first
   return Status::success;
 
 }
@@ -273,7 +272,6 @@ Status::type track_findorbit4(
   unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
-  closed_orbit.pop_back(); // eliminates last element which is the same as first
   return Status::success;
 
 }

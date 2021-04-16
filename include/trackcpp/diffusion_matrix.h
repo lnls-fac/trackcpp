@@ -17,4 +17,17 @@
 // Trackcpp passmethods are based on SLAC Andrei Terebilo AT version 1.3
 // <http://www.slac.stanford.edu/grp/ssrl/spear/at/>.
 
-#include <trackcpp/passmethods.h>
+#ifndef _DIFFMAT
+#define _DIFFMAT
+
+#include "trackcpp.h"
+#include "tracking.h"
+#include "auxiliary.h"
+#include "passmethods.hpp"
+
+Status::type track_diffusionmatrix (const Accelerator& accelerator,
+                                    const Pos<double>& fixed_point,
+                                    const std::vector<Matrix>& tm,
+                                    std::vector<Matrix>& bmat);
+
+#endif

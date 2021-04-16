@@ -46,6 +46,9 @@ public:
   Matrix& transpose(int size = -1, unsigned int r=0, unsigned int c=0);
   Matrix& linear_combination(const double& a1, const Matrix& m1, const double& a2, const Matrix& m2);
   Matrix& multiplication(const Matrix& m1, const Matrix& m2);
+  Matrix& multiply_left(const Matrix& m1);
+  Matrix& multiply_right(const Matrix& m2);
+  Matrix& sandwichme_with_matrix(const Matrix& m1);
   Matrix& getM(Matrix& s, int nr, int nc, unsigned int r=0, unsigned int c=0) const;
   Matrix& setM(Matrix& s, int nr, int nc, unsigned int r=0, unsigned int c=0);
   Matrix& getMx(Matrix& s) const;
@@ -67,6 +70,8 @@ void matrix6_set_identity_posvec(std::vector<Pos<T> >& m, const T& a = 1) {
   for(unsigned int i=0; i<m.size(); ++i) m[i] = Pos<T>(0,0,0,0,0,0);
   m[0].rx = m[1].px = m[2].ry = m[3].py = m[4].de = m[5].dl = a;
 }
+
+Matrix linalg_solve_sylvester(const Matrix& A, const Matrix& B, const Matrix& C);
 
 void multiply_transf_matrix66(Matrix &m, const double k1);
 
