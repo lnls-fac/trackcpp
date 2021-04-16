@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cmath>
 
+
 class PassMethodsClass {
 public:
   static const int pm_identity_pass                  = 0;
@@ -144,8 +145,9 @@ struct Plane {
 
 const double light_speed              = 299792458;         // [m/s]   - definition
 const double vacuum_permeability      = 4*M_PI*1e-7;       // [T.m/A] - definition
-const double electron_charge          = 1.60217656535e-19; // [C]     - 2014-06-11
-const double electron_mass            = 9.1093829140e-31;  // [Kg]    - 2014-06-11
+const double electron_charge          = 1.602176634e-19;   // [C]     - 2021-04-15 https://physics.nist.gov/cgi-bin/cuu/Value?e|search_for=electron+charge
+const double electron_mass            = 9.1093837015e-31;  // [Kg]    - 2021-04-15 https://physics.nist.gov/cgi-bin/cuu/Value?me|search_for=electron+mass
+const double reduced_planck_constant  = 1.054571817e-34;   // [J.s]   - 2021-04-15 http://physics.nist.gov/cgi-bin/cuu/Value?hbar
 const double electron_rest_energy     = electron_mass * pow(light_speed,2);             // [Kg.m^2/s^2] - derived
 const double vaccum_permitticity      = 1/(vacuum_permeability * pow(light_speed,2));   // [V.s/(A.m)]  - derived
 const double electron_rest_energy_MeV = (electron_rest_energy / electron_charge) / 1e6; // [MeV] - derived
