@@ -19,6 +19,20 @@
 
 #include <trackcpp/diffusion_matrix.h>
 
+// constants for 4th-order symplectic integrator
+#define DRIFT1 ( 0.6756035959798286638e00)
+#define DRIFT2 (-0.1756035959798286639e00)
+#define KICK1  ( 0.1351207191959657328e01)
+#define KICK2  (-0.1702414383919314656e01)
+
+// Physical constants used in the calculations
+#define TWOPI (6.28318530717959)
+#define CGAMMA (8.846056192e-05)  // [m]/[GeV^3] Ref[1] (4.1)
+#define M0C2 (5.10999060e5)  // Electron rest mass [eV]
+#define LAMBDABAR (3.86159323e-13)  // Compton wavelength/2pi [m]
+#define CER (2.81794092e-15)  // Classical electron radius [m]
+#define CU (1.323094366892892)  // 55/(24*sqrt(3)) factor
+
 // NOTE: I don't understand this pass method.
 // There is a discrepancy between edge_fringe from the dipole
 // pass method and this one.
@@ -30,11 +44,11 @@ void edge_fringe_b(Pos<double>& pos, Matrix& bdiff, const double& irho,
 
   const double &rx = pos.rx, &ry = pos.ry, &de = pos.de;
 
-  double psi = irho * gap * fint / std::cos(edge_angle) *
+  const double psi = irho * gap * fint / std::cos(edge_angle) *
     (1 + std::sin(edge_angle) * std::sin(edge_angle));
-  double fx = irho * std::tan(edge_angle);  // 1/(1+de) ???
-  double fy = irho * std::tan(edge_angle - psi/(1+de));  // 1/(1+de) ???
-  double fac = ry*(irho*irho + fy*fy)*psi/(1+de)/(1+de)/irho;
+  const double fx = irho * std::tan(edge_angle);  // 1/(1+de) ???
+  const double fy = irho * std::tan(edge_angle - psi/(1+de));  // 1/(1+de) ???
+  const double fac = ry*(irho*irho + fy*fy)*psi/(1+de)/(1+de)/irho;
 
   //  Propagate B
   for(unsigned int m=0; m<6; ++m){
@@ -59,13 +73,13 @@ void edge_fringe_b(Pos<double>& pos, Matrix& bdiff, const double& irho,
 }
 
 
-void drift_propagate(Pos<double>& pos, Matrix& bdiff, double L){
+void drift_propagate(Pos<double>& pos, Matrix& bdiff, const double L){
 
   Matrix drift (6);
   drift.eye(1);
 
-  double ptot = 1 + pos.de;
-  double lop = L/ptot;
+  const double ptot = 1 + pos.de;
+  const double lop = L/ptot;
 
   // This matrix is the linearization of the drift map.
   // If you derive the map in relation to the coordinates
@@ -260,3 +274,14 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
   }
   return status;
 }
+
+#undef DRIFT1
+#undef DRIFT2
+#undef KICK1
+#undef KICK2
+#undef TWOPI
+#undef CGAMMA
+#undef M0C2
+#undef LAMBDABAR
+#undef CER
+#undef CU
