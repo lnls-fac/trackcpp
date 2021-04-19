@@ -34,9 +34,9 @@ public:
   static const int pm_cavity_pass                    = 5;
   static const int pm_thinquad_pass                  = 6;
   static const int pm_thinsext_pass                  = 7;
-  static const int pm_kicktable_pass                 = 8;
+  static const int pm_kickmap_pass                   = 8;
   static const int pm_matrix_pass                    = 9;
-  static const int pm_nr_pms                         = 10;
+  static const int pm_nr_pms                         = 10;  // counter for number of passmethods
   PassMethodsClass() {
     passmethods.push_back("identity_pass");
     passmethods.push_back("drift_pass");
@@ -66,7 +66,7 @@ struct PassMethod {
         pm_cavity_pass                    = 5,
         pm_thinquad_pass                  = 6,
         pm_thinsext_pass                  = 7,
-        pm_kicktable_pass                 = 8,
+        pm_kickmap_pass                   = 8,
         pm_matrix_pass                    = 9,
         pm_nr_pms                         = 10,
     };

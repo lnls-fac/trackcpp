@@ -20,10 +20,9 @@
 #include <fstream>
 #include <cmath>
 
-Kicktable::Kicktable(const std::string& filename_, const double& rescale_length_, const double& rescale_kicks_) :
+Kicktable::Kicktable(const std::string& filename_) :
   filename(""),
   x_nrpts(0), y_nrpts(0),
-  rescale_length(rescale_length_), rescale_kicks(rescale_kicks_),
   x_min(nan("")), x_max(nan("")),
   y_min(nan("")), y_max(nan("")) {
 
@@ -49,7 +48,6 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   getline(fp, str);   // author line
   getline(fp, str);   // label 'ID length[m]'
   fp >> this->length; // length of element
-  this->length *= this->rescale_length;
   getline(fp, str);   // advances to new line
   getline(fp, str);   // label 'number of horizontal points'
   fp >> this->x_nrpts;      // number of horizontal points
@@ -75,10 +73,8 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
     double posy; fp >> posy;
     if (std::isnan(y_min) or posy < y_min) y_min = posy;
     if (std::isnan(y_max) or posy > y_max) y_max = posy;
-    for(unsigned int i=0; i<x_nrpts; ++i) {
-      fp >> kick;
-      x_kick[this->get_idx(i,j)] = kick * this->rescale_kicks;
-    }
+    for(unsigned int i=0; i<x_nrpts; ++i)
+      fp >> x_kick[this->get_idx(i,j)];
   }
   getline(fp, str);   // advances to new line
 
@@ -88,10 +84,8 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   for(unsigned int i=0; i<this->x_nrpts; ++i) { double posx; fp >> posx; }
   for(int j=y_nrpts-1; j>=0; --j) {
     double posy; fp >> posy;
-    for(unsigned int i=0; i<x_nrpts; ++i) {
-      fp >> kick;
-      y_kick[this->get_idx(i,j)] = kick * this->rescale_kicks;
-    }
+    for(unsigned int i=0; i<x_nrpts; ++i)
+      fp >> y_kick[this->get_idx(i,j)];
   }
 
   return Status::success;

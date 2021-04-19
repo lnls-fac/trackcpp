@@ -60,7 +60,7 @@ template <typename T> Status::type pm_corrector_pass             (Pos<T> &pos, c
 template <typename T> Status::type pm_cavity_pass                (Pos<T> &pos, const Element &elem, const Accelerator& accelerator);
 template <typename T> Status::type pm_thinquad_pass              (Pos<T> &pos, const Element &elem, const Accelerator& accelerator);
 template <typename T> Status::type pm_thinsext_pass              (Pos<T> &pos, const Element &elem, const Accelerator& accelerator);
-template <typename T> Status::type pm_kicktable_pass             (Pos<T> &pos, const Element &elem, const Accelerator& accelerator);
+template <typename T> Status::type pm_kickmap_pass               (Pos<T> &pos, const Element &elem, const Accelerator& accelerator);
 template <typename T> Status::type pm_matrix_pass                (Pos<T> &pos, const Element &elem, const Accelerator& accelerator);
 
 #include "passmethods.hpp"

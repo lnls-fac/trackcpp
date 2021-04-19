@@ -84,8 +84,8 @@ Status::type track_elementpass (
 	case PassMethod::pm_thinsext_pass:
 		if ((status = pm_thinsext_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
 		break;
-	case PassMethod::pm_kicktable_pass:
-		if ((status = pm_kicktable_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+	case PassMethod::pm_kickmap_pass:
+		if ((status = pm_kickmap_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
 		break;
 	case PassMethod::pm_matrix_pass:
 		if ((status = pm_matrix_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;

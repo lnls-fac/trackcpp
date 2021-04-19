@@ -380,7 +380,7 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
       }; break;
       case FlatFileType::kicktable:
       {
-        e.pass_method = PassMethod::pm_kicktable_pass;
+        e.pass_method = PassMethod::pm_kickmap_pass;
         double tmpdbl; std::string filename;
         fp >> tmpdbl >> tmpdbl >> filename;
         Status::type status = add_kicktable(filename, accelerator.kicktables, e.kicktable);
