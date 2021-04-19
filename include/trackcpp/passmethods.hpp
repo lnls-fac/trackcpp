@@ -91,7 +91,7 @@ T b2_perp(const T& bx, const T& by, const T& rx, const T& px,
 
 template <typename T>
 Status::type kicktablethinkick(Pos<T>& pos, const Kicktable* kicktable,
-                               const double& brho, const int nr_steps, const float rescale_kicks) {
+                               const double& brho, const int nr_steps, const double& rescale_kicks) {
 
   T hkick, vkick;
   Status::type status = kicktable_getkicks(kicktable, pos.rx, pos.ry, hkick, vkick);

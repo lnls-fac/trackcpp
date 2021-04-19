@@ -22,12 +22,6 @@
 #include <vector>
 
 
-class Kick {
-public:
-    double hkick, vkick;
-    Status::type status;
-};
-
 class Kicktable {
 
   // Kicktable: assumes x_kick and y_kick tables sampled on the same regular (x,y)-point grid.
@@ -51,8 +45,6 @@ public:
   double       get_y(unsigned int iy) const { return y_min + iy * (y_max - y_min) / (y_nrpts - 1.0); }
   template <typename T> unsigned int get_ix(const T& x) const { return (int) ((x - x_min) / ((x_max - x_min) / (x_nrpts - 1))); }
   template <typename T> unsigned int get_iy(const T& y) const { return (int) ((y - y_min) / ((y_max - y_min) / (y_nrpts - 1))); }
-
-  Kick interpolate_kicks(const double& rx, const double& ry) const;
 
   bool operator==(const Kicktable& o) const;
   bool operator!=(const Kicktable& o) const { return !(*this == o); }
