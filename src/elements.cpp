@@ -55,7 +55,6 @@ void Element::set_pass_method(const std::string &pass_method_) {
         pass_method = i;
 }
 
-
 Element Element::marker (const std::string& fam_name_) {
   Element e = Element(fam_name_, 0);
     initialize_marker(e);
@@ -126,7 +125,7 @@ Element Element::rfcavity (const std::string& fam_name_, const double& length_, 
   return e;
 }
 
-Element Element::kickmap (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_) {
+Element Element::kickmap (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_, const double &rescale_length_, const double &rescale_kicks_) {
 
   // add new kicktable to global list, if necessary.
   int i;
@@ -134,7 +133,7 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
     if (kicktable_fname[i] == kicktable_fname_) break;
   if (i == kicktable_fname.size()) {
     kicktable_fname.push_back(kicktable_fname_);
-    kicktable_list.push_back(Kicktable(kicktable_fname_));
+    kicktable_list.push_back(Kicktable(kicktable_fname_, rescale_length_, rescale_kicks_));
     i = kicktable_fname.size() - 1;
   }
 
@@ -252,7 +251,7 @@ void initialize_matrix(Element &element) {
     element.pass_method = PassMethod::pm_matrix_pass;
 }
 
-void initialize_rbend(Element& element, const double& angle, const double& angle_in, const double& angle_out, const double& gap, const double& fint_in, const double& fint_out, const std::vector<double>& polynom_a, const std::vector<double>& polynom_b, const double& K, const double& S, const int nr_steps) {
+void initialize_rbend(Element &element, const double &angle, const double &angle_in, const double &angle_out, const double &gap, const double &fint_in, const double &fint_out, const std::vector<double> &polynom_a, const std::vector<double> &polynom_b, const double &K, const double &S, const int nr_steps) {
     element.pass_method = PassMethod::pm_bnd_mpole_symplectic4_pass;
     element.angle = angle;
     element.angle_in = angle_in;
@@ -266,8 +265,6 @@ void initialize_rbend(Element& element, const double& angle, const double& angle
     element.polynom_b[2] = S;
     element.nr_steps = nr_steps;
 }
-
-
 
 void initialize_quadrupole(Element &element, const double &K, const int &nr_steps) {
     element.pass_method = PassMethod::pm_str_mpole_symplectic4_pass;
