@@ -44,22 +44,22 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   std::string str;
 
   // HEADER
-  getline(fp, str);   // name of kicktable line
-  getline(fp, str);   // author line
-  getline(fp, str);   // label 'ID length[m]'
-  fp >> this->length; // length of element
-  getline(fp, str);   // advances to new line
-  getline(fp, str);   // label 'number of horizontal points'
-  fp >> this->x_nrpts;      // number of horizontal points
-  getline(fp, str);   // advances to new line
-  getline(fp, str);   // label 'number of vertical points'
-  fp >> this->y_nrpts;      // number of vertical points
-  getline(fp, str);   // advances to new line
+  getline(fp, str);    // name of kicktable line
+  getline(fp, str);    // author line
+  getline(fp, str);    // label 'ID length[m]'
+  fp >> this->length;  // length of element
+  getline(fp, str);    // advances to new line
+  getline(fp, str);    // label 'number of horizontal points'
+  fp >> this->x_nrpts; // number of horizontal points
+  getline(fp, str);    // advances to new line
+  getline(fp, str);    // label 'number of vertical points'
+  fp >> this->y_nrpts; // number of vertical points
+  getline(fp, str);    // advances to new line
 
   this->x_kick.resize(x_nrpts * y_nrpts, 0);
   this->y_kick.resize(x_nrpts * y_nrpts, 0);
 
-  double kick;
+  std::vector<double> yvec(y_nrpts); // used to invert tables ordering, if necessary
 
   // HORIZONTAL KICK TABLE
   getline(fp, str);   // label 'Horizontal KickTable in T^2.m^2'
@@ -70,7 +70,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
     if (std::isnan(x_max) or posx > x_max) x_max = posx;
   }
   for(int j=y_nrpts-1; j>=0; --j) {
-    double posy; fp >> posy;
+    double posy; fp >> posy; yvec.push_back(posy);
     if (std::isnan(y_min) or posy < y_min) y_min = posy;
     if (std::isnan(y_max) or posy > y_max) y_max = posy;
     for(unsigned int i=0; i<x_nrpts; ++i)
@@ -88,6 +88,15 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
       fp >> y_kick[this->get_idx(i,j)];
   }
 
+  // invert tables, if necessary
+  if (yvec.size() > 1 and yvec[1] > yvec[0]) {
+    for(unsigned int i=0; i<this->x_nrpts; ++i) {
+      for(unsigned int j=0; j<this->y_nrpts/2; ++j) {
+        std::swap(x_kick[this->get_idx(i,j)], x_kick[this->get_idx(i,this->y_nrpts-j-1)]);
+        std::swap(y_kick[this->get_idx(i,j)], y_kick[this->get_idx(i,this->y_nrpts-j-1)]);
+      }
+    }
+  }
   return Status::success;
 
 }
