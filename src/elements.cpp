@@ -19,7 +19,6 @@
 #include <trackcpp/kicktable.h>
 #include <cfloat>
 
-std::vector<std::string> kicktable_fname;
 std::vector<Kicktable> kicktable_list;
 
 
@@ -129,17 +128,16 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
 
   // add new kicktable to global list, if necessary.
   int i;
-  for(i=0; i<kicktable_fname.size(); ++i)
-    if (kicktable_fname[i] == kicktable_fname_) break;
-  if (i == kicktable_fname.size()) {
-    kicktable_fname.push_back(kicktable_fname_);
-    kicktable_list.push_back(Kicktable(kicktable_fname_, rescale_length_, rescale_kicks_));
-    i = kicktable_fname.size() - 1;
+  for(i=0; i<kicktable_list.size(); ++i)
+    if (kicktable_list[i].filename == kicktable_fname_) break;
+  if (i == kicktable_list.size()) {
+    kicktable_list.push_back(Kicktable(kicktable_fname_));
+    i = kicktable_list.size() - 1;
   }
 
   const Kicktable& kicktable = kicktable_list[i];
-  Element e = Element(fam_name_, kicktable.length);
-    initialize_kickmap(e, nr_steps_, kicktable);
+  Element e = Element(fam_name_, rescale_length_ * kicktable.length);
+    initialize_kickmap(e, kicktable, nr_steps_, rescale_kicks_);
   return e;
 }
 
@@ -284,9 +282,9 @@ void initialize_rfcavity(Element &element, const double &frequency, const double
     element.voltage = voltage;
     element.phase_lag = phase_lag;
 }
-
-void initialize_kickmap(Element &element, const int &nr_steps, const Kicktable& kicktable) {
-    element.pass_method = PassMethod::pm_kicktable_pass;
+void initialize_kickmap(Element& element, const Kicktable& kicktable, const int& nr_steps, const double &rescale_kicks) {
+    element.pass_method = PassMethod::pm_kickmap_pass;
     element.nr_steps = nr_steps;
     element.kicktable = &kicktable;
+    element.rescale_kicks = rescale_kicks;
 }
