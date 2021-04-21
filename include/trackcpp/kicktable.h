@@ -61,11 +61,11 @@ Status::type kicktable_getkicks       (const Kicktable* kicktable, const T& rx, 
   //hkick = vkick = 0.0;
   //return Status::success;
 
-  return kicktable_getkicks_linear(kicktable, rx, ry, hkick, vkick);
+  return kicktable_getkicks_bilinear(kicktable, rx, ry, hkick, vkick);
 }
 
 template <typename T>
-Status::type kicktable_getkicks_linear(const Kicktable* kicktable, const T& rx, const T& ry, T& hkick, T& vkick) {
+Status::type kicktable_getkicks_bilinear(const Kicktable* kicktable, const T& rx, const T& ry, T& hkick, T& vkick) {
 
   // checks x limits
   const double& xmin = kicktable->x_min;
@@ -95,10 +95,12 @@ Status::type kicktable_getkicks_linear(const Kicktable* kicktable, const T& rx, 
   const double y1  = kicktable->get_y(iy);
   const double y2  = kicktable->get_y(iy+1);
 
+  // Bilinear interpolation - https://en.wikipedia.org/wiki/Bilinear_interpolation
+
   {  /* hkick */
     const double fq11 = kicktable->x_kick[kicktable->get_idx(ix+0, iy+0)];
-    const double fq21 = kicktable->x_kick[kicktable->get_idx(ix+1, iy+0)];
     const double fq12 = kicktable->x_kick[kicktable->get_idx(ix+0, iy+1)];
+    const double fq21 = kicktable->x_kick[kicktable->get_idx(ix+1, iy+0)];
     const double fq22 = kicktable->x_kick[kicktable->get_idx(ix+1, iy+1)];
     const T fR1 = ((x2 - rx) * fq11 + (rx - x1) * fq21) / (x2 - x1);
     const T fR2 = ((x2 - rx) * fq12 + (rx - x1) * fq22) / (x2 - x1);
@@ -107,13 +109,13 @@ Status::type kicktable_getkicks_linear(const Kicktable* kicktable, const T& rx, 
   }
   {  /* vkick */
     const double fq11 = kicktable->y_kick[kicktable->get_idx(ix+0, iy+0)];
-    const double fq21 = kicktable->y_kick[kicktable->get_idx(ix+1, iy+0)];
     const double fq12 = kicktable->y_kick[kicktable->get_idx(ix+0, iy+1)];
+    const double fq21 = kicktable->y_kick[kicktable->get_idx(ix+1, iy+0)];
     const double fq22 = kicktable->y_kick[kicktable->get_idx(ix+1, iy+1)];
     const T fR1 = ((x2 - rx) * fq11 + (rx - x1) * fq21) / (x2 - x1);
     const T fR2 = ((x2 - rx) * fq12 + (rx - x1) * fq22) / (x2 - x1);
     const T fP  = ((y2 - ry) * fR1  + (ry - y1) * fR2 ) / (y2 - y1);
-      vkick = fP;
+    vkick = fP;
   }
 
   return Status::success;
