@@ -242,7 +242,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
         if (pass_method.compare(pass_methods[i]) == 0) {
           e.pass_method = i;
           if (pass_method.compare("kicktable_pass") == 0) {
-            Status::type status = add_kicktable(e.fam_name + ".txt", accelerator.kicktables, e.kicktable);
+            Status::type status = add_kicktable(e.fam_name + ".txt", accelerator.kicktables, e.kicktable_idx);
             if (status != Status::success) {
               return status;
             } else {
@@ -383,9 +383,9 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         e.pass_method = PassMethod::pm_kickmap_pass;
         double tmpdbl; std::string filename;
         fp >> tmpdbl >> tmpdbl >> filename;
-        Status::type status = add_kicktable(filename, accelerator.kicktables, e.kicktable);
+        Status::type status = add_kicktable(filename, accelerator.kicktables, e.kicktable_idx);
         if (status == Status::success) {
-          e.length = e.kicktable->length;
+          e.length = kicktable_list[e.kicktable_idx].length;
           //std::cout << accelerator.lattice.size() << " " << e.fam_name << ": " << e.kicktable << " " << e.kicktable->x_nrpts << std::endl;
         } else return status;
 

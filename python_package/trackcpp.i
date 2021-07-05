@@ -47,6 +47,7 @@ namespace std {
     %template(CppDoubleMatrixVector) vector< vector< vector<double> > >;
     %template(CppTwissVector) vector<Twiss>;
     %template(CppMatrixVector) vector< Matrix >;
+    %template(CppKicktableVector) vector< Kicktable >;
 }
 
 %inline %{

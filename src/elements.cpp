@@ -19,8 +19,6 @@
 #include <trackcpp/kicktable.h>
 #include <cfloat>
 
-std::vector<Kicktable> kicktable_list;
-
 
 const std::vector<double> Element::default_polynom = std::vector<double>(3,0);
 
@@ -137,7 +135,7 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
 
   const Kicktable& kicktable = kicktable_list[i];
   Element e = Element(fam_name_, rescale_length_ * kicktable.length);
-    initialize_kickmap(e, kicktable, nr_steps_, rescale_kicks_);
+    initialize_kickmap(e, i, nr_steps_, rescale_kicks_);
   return e;
 }
 
@@ -199,10 +197,7 @@ bool Element::operator==(const Element& o) const {
       if (this->r_in[i] != o.r_in[i]) return false;
       if (this->r_out[i] != o.r_out[i]) return false;
     }
-    if ((this->kicktable != nullptr) and (o.kicktable == nullptr)) return false;
-    if ((this->kicktable == nullptr) and (o.kicktable != nullptr)) return false;
-    if ((this->kicktable != nullptr) and (o.kicktable != nullptr) and (*(this->kicktable) != *(o.kicktable))) return false;
-
+    if (this->kicktable_idx != o.kicktable_idx) return false;
     return true;
 
 }
@@ -282,9 +277,10 @@ void initialize_rfcavity(Element &element, const double &frequency, const double
     element.voltage = voltage;
     element.phase_lag = phase_lag;
 }
-void initialize_kickmap(Element& element, const Kicktable& kicktable, const int& nr_steps, const double &rescale_kicks) {
+
+void initialize_kickmap(Element& element, const int& kicktable_idx, const int& nr_steps, const double &rescale_kicks) {
     element.pass_method = PassMethod::pm_kickmap_pass;
     element.nr_steps = nr_steps;
-    element.kicktable = &kicktable;
+    element.kicktable_idx = kicktable_idx;
     element.rescale_kicks = rescale_kicks;
 }

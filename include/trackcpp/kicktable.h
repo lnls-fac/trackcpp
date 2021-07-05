@@ -51,21 +51,17 @@ public:
 
 };
 
-Status::type add_kicktable(const std::string& filename, std::vector<Kicktable*>& kicktable_list, const Kicktable*& kicktable_pointer);
-void del_kicktables(std::vector<Kicktable*>& kicktable_list);
+
+extern std::vector<Kicktable> kicktable_list;
+
+
+Status::type add_kicktable(const std::string& filename, std::vector<Kicktable*>& kicktable_list, int& kicktable_idx);
+void clear_kicktables(std::vector<Kicktable*>& kicktable_list);
 
 template <typename T>
-Status::type kicktable_getkicks       (const Kicktable* kicktable, const T& rx, const T& ry, T& hkick, T& vkick) {
-  //std::cout << double(rx) << " " << double(ry) << std::endl;
+Status::type kicktable_getkicks_bilinear(const int& kicktable_idx, const T& rx, const T& ry, T& hkick, T& vkick) {
 
-  //hkick = vkick = 0.0;
-  //return Status::success;
-
-  return kicktable_getkicks_bilinear(kicktable, rx, ry, hkick, vkick);
-}
-
-template <typename T>
-Status::type kicktable_getkicks_bilinear(const Kicktable* kicktable, const T& rx, const T& ry, T& hkick, T& vkick) {
+  const Kicktable* kicktable = &kicktable_list[kicktable_idx];
 
   // checks x limits
   const double& xmin = kicktable->x_min;
@@ -86,8 +82,8 @@ Status::type kicktable_getkicks_bilinear(const Kicktable* kicktable, const T& rx
   }
 
   // gets indices
-  const unsigned int  ix = kicktable->get_ix(rx);
-  const unsigned int  iy = kicktable->get_iy(ry);
+  const unsigned int ix = kicktable->get_ix(rx);
+  const unsigned int iy = kicktable->get_iy(ry);
 
   /* coordinates */
   const double x1  = kicktable->get_x(ix);
@@ -119,6 +115,11 @@ Status::type kicktable_getkicks_bilinear(const Kicktable* kicktable, const T& rx
   }
 
   return Status::success;
+}
+
+template <typename T>
+Status::type kicktable_getkicks(const int& kicktable_idx, const T& rx, const T& ry, T& hkick, T& vkick) {
+  return kicktable_getkicks_bilinear(kicktable_idx, rx, ry, hkick, vkick);
 }
 
 #endif
