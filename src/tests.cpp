@@ -309,8 +309,9 @@ int test_kicktable(Accelerator& accelerator) {
 
   Kicktable t;
   const Kicktable *ptrKicktable = nullptr;
-  add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable.txt", accelerator.kicktables, ptrKicktable);
-  add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable2.txt", accelerator.kicktables, ptrKicktable);
+  int kicktable_idx = -1;  // dummy container variable
+  add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable.txt", accelerator.kicktables, kicktable_idx);
+  add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable2.txt", accelerator.kicktables, kicktable_idx);
   return 0;
 
 }

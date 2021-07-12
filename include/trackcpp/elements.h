@@ -25,6 +25,7 @@
 #include <fstream>
 #include <cfloat>
 
+
 class Element {
 public:
 
@@ -59,13 +60,12 @@ public:
   double        frequency   = 0;  // [Hz]
   double        voltage     = 0;  // [V]
   double        phase_lag   = 0;  // [rad]
+  int           kicktable_idx = -1;  // index of kickmap object in kicktable_list
   double        rescale_kicks  = 1.0;  // for kickmaps
 
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
   Matrix              matrix66 = Matrix(6);
-
-  const Kicktable*    kicktable = nullptr;
 
   double              t_in[6],  t_out[6];
   double              r_in[36], r_out[36];
@@ -116,6 +116,6 @@ void initialize_rbend(Element& element, const double& angle, const double& angle
 void initialize_quadrupole(Element& element, const double& K, const int& nr_steps);
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
 void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
-void initialize_kickmap(Element& element, const Kicktable& kicktable, const int& nr_steps, const double &rescale_kicks);
+void initialize_kickmap(Element& element, const int& kicktable_idx, const int& nr_steps, const double &rescale_kicks);
 
 #endif

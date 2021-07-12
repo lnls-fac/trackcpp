@@ -90,11 +90,11 @@ T b2_perp(const T& bx, const T& by, const T& rx, const T& px,
 }
 
 template <typename T>
-Status::type kicktablethinkick(Pos<T>& pos, const Kicktable* kicktable,
+Status::type kicktablethinkick(Pos<T>& pos, const int& kicktable_idx,
                                const double& brho, const int nr_steps, const double& rescale_kicks) {
 
   T hkick, vkick;
-  Status::type status = kicktable_getkicks(kicktable, pos.rx, pos.ry, hkick, vkick);
+  Status::type status = kicktable_getkicks(kicktable_idx, pos.rx, pos.ry, hkick, vkick);
   pos.px += rescale_kicks * hkick / (brho * brho) / nr_steps;
   pos.py += rescale_kicks * vkick / (brho * brho) / nr_steps;
   if (status == Status::kicktable_out_of_range) {
@@ -386,7 +386,7 @@ template <typename T>
 Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
                              const Accelerator& accelerator) {
 
-  if (elem.kicktable == nullptr) return Status::kicktable_not_defined;
+  if (elem.kicktable_idx < 0 or elem.kicktable_idx >= kicktable_list.size()) return Status::kicktable_not_defined;
 
   Status::type status = Status::success;
 
@@ -394,12 +394,12 @@ Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
   const double brho = get_magnetic_rigidity(accelerator.energy);
 
   global_2_local(pos, elem);
-  if (elem.kicktable == nullptr) {
+  if (elem.kicktable_idx < 0) {
     drift<T>(pos, sl);
   } else {
     for(unsigned int i=0; i<elem.nr_steps; ++i) {
       drift<T>(pos, sl / 2);
-      Status::type status = kicktablethinkick(pos, elem.kicktable, brho, elem.nr_steps, elem.rescale_kicks);
+      Status::type status = kicktablethinkick(pos, elem.kicktable_idx, brho, elem.nr_steps, elem.rescale_kicks);
       if (status != Status::success) return status;
       drift<T>(pos, sl / 2);
     }
