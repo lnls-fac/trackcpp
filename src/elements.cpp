@@ -123,7 +123,6 @@ Element Element::rfcavity (const std::string& fam_name_, const double& length_, 
 }
 
 Element Element::kickmap (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_, const double &rescale_length_, const double &rescale_kicks_) {
-
   // add new kicktable to global list, if necessary.
   int i;
   for(i=0; i<kicktable_list.size(); ++i)

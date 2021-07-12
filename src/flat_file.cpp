@@ -98,6 +98,11 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     fp << std::setw(pw) << "fam_name" << e.fam_name << '\n';
     fp << std::setw(pw) << "length" << e.length << '\n';
     fp << std::setw(pw) << "pass_method" << pm_dict[e.pass_method] << '\n';
+    if (pm_dict[e.pass_method].compare("kicktable_pass") == 0) {
+      unsigned int idx = e.kicktable_idx;
+      const Kicktable& ktable = kicktable_list[idx];
+      fp << std::setw(pw) << "kicktable_fname" << ktable.filename << '\n';
+    }
     if (e.nr_steps != 1) {
       fp.unsetf(std::ios_base::showpos);
       fp << std::setw(pw) << "nr_steps" << e.nr_steps << '\n';
@@ -241,19 +246,21 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       for(unsigned int i = 0; i<pass_methods.size(); ++i) {
         if (pass_method.compare(pass_methods[i]) == 0) {
           e.pass_method = i;
-          if (pass_method.compare("kicktable_pass") == 0) {
-            Status::type status = add_kicktable(e.fam_name + ".txt", accelerator.kicktables, e.kicktable_idx);
-            if (status != Status::success) {
-              return status;
-            } else {
-            }
-          }
           found_pm = true;
           break;
         }
       }
       if (found_pm) continue;
       return Status::passmethod_not_defined;
+    }
+    if (cmd.compare("kicktable_fname") == 0) {
+      std::string fname; ss >> fname;
+      Status::type status = add_kicktable(fname, kicktable_list, e.kicktable_idx);
+      if (status != Status::success) {
+        return status;
+      } else {
+        continue;
+      }
     }
     if (cmd.compare("polynom_a") == 0) {
       std::vector<unsigned int> order;
@@ -383,7 +390,7 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         e.pass_method = PassMethod::pm_kickmap_pass;
         double tmpdbl; std::string filename;
         fp >> tmpdbl >> tmpdbl >> filename;
-        Status::type status = add_kicktable(filename, accelerator.kicktables, e.kicktable_idx);
+        Status::type status = add_kicktable(filename, kicktable_list, e.kicktable_idx);
         if (status == Status::success) {
           e.length = kicktable_list[e.kicktable_idx].length;
           //std::cout << accelerator.lattice.size() << " " << e.fam_name << ": " << e.kicktable << " " << e.kicktable->x_nrpts << std::endl;

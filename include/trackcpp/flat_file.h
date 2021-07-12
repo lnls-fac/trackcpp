@@ -20,6 +20,7 @@
 #include "accelerator.h"
 #include "elements.h"
 #include "auxiliary.h"
+#include "kicktable.h"
 #include <string>
 #include <vector>
 #include <iomanip>

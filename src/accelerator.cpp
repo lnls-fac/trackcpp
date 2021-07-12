@@ -29,23 +29,12 @@ double Accelerator::get_length() const {
 
 bool Accelerator::operator==(const Accelerator& o) const {
 
-  double                  energy;              // [eV]
-  bool                    cavity_on;
-  bool                    radiation_on;
-  bool                    vchamber_on;
-  int                     harmonic_number;
-  std::vector<Element>    lattice;
-  std::vector<Kicktable*> kicktables;
-
   if (this->energy != o.energy) return false;
   if (this->cavity_on != o.cavity_on) return false;
   if (this->radiation_on != o.radiation_on) return false;
   if (this->vchamber_on != o.vchamber_on) return false;
   if (this->harmonic_number != o.harmonic_number) return false;
   if (this->lattice != o.lattice) return false;
-
-  // in the element-by-element comparison of the lattice kicktables
-  // that are actually being referenced have already been compared.
 
   return true;
 
@@ -59,6 +48,5 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "vchamber_on    : " << a.vchamber_on;
   out << std::endl << "harmonic_number: " << a.harmonic_number;
   out << std::endl << "lattice        : " << a.lattice.size() << " elements";
-  out << std::endl << "kicktables     : " << a.kicktables.size() << " elements";
   return out;
 }
