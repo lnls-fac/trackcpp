@@ -55,8 +55,8 @@ public:
 extern std::vector<Kicktable> kicktable_list;
 
 
-Status::type add_kicktable(const std::string& filename, std::vector<Kicktable*>& kicktable_list, int& kicktable_idx);
-void clear_kicktables(std::vector<Kicktable*>& kicktable_list);
+Status::type add_kicktable(const std::string& filename, std::vector<Kicktable>& kicktable_list, int& kicktable_idx);
+void clear_kicktables(std::vector<Kicktable>& kicktable_list);
 
 template <typename T>
 Status::type kicktable_getkicks_bilinear(const int& kicktable_idx, const T& rx, const T& ry, T& hkick, T& vkick) {

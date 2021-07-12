@@ -103,19 +103,19 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
 }
 
-Status::type add_kicktable(const std::string& filename, std::vector<Kicktable*>& kicktable_list, int& kicktable_idx) {
+Status::type add_kicktable(const std::string& filename, std::vector<Kicktable>& kicktable_list, int& kicktable_idx) {
 
   // looks through vector of kickmaps...
   for(unsigned int i=0; i<kicktable_list.size(); ++i) {
-    if (kicktable_list[i]->filename == filename) {
+    if (kicktable_list[i].filename == filename) {
       kicktable_idx = i;
       return Status::success;
     }
   }
 
   // loads a new kicktable from file and inserts it into vector of kicktables
-  Kicktable* new_kicktable = new Kicktable();
-  Status::type status = new_kicktable->load_from_file(filename);
+  Kicktable new_kicktable("");
+  Status::type status = new_kicktable.load_from_file(filename);
   if (status == Status::success) {
     kicktable_list.push_back(new_kicktable);
     kicktable_idx = kicktable_list.size() - 1;
@@ -123,14 +123,11 @@ Status::type add_kicktable(const std::string& filename, std::vector<Kicktable*>&
     kicktable_idx = -1;
   }
   return status;
-
 }
 
 
-void clear_kicktables(std::vector<Kicktable*>& kicktable_list) {
-  for(unsigned int i=0; i<kicktable_list.size(); ++i) {
-    delete [] kicktable_list[i];
-  }
+void clear_kicktables(std::vector<Kicktable>& kicktable_list) {
+  kicktable_list.clear();
 }
 
 bool Kicktable::operator==(const Kicktable& o) const {
