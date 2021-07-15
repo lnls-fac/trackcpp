@@ -125,6 +125,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.phase_lag != 0) { fp << std::setw(pw) << "phase_lag" << e.phase_lag << '\n'; }
     if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
     if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
+    if (e.rescale_kicks != 1.0) { fp << std::setw(pw) << "rescale_kicks" << e.rescale_kicks << '\n'; }
     if (has_t_vector(e.t_in)) write_6d_vector(fp, "t_in", e.t_in);
     if (has_t_vector(e.t_out)) write_6d_vector(fp, "t_out", e.t_out);
     if (has_r_matrix(e.r_in)) {
@@ -220,6 +221,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("phase_lag")   == 0) { ss >> e.phase_lag; continue; }
     if (cmd.compare("angle_in")    == 0) { ss >> e.angle_in;  continue; }
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
+    if (cmd.compare("rescale_kicks")   == 0) { ss >> e.rescale_kicks; continue; }
     if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i];  continue; }
     if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) ss >> e.t_out[i]; continue; }
     if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[0*6+i]; continue; }
