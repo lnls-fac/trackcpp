@@ -55,7 +55,7 @@ public:
 extern std::vector<Kicktable> kicktable_list;
 
 
-Status::type add_kicktable(const std::string& filename, std::vector<Kicktable>& kicktable_list, int& kicktable_idx);
+unsigned int add_kicktable(const std::string& filename);
 void clear_kicktables(std::vector<Kicktable>& kicktable_list);
 
 template <typename T>
