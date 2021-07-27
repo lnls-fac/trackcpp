@@ -257,7 +257,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     }
     if (cmd.compare("kicktable_fname") == 0) {
       std::string fname; ss >> fname;
-      unsigned int idx = add_kicktable(fname);
+      int idx = add_kicktable(fname);
       if (idx < 0) {
         return Status::file_not_found;
       } else {
@@ -392,8 +392,8 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         e.pass_method = PassMethod::pm_kickmap_pass;
         double tmpdbl; std::string filename;
         fp >> tmpdbl >> tmpdbl >> filename;
-        unsigned int idx = add_kicktable(filename);
-        if (idx < 0) {
+        int idx = add_kicktable(filename);
+        if (idx >= 0) {
           e.length = kicktable_list[e.kicktable_idx].length;
           //std::cout << accelerator.lattice.size() << " " << e.fam_name << ": " << e.kicktable << " " << e.kicktable->x_nrpts << std::endl;
         } else return Status::file_not_found;
