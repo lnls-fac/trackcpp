@@ -84,7 +84,7 @@ Element rbend_wrapper(const std::string& fam_name_, const double& length_,
                       const double& K_, const double& S_);
 Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerator, bool file_flag = true);
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag = true);
-
+Status::type kicktable_getkicks_wrapper(const int& kicktable_idx, const double& rx, const double& ry, double& hkick__, double& vkick__);
 
 Status::type track_findm66_wrapper(
     const Accelerator& accelerator,
@@ -99,7 +99,6 @@ Status::type track_diffusionmatrix_wrapper(
     const Pos<double>& fixed_point,
     double *elem_tm, int n1_tm, int n2_tm, int n3_tm,
     double *bdiffmats, int n1_bd, int n2_bd, int n3_bd);
-
 
 void naff_general_wrapper(
     double *re_in, int n1_re_in, int n2_re_in,

@@ -115,7 +115,7 @@ int add_kicktable(const std::string& filename) {
   // loads a new kicktable from file and inserts it into vector of kicktables
   Kicktable new_kicktable("");
   Status::type status = new_kicktable.load_from_file(filename);
-  unsigned int kicktable_idx = -1;
+  int kicktable_idx = -1;
   if (status == Status::success) {
     kicktable_list.push_back(new_kicktable);
     kicktable_idx = kicktable_list.size() - 1;
@@ -139,3 +139,5 @@ bool Kicktable::operator==(const Kicktable& o) const {
   if (this->y_kick != o.y_kick) return false;
   return true;
 }
+
+template Status::type kicktable_getkicks(const int& kicktable_idx, const double& rx, const double& ry, double& hkick, double& vkick);
