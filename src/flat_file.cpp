@@ -261,6 +261,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       if (idx < 0) {
         return Status::file_not_found;
       } else {
+        e.kicktable_idx = idx;
         continue;
       }
     }
@@ -394,6 +395,7 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         fp >> tmpdbl >> tmpdbl >> filename;
         int idx = add_kicktable(filename);
         if (idx >= 0) {
+          e.kicktable_idx = idx;
           e.length = kicktable_list[e.kicktable_idx].length;
           //std::cout << accelerator.lattice.size() << " " << e.fam_name << ": " << e.kicktable << " " << e.kicktable->x_nrpts << std::endl;
         } else return Status::file_not_found;
