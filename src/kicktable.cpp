@@ -103,26 +103,24 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
 }
 
-Status::type add_kicktable(const std::string& filename, std::vector<Kicktable>& kicktable_list, int& kicktable_idx) {
-
-  // looks through vector of kickmaps...
+int add_kicktable(const std::string& filename) {
+  
+  // looks through vector of kicktables...
   for(unsigned int i=0; i<kicktable_list.size(); ++i) {
     if (kicktable_list[i].filename == filename) {
-      kicktable_idx = i;
-      return Status::success;
+      return i;
     }
   }
 
   // loads a new kicktable from file and inserts it into vector of kicktables
   Kicktable new_kicktable("");
   Status::type status = new_kicktable.load_from_file(filename);
+  int kicktable_idx = -1;
   if (status == Status::success) {
     kicktable_list.push_back(new_kicktable);
     kicktable_idx = kicktable_list.size() - 1;
-  } else {
-    kicktable_idx = -1;
   }
-  return status;
+  return kicktable_idx;
 }
 
 
@@ -141,3 +139,5 @@ bool Kicktable::operator==(const Kicktable& o) const {
   if (this->y_kick != o.y_kick) return false;
   return true;
 }
+
+template Status::type kicktable_getkicks(const int& kicktable_idx, const double& rx, const double& ry, double& hkick, double& vkick);

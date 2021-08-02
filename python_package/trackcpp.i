@@ -36,6 +36,7 @@
 %include "std_string.i"
 %include "std_vector.i"
 %include "stl.i"
+%include "typemaps.i"
 
 namespace std {
     %template(CppStringVector) vector<string>;
@@ -96,6 +97,9 @@ double get_double_max() {
     (double *re_out, int n1_re_out, int n2_re_out)}
 %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
     (double *im_out, int n1_im_out, int n2_im_out)}
+
+// For kicktable_getkicks
+%apply double *OUTPUT { double &hkick__, double &vkick__ };
 
 
 %include "../include/trackcpp/elements.h"

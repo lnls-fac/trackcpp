@@ -169,6 +169,9 @@ Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerat
   return write_flat_file(fname.data, accelerator, file_flag);
 }
 
+Status::type kicktable_getkicks_wrapper(const int& kicktable_idx, const double& rx, const double& ry, double& hkick__, double& vkick__) {
+  return kicktable_getkicks(kicktable_idx, rx, ry, hkick__, vkick__);
+}
 
 Status::type track_findm66_wrapper(
     const Accelerator& accelerator,
