@@ -107,7 +107,43 @@ Status::type track_ringpass_wrapper (
     return status;
 }
 
+Status::type calc_twiss_wrapper (
+        const Accelerator& accelerator,
+        const Pos<double>& fixed_point,
+        Matrix& m66,
+        double *twiss, int n1, int n2,
+        Twiss twiss0) {
 
+    std::vector<Pos<double> > post;
+    std::vector<Pos<double> > orig_post;
+
+    std::vector<Twiss> twiss_;
+
+    Status::type status = calc_twiss(
+        accelerator, fixed_point, m66, twiss_, twiss0);
+
+    for (unsigned int i=0; i<n1; ++i){
+        unsigned int j = i*n2;
+        twiss[j] = twiss_[i].spos;
+        j++; twiss[j] = twiss_[i].betax;
+        j++; twiss[j] = twiss_[i].alphax;
+        j++; twiss[j] = twiss_[i].mux;
+        j++; twiss[j] = twiss_[i].betay;
+        j++; twiss[j] = twiss_[i].alphay;
+        j++; twiss[j] = twiss_[i].muy;
+        j++; twiss[j] = twiss_[i].etax[0];
+        j++; twiss[j] = twiss_[i].etax[1];
+        j++; twiss[j] = twiss_[i].etay[0];
+        j++; twiss[j] = twiss_[i].etay[1];
+        j++; twiss[j] = twiss_[i].co.rx;
+        j++; twiss[j] = twiss_[i].co.px;
+        j++; twiss[j] = twiss_[i].co.ry;
+        j++; twiss[j] = twiss_[i].co.py;
+        j++; twiss[j] = twiss_[i].co.de;
+        j++; twiss[j] = twiss_[i].co.dl;
+    }
+    return status;
+}
 
 Element marker_wrapper(const std::string &fam_name_) {
     return Element::marker(fam_name_);

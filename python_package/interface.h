@@ -66,6 +66,13 @@ Status::type track_ringpass_wrapper (
         double *pos, int n1, int n2,
         RingPassArgs& args);
 
+Status::type calc_twiss_wrapper (
+        const Accelerator& accelerator,
+        const Pos<double>& fixed_point,
+        Matrix& m66,
+        double *twiss, int n1, int n2,
+        Twiss twiss0);
+
 Element marker_wrapper(const std::string& fam_name_);
 Element bpm_wrapper(const std::string& fam_name_);
 Element hcorrector_wrapper(const std::string& fam_name_, const double& length_, const double& hkick_);
