@@ -124,24 +124,24 @@ Status::type calc_twiss_wrapper (
     if (status != Status::success) return status;
 
     unsigned int j = 0;
-    for (unsigned int i=0; i<n1; ++i){
-        twiss[j++] = twiss_[i].spos;
-        twiss[j++] = twiss_[i].betax;
-        twiss[j++] = twiss_[i].alphax;
-        twiss[j++] = twiss_[i].mux;
-        twiss[j++] = twiss_[i].betay;
-        twiss[j++] = twiss_[i].alphay;
-        twiss[j++] = twiss_[i].muy;
-        twiss[j++] = twiss_[i].etax[0];
-        twiss[j++] = twiss_[i].etax[1];
-        twiss[j++] = twiss_[i].etay[0];
-        twiss[j++] = twiss_[i].etay[1];
-        twiss[j++] = twiss_[i].co.rx;
-        twiss[j++] = twiss_[i].co.px;
-        twiss[j++] = twiss_[i].co.ry;
-        twiss[j++] = twiss_[i].co.py;
-        twiss[j++] = twiss_[i].co.de;
-        twiss[j++] = twiss_[i].co.dl;
+    for (auto&& twi : twiss_){
+        twiss[j++] = twi.spos;
+        twiss[j++] = twi.betax;
+        twiss[j++] = twi.alphax;
+        twiss[j++] = twi.mux;
+        twiss[j++] = twi.betay;
+        twiss[j++] = twi.alphay;
+        twiss[j++] = twi.muy;
+        twiss[j++] = twi.etax[0];
+        twiss[j++] = twi.etax[1];
+        twiss[j++] = twi.etay[0];
+        twiss[j++] = twi.etay[1];
+        twiss[j++] = twi.co.rx;
+        twiss[j++] = twi.co.px;
+        twiss[j++] = twi.co.ry;
+        twiss[j++] = twi.co.py;
+        twiss[j++] = twi.co.de;
+        twiss[j++] = twi.co.dl;
     }
     return status;
 }
