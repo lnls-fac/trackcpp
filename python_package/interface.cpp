@@ -126,22 +126,22 @@ Status::type calc_twiss_wrapper (
     for (unsigned int i=0; i<n1; ++i){
         unsigned int j = i*n2;
         twiss[j] = twiss_[i].spos;
-        j++; twiss[j] = twiss_[i].betax;
-        j++; twiss[j] = twiss_[i].alphax;
-        j++; twiss[j] = twiss_[i].mux;
-        j++; twiss[j] = twiss_[i].betay;
-        j++; twiss[j] = twiss_[i].alphay;
-        j++; twiss[j] = twiss_[i].muy;
-        j++; twiss[j] = twiss_[i].etax[0];
-        j++; twiss[j] = twiss_[i].etax[1];
-        j++; twiss[j] = twiss_[i].etay[0];
-        j++; twiss[j] = twiss_[i].etay[1];
-        j++; twiss[j] = twiss_[i].co.rx;
-        j++; twiss[j] = twiss_[i].co.px;
-        j++; twiss[j] = twiss_[i].co.ry;
-        j++; twiss[j] = twiss_[i].co.py;
-        j++; twiss[j] = twiss_[i].co.de;
-        j++; twiss[j] = twiss_[i].co.dl;
+        twiss[++j] = twiss_[i].betax;
+        twiss[++j] = twiss_[i].alphax;
+        twiss[++j] = twiss_[i].mux;
+        twiss[++j] = twiss_[i].betay;
+        twiss[++j] = twiss_[i].alphay;
+        twiss[++j] = twiss_[i].muy;
+        twiss[++j] = twiss_[i].etax[0];
+        twiss[++j] = twiss_[i].etax[1];
+        twiss[++j] = twiss_[i].etay[0];
+        twiss[++j] = twiss_[i].etay[1];
+        twiss[++j] = twiss_[i].co.rx;
+        twiss[++j] = twiss_[i].co.px;
+        twiss[++j] = twiss_[i].co.ry;
+        twiss[++j] = twiss_[i].co.py;
+        twiss[++j] = twiss_[i].co.de;
+        twiss[++j] = twiss_[i].co.dl;
     }
     return status;
 }
