@@ -122,6 +122,7 @@ Status::type calc_twiss_wrapper (
     Status::type status = calc_twiss(
         accelerator, fixed_point, m66, twiss_, twiss0);
 
+    if (status != Status::success) return status;
     for (unsigned int i=0; i<n1; ++i){
         unsigned int j = i*n2;
         twiss[j] = twiss_[i].spos;
