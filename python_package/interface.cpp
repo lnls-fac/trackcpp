@@ -121,26 +121,27 @@ Status::type calc_twiss_wrapper (
 
     Status::type status = calc_twiss(
         accelerator, fixed_point, m66, twiss_, twiss0);
+    if (status != Status::success) return status;
 
-    for (unsigned int i=0; i<n1; ++i){
-        unsigned int j = i*n2;
-        twiss[j] = twiss_[i].spos;
-        j++; twiss[j] = twiss_[i].betax;
-        j++; twiss[j] = twiss_[i].alphax;
-        j++; twiss[j] = twiss_[i].mux;
-        j++; twiss[j] = twiss_[i].betay;
-        j++; twiss[j] = twiss_[i].alphay;
-        j++; twiss[j] = twiss_[i].muy;
-        j++; twiss[j] = twiss_[i].etax[0];
-        j++; twiss[j] = twiss_[i].etax[1];
-        j++; twiss[j] = twiss_[i].etay[0];
-        j++; twiss[j] = twiss_[i].etay[1];
-        j++; twiss[j] = twiss_[i].co.rx;
-        j++; twiss[j] = twiss_[i].co.px;
-        j++; twiss[j] = twiss_[i].co.ry;
-        j++; twiss[j] = twiss_[i].co.py;
-        j++; twiss[j] = twiss_[i].co.de;
-        j++; twiss[j] = twiss_[i].co.dl;
+    unsigned int j = 0;
+    for (auto&& twi : twiss_){
+        twiss[j++] = twi.spos;
+        twiss[j++] = twi.betax;
+        twiss[j++] = twi.alphax;
+        twiss[j++] = twi.mux;
+        twiss[j++] = twi.betay;
+        twiss[j++] = twi.alphay;
+        twiss[j++] = twi.muy;
+        twiss[j++] = twi.etax[0];
+        twiss[j++] = twi.etax[1];
+        twiss[j++] = twi.etay[0];
+        twiss[j++] = twi.etay[1];
+        twiss[j++] = twi.co.rx;
+        twiss[j++] = twi.co.px;
+        twiss[j++] = twi.co.ry;
+        twiss[j++] = twi.co.py;
+        twiss[j++] = twi.co.de;
+        twiss[j++] = twi.co.dl;
     }
     return status;
 }
