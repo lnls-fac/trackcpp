@@ -27,7 +27,7 @@ Vector& Vector::multiplication(const Matrix& m, const Vector& b) {
   return v;
 }
 
-void    Vector::_print() const {
+void Vector::_print() const {
   const Vector& m = *this;
   for(unsigned int i=0; i<m.size(); ++i) printf("%+.4e ", m[i]);
   printf("\n");
@@ -67,7 +67,7 @@ Matrix& Matrix::transpose(int size, unsigned int r, unsigned int c) {
   return m;
 }
 
-void    Matrix::_print() const {
+void Matrix::_print() const {
   const Matrix& m = *this;
   for(unsigned int i=0; i<m.size(); ++i) {
     for(unsigned int j=0; j<m[i].size(); ++j) {
@@ -229,7 +229,7 @@ Matrix& Matrix::inverse(int size, unsigned int r, unsigned int c) {
   return m;
 }
 
-Status::type matrix_inverse4_blockwise(Matrix& m) {
+void matrix_inverse4_blockwise(Matrix& m) {
 
   Matrix A({{m[0][0],m[0][1]},{m[1][0],m[1][1]}});
   Matrix B({{m[0][2],m[0][3]},{m[1][2],m[1][3]}});

@@ -233,6 +233,7 @@ Status::type track_findm66_wrapper(
     for (unsigned int i=0; i<n1_m66; ++i)
         for (unsigned int j=0; j<n2_m66; ++j)
             m66[i*n2_m66 + j] = vec_m66[i][j];
+    return status;
 }
 
 
@@ -262,6 +263,7 @@ Status::type track_diffusionmatrix_wrapper(
             for (unsigned int k=0; k<n3_bd; ++k)
                 bdiffmats[(i*n2_bd + j)*n3_bd + k] = m[j][k];
     }
+    return status;
 }
 
 
