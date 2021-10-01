@@ -10,12 +10,14 @@ WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
 PYTHON_INCLUDES := $(shell python-sirius-config --includes)
+NUMPY_INCLUDE := -I$(shell python-sirius -c "import numpy; print(numpy.get_include())")
+NUMPY_VERSION := $(shell python-sirius -c "import numpy; print(numpy.__version__)")
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
 
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas -L../build -ltrackcpp
-INC = -I../include $(PYTHON_INCLUDES)
+INC = -I../include $(PYTHON_INCLUDES) $(NUMPY_INCLUDE)
 PYTHON = python-sirius
 SETUPARGS =
 
@@ -34,7 +36,7 @@ trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
 	[ -f ./numpy.i ] && echo "numpy.i already here, good" || \
-	wget https://raw.githubusercontent.com/numpy/numpy/v1.18.0/tools/swig/numpy.i
+	wget https://raw.githubusercontent.com/numpy/numpy/v$(NUMPY_VERSION)/tools/swig/numpy.i
 	$(SWIG) -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: all
