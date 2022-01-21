@@ -127,17 +127,31 @@ $(BINOBJECTS): | $(OBJDIR)
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
-install: uninstall all
+install-cpp: uninstall-cpp all
 	cp $(OBJDIR)/trackcpp $(BINDEST_DIR)
 	cp $(OBJDIR)/libtrackcpp.a $(LIBDEST_DIR)
 	cp -r $(INCDIR)/trackcpp $(INCDEST_DIR)
+
+uninstall-cpp:
+	-rm -rf $(BINDEST_DIR)/trackcpp
+	-rm -rf $(LIBDEST_DIR)/libtrackcpp.a
+	-rm -rf $(INCDEST_DIR)/trackcpp
+
+install-py: uninstall-py
 	$(MAKE) install -C $(PYTHON_PACKAGE_DIR)
 
-develop: uninstall all
-	ln -srf $(OBJDIR)/trackcpp $(BINDEST_DIR)
-	ln -srf $(OBJDIR)/libtrackcpp.a $(LIBDEST_DIR)
-	ln -srf $(INCDIR)/trackcpp $(INCDEST_DIR)
-	$(MAKE) develop -C $(PYTHON_PACKAGE_DIR)
+uninstall-py:
+	$(MAKE) uninstall -C $(PYTHON_PACKAGE_DIR)
+
+install: install-cpp install-py
+
+uninstall: uninstall-cpp uninstall-py
+
+develop-install-py: develop-uninstall-py all
+	$(MAKE) develop-install -C $(PYTHON_PACKAGE_DIR)
+
+develop-uninstall-py:
+	$(MAKE) develop-uninstall -C $(PYTHON_PACKAGE_DIR)
 
 $(BINDEST_DIR):
 	mkdir $(BINDEST_DIR)
@@ -151,11 +165,6 @@ $(INCDEST_DIR):
 clean:
 	-rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~ *.o *.a
 	$(MAKE) clean -C $(PYTHON_PACKAGE_DIR)
-
-uninstall:
-	-rm -rf $(BINDEST_DIR)/trackcpp
-	-rm -rf $(LIBDEST_DIR)/libtrackcpp.a
-	-rm -rf $(INCDEST_DIR)/trackcpp
 
 cleanall: clean
 	cd tracking_mp; make clean;
