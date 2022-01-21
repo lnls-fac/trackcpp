@@ -12,7 +12,7 @@ TRACKCPPLIB = ../build/libtrackcpp.a
 PACKAGE = trackcpp
 PREFIX =
 PIP = pip
-PYTHON = python
+PYTHON = python3
 ifeq ($(CONDA_PREFIX),)
 	PREFIX = sudo -H
 	PIP = pip-sirius
