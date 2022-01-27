@@ -64,9 +64,15 @@ AUXFILES  = VERSION
 
 LIBS = -lgsl -lgslcblas -lpthread -lm
 INC  = -I./include
-BINDEST_DIR = /usr/local/bin
-LIBDEST_DIR = /usr/local/lib
-INCDEST_DIR = /usr/local/include
+
+ifeq ($(CONDA_PREFIX),)
+    PREFIX = /usr/local
+else
+    PREFIX = $(CONDA_PREFIX)
+endif
+BINDEST_DIR = $(PREFIX)/bin
+LIBDEST_DIR = $(PREFIX)/lib
+INCDEST_DIR = $(PREFIX)/include
 
 OBJDIR = build
 SRCDIR = src
