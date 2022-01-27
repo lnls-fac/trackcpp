@@ -2,7 +2,7 @@
 #### COMPILATION OPTIONS ####
 C = gcc
 CXX = g++
-SWIG = swig3.0
+SWIG = swig
 MACHINE = -m64
 OPT_FLAG = -O3
 SOURCES_I =     trackcpp.i
