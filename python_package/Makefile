@@ -2,24 +2,32 @@
 #### COMPILATION OPTIONS ####
 C = gcc
 CXX = g++
-SWIG = swig3.0
+SWIG = swig
 MACHINE = -m64
 OPT_FLAG = -O3
 SOURCES_I =     trackcpp.i
 WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
-PYTHON_INCLUDES := $(shell python-sirius-config --includes)
-NUMPY_INCLUDE := -I$(shell python-sirius -c "import numpy; print(numpy.get_include())")
-NUMPY_VERSION := $(shell python-sirius -c "import numpy; print(numpy.__version__)")
+PACKAGE = trackcpp
+PREFIX =
+PIP = pip
+PYTHON = python3
+ifeq ($(CONDA_PREFIX),)
+	PREFIX = sudo -H
+	PIP = pip-sirius
+	PYTHON = python-sirius
+endif
+
+PYTHON_INCLUDES := $(shell $(PYTHON)-config --includes)
+NUMPY_INCLUDE := -I$(shell $(PYTHON) -c "import numpy; print(numpy.get_include())")
+NUMPY_VERSION := $(shell $(PYTHON) -c "import numpy; print(numpy.__version__)")
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
 
 CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
 LIBS = -lgsl -lblas -L../build -ltrackcpp
 INC = -I../include $(PYTHON_INCLUDES) $(NUMPY_INCLUDE)
-PYTHON = python-sirius
-SETUPARGS =
 
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
@@ -39,11 +47,19 @@ trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
 	wget https://raw.githubusercontent.com/numpy/numpy/v$(NUMPY_VERSION)/tools/swig/numpy.i
 	$(SWIG) -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
-install: all
-	$(PYTHON) setup.py install $(SETUPARGS)
+install: uninstall all
+	$(PREFIX) $(PIP) install --no-deps ./
 
-develop: all
-	$(PYTHON) setup.py develop $(SETUPARGS)
+uninstall:
+	$(PREFIX) $(PIP) uninstall -y $(PACKAGE)
+
+develop-install: develop-uninstall all
+	$(PIP) install --no-deps -e ./
+
+# known issue: It will fail to uninstall scripts
+#  if they were installed in develop mode
+develop-uninstall:
+	$(PIP) uninstall -y $(PACKAGE)
 
 clean:
 	-rm -rf *.o trackcpp/*.so *_wrap.cxx trackcpp/__pycache__ trackcpp/trackcpp.py build dist trackcpp.egg-info
