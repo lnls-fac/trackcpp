@@ -10,9 +10,9 @@ WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
 PACKAGE = trackcpp
-PREFIX =
-PIP = pip
-PYTHON = python3
+PREFIX ?=
+PIP ?= pip
+PYTHON ?= python3
 ifeq ($(CONDA_PREFIX),)
 	PREFIX = sudo -H
 	PIP = pip-sirius
