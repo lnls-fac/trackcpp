@@ -1,0 +1,55 @@
+# -*- mode: yaml -*-
+# vi: set ft=yaml :
+#
+# Name prefix           Description
+# abseil-               Checks related to Abseil library.
+# altera-               Checks related to OpenCL programming for FPGAs.
+# android-              Checks related to Android.
+# boost-                Checks related to Boost library.
+# bugprone-             Checks that target bug-prone code constructs.
+# cert-                 Checks related to CERT Secure Coding Guidelines.
+# clang-analyzer-       Clang Static Analyzer checks.
+# concurrency-          Checks related to concurrent programming (including threads, fibers, coroutines, etc.).
+# cppcoreguidelines-    Checks related to C++ Core Guidelines.
+# darwin-               Checks related to Darwin coding conventions.
+# fuchsia  -            Checks related to Fuchsia coding conventions.
+# google-               Checks related to Google coding conventions.
+# hicpp-                Checks related to High Integrity C++ Coding Standard.
+# linuxkernel-          Checks related to the Linux Kernel coding conventions.
+# llvm-                 Checks related to the LLVM coding conventions.
+# llvmlibc-             Checks related to the LLVM-libc coding standards.
+# misc-                 Checks that we didn’t have a better category for.
+# modernize-            Checks that advocate usage of modern (currently “modern” means “C++11”) language constructs.
+# mpi-                  Checks related to MPI (Message Passing Interface).
+# objc-                 Checks related to Objective-C coding conventions.
+# openmp-               Checks related to OpenMP API.
+# performance-          Checks that target performance-related issues.
+# portability-          Checks that target portability-related issues that don’t relate to any particular coding style.
+# readability-          Checks that target readability-related issues that don’t relate to any particular coding style.
+# zircon-               Checks related to Zircon kernel coding conventions.
+#
+---
+# https://clang.llvm.org/extra/clang-tidy/
+Checks: "*,
+        -abseil-*,
+        -altera-*,
+        -android-*,
+        -clang-diagnostic-old-style-cast,
+        -cppcoreguidelines-avoid-magic-numbers,
+        -cppcoreguidelines-non-private-member-variables-in-classes,
+        -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+        -fuchsia-*,
+        -google-*,
+        -hicpp-no-array-decay,
+        -llvm*,
+        -misc-non-private-member-variables-in-classes,
+        -modernize-use-trailing-return-type,
+        -readability-avoid-const-params-in-decls,
+        -readability-else-after-return,
+        -readability-magic-numbers,
+        -readability-static-accessed-through-instance,
+        -zircon-*,
+"
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none

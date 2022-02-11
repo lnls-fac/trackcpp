@@ -82,11 +82,34 @@ PYTHON_PACKAGE_DIR = python_package
 
 $(shell touch $(SRCDIR)/output.cpp) # this is so that last compilation time always goes into executable
 
+WARNINGS_CFLAGS += -Wall
+WARNINGS_CFLAGS += -Wextra # reasonable and standard
+WARNINGS_CFLAGS += -Wshadow # warn the user if a variable declaration shadows one from a parent context
+WARNINGS_CFLAGS += -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor.
+									 # This helps catch hard to track down memory errors
+# WARNINGS_CFLAGS += -Wdouble-promotion # warn if float is implicit promoted to double
+# WARNINGS_CFLAGS += -Wformat=2 # warn on security issues around functions that format output (ie printf)
+# WARNINGS_CFLAGS += -Wold-style-cast # warn for c-style casts
+# WARNINGS_CFLAGS += -Wsign-conversion # warn on sign conversions
+WARNINGS_CFLAGS += -Wcast-align # warn for potential performance problem casts
+WARNINGS_CFLAGS += -Wconversion # warn on type conversions that may lose data
+WARNINGS_CFLAGS += -Wduplicated-branches # warn if if / else branches have duplicated code
+WARNINGS_CFLAGS += -Wduplicated-cond # warn if if / else chain has duplicated conditions
+WARNINGS_CFLAGS += -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation
+WARNINGS_CFLAGS += -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
+WARNINGS_CFLAGS += -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
+WARNINGS_CFLAGS += -Wnull-dereference # warn if a null dereference is detected
+WARNINGS_CFLAGS += -Woverloaded-virtual # warn if you overload (not override) a virtual function
+WARNINGS_CFLAGS += -Wpedantic # warn if non-standard C++ is used
+WARNINGS_CFLAGS += -Wunused # warn on anything being unused
+WARNINGS_CFLAGS += -Wuseless-cast # warn if you perform a cast to the same type
+
 ifeq ($(MAKECMDGOALS),trackcpp-debug)
   CFLAGS    = $(MACHINE) $(DBG_FLAG) $(DFLAGS) -pthread
 else
   CFLAGS    = $(MACHINE) $(OPT_FLAG) $(DFLAGS) -pthread
 endif
+CFLAGS += $(WARNINGS_CFLAGS)
 
 LIBOBJECTS  = $(addprefix $(OBJDIR)/, $(LIBSOURCES_CPP:.cpp=.o))
 BINOBJECTS  = $(addprefix $(OBJDIR)/, $(BINSOURCES_CPP:.cpp=.o))
