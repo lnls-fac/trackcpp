@@ -1,0 +1,22 @@
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          apt update
+          apt install bear clang-format clang-tidy clang-tools libblas-dev libgsl-dev swig gcc g++ make
+
+      - name: Build using make and generate compile commands
+        run: |
+          make clean
+          bear make -j$(nproc)
+
+      - name: Build using make and generate compile commands
+        run: |
+          bash ./tools/static-analyser.sh
