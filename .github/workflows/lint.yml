@@ -9,8 +9,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt update
-          apt install bear clang-format clang-tidy clang-tools libblas-dev libgsl-dev swig gcc g++ make
+          sudo apt update
+          sudo apt install -y bear clang-format clang-tidy clang-tools libblas-dev libgsl-dev swig gcc g++ make
 
       - name: Build using make and generate compile commands
         run: |
