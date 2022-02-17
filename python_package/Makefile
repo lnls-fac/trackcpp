@@ -10,7 +10,7 @@ WRAPPEROBJS =   trackcpp_wrap.o
 INTERFACEOBJS = interface.o
 TRACKCPPLIB = ../build/libtrackcpp.a
 PACKAGE = trackcpp
-PREFIX =
+PREFIX ?=
 PIP ?= pip
 PYTHON ?= python3
 ifeq ($(CONDA_PREFIX),)
