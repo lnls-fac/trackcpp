@@ -214,9 +214,9 @@ Status::type track_linepass (
 				double ly = (element.vmax - element.vmin) / 2;
 				double xc = (element.hmax + element.hmin) / 2;
 				double yc = (element.vmax + element.vmin) / 2;
-				double xn = (rx - xc)/lx;
-				double yn = (ry - yc)/ly;
-				double amplitude = xn*xn + yn*yn;
+				T xn = (rx - xc)/lx;
+				T yn = (ry - yc)/ly;
+				T amplitude = xn*xn + yn*yn;
 				if (amplitude > 1) {
 					lost_plane = Plane::xy;
 					status = Status::particle_lost;
