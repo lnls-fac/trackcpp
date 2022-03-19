@@ -1,0 +1,23 @@
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y bear clang-format clang-tidy clang-tools libblas-dev libgsl-dev swig gcc g++ make python3 python3-pip
+          pip3 install numpy
+
+      - name: Build using make and generate compile commands
+        run: |
+          make clean
+          CONDA_PREFIX=/dummy-prefix PIP=pip3 PYTHON=python3 bear make -j$(nproc)
+
+      - name: Build using make and generate compile commands
+        run: |
+          bash ./tools/static-analyser.sh
