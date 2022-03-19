@@ -140,10 +140,12 @@ public:
 	bool operator >  (const TYPE& o_) const;
 	bool operator >= (const TYPE& o_) const;
 
-	bool operator >  (const Tpsa& o_) const;
-	bool operator >= (const Tpsa& o_) const;
 	bool operator == (const Tpsa& o_) const;
 	bool operator != (const Tpsa& o_) const;
+	bool operator <  (const Tpsa& o_) const;
+	bool operator <= (const Tpsa& o_) const;
+	bool operator >  (const Tpsa& o_) const;
+	bool operator >= (const Tpsa& o_) const;
 
 	explicit operator int()    const { return int(c[0]); }
 	explicit operator double() const { return double(c[0]); }
@@ -349,6 +351,7 @@ bool Tpsa<V,N,TYPE>::operator < (const TYPE& o_) const {
 	return false;
 }
 
+
 template <unsigned int V, unsigned int N, typename TYPE>
 bool Tpsa<V,N,TYPE>::operator <= (const TYPE& o_) const {
 	for(unsigned int i=0; i<get_size(); i++) if (c[i] - o_ != 0) return c[i] - o_ <= 0;
@@ -368,11 +371,6 @@ bool Tpsa<V,N,TYPE>::operator >= (const TYPE& o_) const {
 }
 
 template <unsigned int V, unsigned int N, typename TYPE>
-bool Tpsa<V,N,TYPE>::operator >= (const Tpsa<V,N,TYPE>& o_) const {
-	return (*this - o_) >= (TYPE) 0;
-}
-
-template <unsigned int V, unsigned int N, typename TYPE>
 bool Tpsa<V,N,TYPE>::operator == (const Tpsa<V,N,TYPE>& o_) const {
 	return (*this - o_) == (TYPE) 0;
 }
@@ -383,8 +381,23 @@ bool Tpsa<V,N,TYPE>::operator != (const Tpsa<V,N,TYPE>& o_) const {
 }
 
 template <unsigned int V, unsigned int N, typename TYPE>
+bool Tpsa<V,N,TYPE>::operator < (const Tpsa<V,N,TYPE>& o_) const {
+	return (*this - o_) < (TYPE) 0;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+bool Tpsa<V,N,TYPE>::operator <= (const Tpsa<V,N,TYPE>& o_) const {
+	return (*this - o_) <= (TYPE) 0;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
 bool Tpsa<V,N,TYPE>::operator > (const Tpsa<V,N,TYPE>& o_) const {
 	return (*this - o_) > (TYPE) 0;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+bool Tpsa<V,N,TYPE>::operator >= (const Tpsa<V,N,TYPE>& o_) const {
+	return (*this - o_) >= (TYPE) 0;
 }
 
 
