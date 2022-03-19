@@ -251,21 +251,21 @@ template <typename T>
 T get_kite_ry(const Element& elem, int side, const T& rx) {
 	double x1, y1, x2, y2;
 	if (side == 0) {
-		// upper-right
+		// std::cout << "upper-right" << std::endl;
 		x1 = 0; y1 = elem.vmax;
 		x2 = elem.hmax; y2 = 0;
 	} else if (side == 1) {
-		// upper-left
+		// std::cout << "upper-left" << std::endl;
 		x1 = elem.hmin; y1 = 0;
-		x2 = 0; y1 = elem.vmax;
+		x2 = 0; y2 = elem.vmax;
 	} else if (side == 2) {
-		// lower-left
+		// std::cout << "lower-left" << std::endl;
 		x1 = elem.hmin; y1 = 0;
-		x2 = 0; y1 = elem.vmin;
+		x2 = 0; y2 = elem.vmin;
 	} else {
-		// lower-right
+		// std::cout << "lower-right" << std::endl;
 		x1 = 0; y1 = elem.vmin;
-		x2 = elem.hmax; y1 = 0;
+		x2 = elem.hmax; y2 = 0;
 	}
 	return y1 + (rx - x1) * (y2 - y1) / (x2 - x1);
 }
