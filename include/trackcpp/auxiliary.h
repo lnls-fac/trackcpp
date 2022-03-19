@@ -149,6 +149,8 @@ struct VChamberShape {
     };
 };
 
+// See https://en.wikipedia.org/wiki/International_System_of_Units
+
 const double light_speed              = 299792458;         // [m/s]   - definition
 const double electron_charge          = 1.602176634e-19;   // [C]     - definition
 const double reduced_planck_constant  = 1.054571817e-34;   // [J.s]   - definition
