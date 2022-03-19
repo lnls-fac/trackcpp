@@ -182,7 +182,7 @@ Status::type track_linepass (
 		}
 		if ((status != Status::particle_lost) and accelerator.vchamber_on) {
 			if (element.vchamber == VChamberShape::rectangle) {
-				// rectangular vaccum chamber
+				// rectangular vacuum chamber
 				if (((rx < element.hmin) or (rx > element.hmax))) {
 					lost_plane = Plane::x;
 					status = Status::particle_lost;
@@ -196,7 +196,7 @@ Status::type track_linepass (
 					}
 				}
 			} else if (element.vchamber == VChamberShape::kite) {
-				// kite-shaped vaccum chamber
+				// kite-shaped vacuum chamber
 				if (((rx < element.hmin) or (rx > element.hmax))) {
 					lost_plane = Plane::xy;
 					status = Status::particle_lost;
@@ -209,7 +209,7 @@ Status::type track_linepass (
 					status = Status::particle_lost;
 				}
 			} else if (element.vchamber == VChamberShape::ellipse) {
-				// elliptical vaccum chamber
+				// elliptical vacuum chamber
 				double lx = (element.hmax - element.hmin) / 2;
 				double ly = (element.vmax - element.vmin) / 2;
 				double xc = (element.hmax + element.hmin) / 2;
