@@ -152,8 +152,8 @@ struct VChamberShape {
 const double light_speed              = 299792458;         // [m/s]   - definition
 const double electron_charge          = 1.602176634e-19;   // [C]     - definition
 const double reduced_planck_constant  = 1.054571817e-34;   // [J.s]   - definition
-const double electron_mass            = 9.1093837015e-31;  // [Kg]    - 2021-04-15 - https://physics.nist.gov/cgi-bin/cuu/Value?me|search_for=electron+mass
-const double vacuum_permeability      = 1.25663706212e-6;  // [T.m/A] - 2021-04-15 - https://physics.nist.gov/cgi-bin/cuu/Value?mu0|search_for=vacuum+permeability
+const double electron_mass            = 9.1093837015e-31;  // [Kg]    - 2022-03-19 - https://physics.nist.gov/cgi-bin/cuu/Value?me|search_for=electron+mass
+const double vacuum_permeability      = 1.25663706212e-6;  // [T.m/A] - 2022-03-19 - https://physics.nist.gov/cgi-bin/cuu/Value?mu0|search_for=vacuum+permeability
 const double electron_rest_energy     = electron_mass * pow(light_speed,2);             // [Kg.m^2/s^2] - derived
 const double vacuum_permitticity      = 1/(vacuum_permeability * pow(light_speed,2));   // [V.s/(A.m)]  - derived
 const double electron_rest_energy_MeV = (electron_rest_energy / electron_charge) / 1e6; // [MeV] - derived
