@@ -150,6 +150,7 @@ bool Element::operator==(const Element& o) const {
     if (this->fam_name != o.fam_name) return false;
     if (this->pass_method != o.pass_method) return false;
     if (this->length != o.length) return false;
+    if (this->vchamber != o.vchamber) return false;
     if (this->hmin != o.hmin) return false;
     if (this->hmax != o.hmax) return false;
     if (this->vmin != o.vmin) return false;
@@ -191,6 +192,8 @@ bool Element::operator==(const Element& o) const {
       if (this->r_out[i] != o.r_out[i]) return false;
     }
     if (this->kicktable_idx != o.kicktable_idx) return false;
+    if (this->rescale_kicks != o.rescale_kicks) return false;
+
     return true;
 
 }
