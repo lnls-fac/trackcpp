@@ -163,19 +163,69 @@ Status::type track_linepass (
 
 		status = track_elementpass (element, orig_pos, accelerator);
 
+		const T& rx = orig_pos.rx;
+		const T& ry = orig_pos.ry;
+
 		// checks if particle is lost
-		if ((not isfinite(orig_pos.rx)) or
-			((accelerator.vchamber_on) and
-			 ((orig_pos.rx < element.hmin) or
-			  (orig_pos.rx >  element.hmax)))) {
+
+		if (not isfinite(rx)) {
 			lost_plane = Plane::x;
 			status = Status::particle_lost;
-		}else if ((not isfinite(orig_pos.ry)) or
-				 ((accelerator.vchamber_on) and
-			 	  ((orig_pos.ry < element.vmin) or
-			 	   (orig_pos.ry >  element.vmax)))) {
-			lost_plane = Plane::y;
-			status = Status::particle_lost;
+		}
+		if (not isfinite(ry)) {
+			if (status != Status::particle_lost) {
+				lost_plane = Plane::y;
+				status = Status::particle_lost;
+			} else {
+				lost_plane = Plane::xy;
+			}
+		}
+		if ((status != Status::particle_lost) and accelerator.vchamber_on) {
+			if (element.vchamber == VChamberShape::rectangle) {
+				// rectangular vaccum chamber
+				if (((rx < element.hmin) or (rx > element.hmax))) {
+					lost_plane = Plane::x;
+					status = Status::particle_lost;
+				}
+				if (((ry < element.vmin) or (ry > element.vmax))) {
+					if (status != Status::particle_lost) {
+						lost_plane = Plane::y;
+						status = Status::particle_lost;
+					} else {
+						lost_plane = Plane::xy;
+					}
+				}
+			} else if (element.vchamber == VChamberShape::kite) {
+				// kite-shaped vaccum chamber
+				if (((rx < element.hmin) or (rx > element.hmax))) {
+					lost_plane = Plane::xy;
+					status = Status::particle_lost;
+				}
+				if ((ry > get_kite_ry(element, 0, rx)) or  // upper right
+				    (ry > get_kite_ry(element, 1, rx)) or  // upper left
+					(ry < get_kite_ry(element, 2, rx)) or  // lower left
+					(ry < get_kite_ry(element, 3, rx))) {  // lower right
+					lost_plane = Plane::xy;
+					status = Status::particle_lost;
+				}
+			} else if (element.vchamber == VChamberShape::ellipse) {
+				// elliptical vaccum chamber
+				double lx = (element.hmax - element.hmin) / 2;
+				double ly = (element.vmax - element.vmin) / 2;
+				double xc = (element.hmax + element.hmin) / 2;
+				double yc = (element.vmax + element.vmin) / 2;
+				double xn = (rx - xc)/lx;
+				double yn = (ry - yc)/ly;
+				double amplitude = xn*xn + yn*yn;
+				if (amplitude > 1) {
+					lost_plane = Plane::xy;
+					status = Status::particle_lost;
+				}
+			} else {
+				// any other shape not implemented safely signals lost particle
+				lost_plane = Plane::xy;
+				status = Status::particle_lost;
+			}
 		}
 
 		if (status != Status::success) {
@@ -194,6 +244,30 @@ Status::type track_linepass (
 	if (indcs[nr_elements]) pos.push_back(orig_pos);
 
 	return (status == Status::success) ? status: Status::particle_lost;
+}
+
+
+template <typename T>
+T get_kite_ry(const Element& elem, int side, const T& rx) {
+	double x1, y1, x2, y2;
+	if (side == 0) {
+		// upper-right
+		x1 = 0; y1 = elem.vmax;
+		x2 = elem.hmax; y2 = 0;
+	} else if (side == 1) {
+		// upper-left
+		x1 = elem.hmin; y1 = 0;
+		x2 = 0; y1 = elem.vmax;
+	} else if (side == 2) {
+		// lower-left
+		x1 = elem.hmin; y1 = 0;
+		x2 = 0; y1 = elem.vmin;
+	} else {
+		// lower-right
+		x1 = 0; y1 = elem.vmin;
+		x2 = elem.hmax; y1 = 0;
+	}
+	return y1 + (rx - x1) * (y2 - y1) / (x2 - x1);
 }
 
 
