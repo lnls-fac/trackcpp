@@ -142,10 +142,11 @@ struct Plane {
 };
 
 struct VChamberShape {
+    // integer corresponds to p-norm number defining the normalized shape
     enum type {
-        rectangle = 0,
-        kite = 1,
+        rhombus = 1,
         ellipse = 2,
+        rectangle = 0,  // (inf-norm)
     };
 };
 

@@ -195,29 +195,10 @@ Status::type track_linepass (
 						lost_plane = Plane::xy;
 					}
 				}
-			} else if (element.vchamber == VChamberShape::kite) {
-				// kite-shaped vacuum chamber
-				if (((rx < element.hmin) or (rx > element.hmax))) {
-					lost_plane = Plane::xy;
-					status = Status::particle_lost;
-				}
-				if ((ry > get_kite_ry(element, 0, rx)) or  // upper right
-				    (ry > get_kite_ry(element, 1, rx)) or  // upper left
-					(ry < get_kite_ry(element, 2, rx)) or  // lower left
-					(ry < get_kite_ry(element, 3, rx))) {  // lower right
-					lost_plane = Plane::xy;
-					status = Status::particle_lost;
-				}
-			} else if (element.vchamber == VChamberShape::ellipse) {
-				// elliptical vacuum chamber
-				double lx = (element.hmax - element.hmin) / 2;
-				double ly = (element.vmax - element.vmin) / 2;
-				double xc = (element.hmax + element.hmin) / 2;
-				double yc = (element.vmax + element.vmin) / 2;
-				T xn = (rx - xc)/lx;
-				T yn = (ry - yc)/ly;
-				T amplitude = xn*xn + yn*yn;
-				if (amplitude > 1) {
+			} else if (
+				(element.vchamber == VChamberShape::rhombus) or
+				(element.vchamber == VChamberShape::ellipse)) {
+				if (get_norm_amp_in_vchamber(element, rx, ry) > 1) {
 					lost_plane = Plane::xy;
 					status = Status::particle_lost;
 				}
@@ -248,26 +229,22 @@ Status::type track_linepass (
 
 
 template <typename T>
-T get_kite_ry(const Element& elem, int side, const T& rx) {
-	double x1, y1, x2, y2;
-	if (side == 0) {
-		// std::cout << "upper-right" << std::endl;
-		x1 = 0; y1 = elem.vmax;
-		x2 = elem.hmax; y2 = 0;
-	} else if (side == 1) {
-		// std::cout << "upper-left" << std::endl;
-		x1 = elem.hmin; y1 = 0;
-		x2 = 0; y2 = elem.vmax;
-	} else if (side == 2) {
-		// std::cout << "lower-left" << std::endl;
-		x1 = elem.hmin; y1 = 0;
-		x2 = 0; y2 = elem.vmin;
+T get_norm_amp_in_vchamber(const Element& elem, const T& rx, const T& ry) {
+	double lx = (elem.hmax - elem.hmin) / 2;
+	double ly = (elem.vmax - elem.vmin) / 2;
+	double xc = (elem.hmax + elem.hmin) / 2;
+	double yc = (elem.vmax + elem.vmin) / 2;
+	T xn = abs((rx - xc)/lx);
+	T yn = abs((ry - yc)/ly);
+	T amplitude;
+	if (elem.vchamber == VChamberShape::rhombus) {
+		amplitude = xn + yn;
+	} else if (elem.vchamber == VChamberShape::ellipse) {
+		amplitude = xn*xn + yn*yn;
 	} else {
-		// std::cout << "lower-right" << std::endl;
-		x1 = 0; y1 = elem.vmin;
-		x2 = elem.hmax; y2 = 0;
+		amplitude = pow(xn, elem.vchamber) + pow(yn, elem.vchamber);
 	}
-	return y1 + (rx - x1) * (y2 - y1) / (x2 - x1);
+	return amplitude;
 }
 
 

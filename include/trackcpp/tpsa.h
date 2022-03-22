@@ -70,6 +70,7 @@ template <int V, int N>        struct et_osip<V,N,0>   { enum { val = et_binomia
 // --------------------
 
 template <unsigned int  , unsigned int  , typename     > class Tpsa;
+template <unsigned int V, unsigned int N, typename TYPE> Tpsa<V,N,TYPE> pow   (const Tpsa<V,N,TYPE>&, const int n);
 template <unsigned int V, unsigned int N, typename TYPE> Tpsa<V,N,TYPE> abs   (const Tpsa<V,N,TYPE>&);
 template <unsigned int V, unsigned int N, typename TYPE> Tpsa<V,N,TYPE> sqrt  (const Tpsa<V,N,TYPE>&);
 template <unsigned int V, unsigned int N, typename TYPE> Tpsa<V,N,TYPE> log   (const Tpsa<V,N,TYPE>&);
@@ -91,6 +92,7 @@ template <unsigned int V, unsigned int N, typename TYPE> Tpsa<V,N,TYPE> D     (c
 template <unsigned int V = 0, unsigned int N = 0, typename TYPE = double>
 class Tpsa {
 
+	friend Tpsa<V,N,TYPE> pow<>   (const Tpsa<V,N,TYPE>&, const int);
 	friend Tpsa<V,N,TYPE> abs<>   (const Tpsa<V,N,TYPE>&);
 	friend Tpsa<V,N,TYPE> sqrt<>  (const Tpsa<V,N,TYPE>&);
 	friend Tpsa<V,N,TYPE> log<>   (const Tpsa<V,N,TYPE>&);
@@ -478,12 +480,21 @@ Tpsa<V,N,TYPE> operator / (const T& o1, const Tpsa<V,N,TYPE>& o2) { return o2.in
 
 
 template <unsigned int V, unsigned int N, typename TYPE>
+Tpsa<V,N,TYPE> pow(const Tpsa<V,N,TYPE>& a_, const int n) {
+	Tpsa<V,N,TYPE> r;
+	Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
+	int n_ = N < n ? N : n;
+	for(unsigned int i=0; i<=n_; i++) {
+		r *= 1 + x;
+	}
+	r *= std::pow(a_.c[0], n);
+	return r;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> abs(const Tpsa<V,N,TYPE>& a_) {
 	if (a_ >= 0) return a_; else return -a_;
 }
-
-//template <unsigned int V, unsigned int N, typename TYPE>
-//Tpsa<V,N,TYPE> fabs(const Tpsa<V,N,TYPE>& a_) { return abs(a_); }
 
 #include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
