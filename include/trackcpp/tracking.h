@@ -156,7 +156,8 @@ Status::type track_linepass (
 
 	for(int i=0; i<nr_elements; ++i) {
 
-		const Element& element = line[element_offset];  // syntactic-sugar for read-only access to element object parameters
+		// syntactic-sugar for read-only access to element object parameters
+		const Element& element = line[element_offset];
 
 		// stores trajectory at entrance of each element
 		if (indcs[i]) pos.push_back(orig_pos);
@@ -167,7 +168,6 @@ Status::type track_linepass (
 		const T& ry = orig_pos.ry;
 
 		// checks if particle is lost
-
 		if (not isfinite(rx)) {
 			lost_plane = Plane::x;
 			status = Status::particle_lost;
@@ -181,7 +181,12 @@ Status::type track_linepass (
 			}
 		}
 		if ((status != Status::particle_lost) and accelerator.vchamber_on) {
-			if (element.vchamber == VChamberShape::rectangle) {
+			if (element.vchamber < 0) {
+				// invalid p-norm shape (negative p)
+				// safely signals lost particle
+				lost_plane = Plane::xy;
+				status = Status::particle_lost;
+			} else if (element.vchamber == VChamberShape::rectangle) {
 				// rectangular vacuum chamber
 				if (((rx < element.hmin) or (rx > element.hmax))) {
 					lost_plane = Plane::x;
@@ -195,15 +200,8 @@ Status::type track_linepass (
 						lost_plane = Plane::xy;
 					}
 				}
-			} else if (
-				(element.vchamber == VChamberShape::rhombus) or
-				(element.vchamber == VChamberShape::ellipse)) {
-				if (get_norm_amp_in_vchamber(element, rx, ry) > 1) {
-					lost_plane = Plane::xy;
-					status = Status::particle_lost;
-				}
-			} else {
-				// any other shape not implemented safely signals lost particle
+			} else if (get_norm_amp_in_vchamber(element, rx, ry) > 1) {
+				// lost in rhombus, elliptic and all finite p-norm shapes
 				lost_plane = Plane::xy;
 				status = Status::particle_lost;
 			}
