@@ -18,6 +18,6 @@ jobs:
           make clean
           CONDA_PREFIX=/dummy-prefix PIP=pip3 PYTHON=python3 bear make -j$(nproc)
 
-      - name: Build using make and generate compile commands
-        run: |
-          bash ./tools/static-analyser.sh
+      # - name: Build using make and generate compile commands
+      #   run: |
+      #     bash ./tools/static-analyser.sh
