@@ -156,26 +156,55 @@ Status::type track_linepass (
 
 	for(int i=0; i<nr_elements; ++i) {
 
-		const Element& element = line[element_offset];  // syntactic-sugar for read-only access to element object parameters
+		// syntactic-sugar for read-only access to element object parameters
+		const Element& element = line[element_offset];
 
 		// stores trajectory at entrance of each element
 		if (indcs[i]) pos.push_back(orig_pos);
 
 		status = track_elementpass (element, orig_pos, accelerator);
 
+		const T& rx = orig_pos.rx;
+		const T& ry = orig_pos.ry;
+
 		// checks if particle is lost
-		if ((not isfinite(orig_pos.rx)) or
-			((accelerator.vchamber_on) and
-			 ((orig_pos.rx < element.hmin) or
-			  (orig_pos.rx >  element.hmax)))) {
+		if (not isfinite(rx)) {
 			lost_plane = Plane::x;
 			status = Status::particle_lost;
-		}else if ((not isfinite(orig_pos.ry)) or
-				 ((accelerator.vchamber_on) and
-			 	  ((orig_pos.ry < element.vmin) or
-			 	   (orig_pos.ry >  element.vmax)))) {
-			lost_plane = Plane::y;
-			status = Status::particle_lost;
+		}
+		if (not isfinite(ry)) {
+			if (status != Status::particle_lost) {
+				lost_plane = Plane::y;
+				status = Status::particle_lost;
+			} else {
+				lost_plane = Plane::xy;
+			}
+		}
+		if ((status != Status::particle_lost) and accelerator.vchamber_on) {
+			if (element.vchamber < 0) {
+				// invalid p-norm shape (negative p)
+				// safely signals lost particle
+				lost_plane = Plane::xy;
+				status = Status::particle_lost;
+			} else if (element.vchamber == VChamberShape::rectangle) {
+				// rectangular vacuum chamber
+				if (((rx < element.hmin) or (rx > element.hmax))) {
+					lost_plane = Plane::x;
+					status = Status::particle_lost;
+				}
+				if (((ry < element.vmin) or (ry > element.vmax))) {
+					if (status != Status::particle_lost) {
+						lost_plane = Plane::y;
+						status = Status::particle_lost;
+					} else {
+						lost_plane = Plane::xy;
+					}
+				}
+			} else if (get_norm_amp_in_vchamber(element, rx, ry) > 1) {
+				// lost in rhombus, elliptic and all finite p-norm shapes
+				lost_plane = Plane::xy;
+				status = Status::particle_lost;
+			}
 		}
 
 		if (status != Status::success) {
@@ -194,6 +223,26 @@ Status::type track_linepass (
 	if (indcs[nr_elements]) pos.push_back(orig_pos);
 
 	return (status == Status::success) ? status: Status::particle_lost;
+}
+
+
+template <typename T>
+T get_norm_amp_in_vchamber(const Element& elem, const T& rx, const T& ry) {
+	double lx = (elem.hmax - elem.hmin) / 2;
+	double ly = (elem.vmax - elem.vmin) / 2;
+	double xc = (elem.hmax + elem.hmin) / 2;
+	double yc = (elem.vmax + elem.vmin) / 2;
+	T xn = abs((rx - xc)/lx);
+	T yn = abs((ry - yc)/ly);
+	T amplitude;
+	if (elem.vchamber == VChamberShape::rhombus) {
+		amplitude = xn + yn;
+	} else if (elem.vchamber == VChamberShape::ellipse) {
+		amplitude = xn*xn + yn*yn;
+	} else {
+		amplitude = pow(xn, elem.vchamber) + pow(yn, elem.vchamber);
+	}
+	return amplitude;
 }
 
 

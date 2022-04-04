@@ -110,6 +110,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     }
     if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a", e.polynom_a);
     if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b", e.polynom_b);
+    if (e.vchamber != 0) { fp << std::setw(pw) << "vchamber" << e.vchamber << '\n'; }
     if (e.hmin != 0) { fp << std::setw(pw) << "hmin" << e.hmin << '\n'; }
     if (e.hmax != 0) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
     if (e.vmin != 0) { fp << std::setw(pw) << "vmin" << e.vmin << '\n'; }
@@ -195,6 +196,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       continue;
     }
     if (cmd.compare("length")      == 0) { ss >> e.length;    continue; }
+    if (cmd.compare("vchamber")    == 0) { ss >> e.vchamber; continue; }
     if (cmd.compare("hmin")        == 0) { ss >> e.hmin; found_hmin = true; continue; }
     if (cmd.compare("hmax")        == 0) {
       ss >> e.hmax;

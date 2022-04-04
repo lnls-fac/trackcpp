@@ -43,6 +43,7 @@ public:
   int           pass_method = PassMethod::pm_drift_pass;
   double        length      = 0;  // [m]
   int           nr_steps    = 1;  //
+  int           vchamber    = VChamberShape::rectangle;  // vchamber type
   double        hmin        = -DBL_MAX;  // [m]
   double        hmax        =  DBL_MAX;  // [m]
   double        vmin        = -DBL_MAX;  // [m]
@@ -60,8 +61,8 @@ public:
   double        frequency   = 0;  // [Hz]
   double        voltage     = 0;  // [V]
   double        phase_lag   = 0;  // [rad]
-  int           kicktable_idx = -1;  // index of kickmap object in kicktable_list
-  double        rescale_kicks  = 1.0;  // for kickmaps
+  int           kicktable_idx = -1;   // index of kickmap object in kicktable_list
+  double        rescale_kicks = 1.0;  // for kickmaps
 
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
