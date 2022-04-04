@@ -172,7 +172,7 @@ install-py: uninstall-py
 uninstall-py:
 	$(MAKE) uninstall -C $(PYTHON_PACKAGE_DIR)
 
-install: install-cpp install-py
+install: clean install-cpp install-py
 
 uninstall: uninstall-cpp uninstall-py
 
