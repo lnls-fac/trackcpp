@@ -8,12 +8,6 @@ authors:
 - family-names: "de Sá"
   given-names: "Fernando Henrique"
 
-- family-names: "Oliveira"
-  given-names: "Ana Clara"
-  
-- family-names: "Carneiro"
-  given-names: "Claúdio"
-
 title: "Trackcpp. C++ codes for particle tracking in accelerators."
 version: v4.7.0
 doi:  DOI: 10.5281/zenodo.6412854
