@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/33890374.svg)](https://zenodo.org/badge/latestdoi/33890374)
+
 # trackcpp
 
 Particle tracking code
