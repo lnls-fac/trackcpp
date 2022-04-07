@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+
+- family-names: "Resende"
+  given-names: "Ximenes"
+
+- family-names: "de Sá"
+  given-names: "Fernando Henrique"
+
+title: "Trackcpp. C++ codes for particle tracking in accelerators."
+version: v4.7.0
+doi:  DOI: 10.5281/zenodo.6412854
+date-released: 2022-04-04
+url: "https://github.com/lnls-fac/trackcpp"
