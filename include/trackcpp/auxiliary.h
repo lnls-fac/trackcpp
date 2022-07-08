@@ -22,7 +22,7 @@
 #include <ostream>
 #include <iostream>
 #include <cmath>
-
+#include <random>
 
 class PassMethodsClass {
 public:
@@ -167,6 +167,13 @@ int sgn(T val) {
     if (val >= 0) return 1; else return -1;
 }
 
+template <typename T>
+T random_normal(T mean, T stddev) {
+    std::random_device             rand_dev;
+    std::mt19937                   generator(rand_dev());
+    std::normal_distribution<T>    distr(mean, stddev);
+    return distr(generator);
+}
 
 #if __GNUC__ < 6
     bool isfinite(const double& v);

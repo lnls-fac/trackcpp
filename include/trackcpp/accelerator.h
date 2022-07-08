@@ -29,6 +29,7 @@ public:
   double                  energy;              // [eV]
   bool                    cavity_on;
   bool                    radiation_on;
+  bool                    quantdiff_on;
   bool                    vchamber_on;
   int                     harmonic_number;
   std::vector<Element>    lattice;

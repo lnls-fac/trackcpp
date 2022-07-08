@@ -155,11 +155,13 @@ void bndthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_a,
                  const std::vector<double>& polynom_b,
                  const double& irho,
-                 const Accelerator& accelerator) {
+                 const Accelerator& accelerator,
+                 const bool quantum_kick_on) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
   T de = pos.de;
+
   if (accelerator.radiation_on) {
     T pnorm = 1 / (1 + pos.de);
     const T& rx = pos.rx;
@@ -171,6 +173,23 @@ void bndthinkick(Pos<T>& pos, const double& length,
       CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m]/[GeV^3] M.Sands(4.1)*/
     pos.de -=
       radiation_constant*SQR(1+pos.de)*b2p*(1+irho*rx + (px*px+py*py)/2)*length;
+
+    if (quantum_kick_on){
+      double p0 = accelerator.energy/light_speed;
+      double p0_SI = (accelerator.energy/light_speed) * electron_charge;
+      double gamma = accelerator.energy/M0C2;
+      
+      T dl_ds = (1 + rx*irho);
+
+      T d = CU*CER*reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
+        * pow(abs(irho), 3)*pow(p0, 2)*p0_SI*dl_ds/pow(accelerator.energy, 2) *
+        (length/KICK2);
+
+      T qkick = sqrt(d) * random_normal(0., 1.);
+
+      pos.de += qkick;
+    }
+
     pnorm = 1 / (1 + pos.de);
     pos.px = px / pnorm;
     pos.py = py / pnorm;
@@ -289,11 +308,11 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   edge_fringe(pos, irho, elem.angle_in, elem.fint_in, elem.gap);
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
     drift<T>(pos, l1);
-    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator);
+    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator, false);
     drift<T>(pos, l2);
-    bndthinkick<T>(pos, k2, polynom_a, polynom_b, irho, accelerator);
+    bndthinkick<T>(pos, k2, polynom_a, polynom_b, irho, accelerator, accelerator.quantdiff_on);
     drift<T>(pos, l2);
-    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator);
+    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator, false);
     drift<T>(pos, l1);
   }
   edge_fringe(pos, irho, elem.angle_out, elem.fint_out, elem.gap);

@@ -85,6 +85,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
   fp << std::setw(hw) << "% harmonic_number" << accelerator.harmonic_number << "\n";
   fp << std::setw(hw) << "% cavity_on" << get_boolean_string(accelerator.cavity_on) << "\n";
   fp << std::setw(hw) << "% radiation_on" << get_boolean_string(accelerator.radiation_on) << "\n";
+  fp << std::setw(hw) << "% quantdiff_on" << get_boolean_string(accelerator.quantdiff_on) << "\n";
   fp << std::setw(hw) << "% vchamber_on" << get_boolean_string(accelerator.vchamber_on) << "\n";
   fp << '\n';
 
@@ -184,6 +185,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       if (cmd.compare("harmonic_number") == 0) { ss >> accelerator.harmonic_number; continue; }
       if (cmd.compare("cavity_on") == 0) { accelerator.cavity_on = read_boolean_string(ss); continue; }
       if (cmd.compare("radiation_on") == 0) { accelerator.radiation_on = read_boolean_string(ss); continue; }
+      if (cmd.compare("quantdiff_on") == 0) { accelerator.quantdiff_on = read_boolean_string(ss); continue; }
       if (cmd.compare("vchamber_on") == 0) { accelerator.vchamber_on = read_boolean_string(ss); continue; }
       continue;
     }
