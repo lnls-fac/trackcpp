@@ -168,6 +168,7 @@ int sgn(T val) {
 }
 
 
+void set_random_seed(unsigned rnd_seed);
 double gen_random_number();
 
 

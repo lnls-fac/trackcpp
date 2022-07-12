@@ -16,10 +16,15 @@
 
 #include <trackcpp/auxiliary.h>
 
+static std::random_device rand_dev;
+static std::mt19937 generator(rand_dev());
+static std::normal_distribution<double>  distr(0., 1.);
+
+void set_random_seed(unsigned rnd_seed) {
+    generator.seed(rnd_seed);
+}
+
 double gen_random_number() {
-  static std::random_device rand_dev;
-  static std::mt19937  generator(rand_dev());
-  static std::normal_distribution<double>  distr(0., 1.);
   return distr(generator);
   // Box-Muller Transform
   //
