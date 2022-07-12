@@ -167,43 +167,9 @@ int sgn(T val) {
     if (val >= 0) return 1; else return -1;
 }
 
-class RandomGen{
-    private:
-    int seed;
-    std::random_device rand_dev;
-    std::mt19937  generator;
-    std::normal_distribution<double>  distr;
-    
-    public:
-    RandomGen(const int seedIn){
-        seed = seedIn;
-        std::random_device rand_dev;
-        std::mt19937  generator(seed);
-        std::normal_distribution<double>  distr(0., 0.1);
-    }
-    void setSeed(const int seedIn){
-        seed = seedIn;
-        generator.seed(seedIn);
-    }
-    int getSeed(){
-        return seed;
-    }
-    void setRandomSeed(){
-        seed = rand_dev();
-        generator.seed(seed);
-    }
-    double genNormalNumber(){
-        return distr(generator);
-    };
-};
 
-// double random_normal(int seed=0) {
-//     // std::random_device             rand_dev;
-//     // std::mt19937                   generator(rand_dev());
-//     std::default_random_engine             generator();
-//     std::normal_distribution<double>       distr(0., 1.);
-//     return distr(generator);
-// }
+double gen_random_number();
+
 
 #if __GNUC__ < 6
     bool isfinite(const double& v);

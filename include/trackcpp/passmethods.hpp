@@ -156,8 +156,7 @@ void bndthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_b,
                  const double& irho,
                  const Accelerator& accelerator,
-                 const bool quantum_kick_on,
-                 const double random_number=0) {
+                 const double d_factor=0) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
@@ -175,19 +174,12 @@ void bndthinkick(Pos<T>& pos, const double& length,
     pos.de -=
       radiation_constant*SQR(1+pos.de)*b2p*(1+irho*rx + (px*px+py*py)/2)*length;
 
-    if (quantum_kick_on){
-      const double p0 = accelerator.energy/light_speed;
-      const double p0_SI = (accelerator.energy/light_speed) * electron_charge;
-      const double gamma = accelerator.energy/M0C2;
-      
+    if (d_factor != 0) {
+      // quantum excitation kick
       T dl_ds = (1 + rx*irho);
-
-      T d = CU*CER*reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
-        * pow(abs(irho), 3)*pow(p0, 2)*p0_SI*dl_ds/pow(accelerator.energy, 2) *
-        (length/KICK2);
-
+      T d = d_factor * dl_ds * length;
+      double random_number = gen_random_number();
       T qkick = sqrt(d) * random_number;
-
       pos.de += qkick;
     }
 
@@ -304,26 +296,25 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   double irho = elem.angle / elem.length;
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
-  //Necessary utils for quantum diffusion
-  double rn = 0;
-  std::random_device rand_dev;
-  std::mt19937  generator(rand_dev());
-  // std::mt19937  generator;
-  std::normal_distribution<double>  distr(0., 1.);
+  double d_factor = 0; // quantum excitation scale factor
+
+  if (accelerator.quantdiff_on) {
+    const double p0 = accelerator.energy/light_speed;
+    const double p0_SI = p0 * electron_charge;
+    const double gamma = accelerator.energy/M0C2;
+    d_factor = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
+      * pow(abs(irho), 3)*pow(p0, 2)*p0_SI/pow(accelerator.energy, 2) / KICK2;
+  }
 
   global_2_local(pos, elem);
   edge_fringe(pos, irho, elem.angle_in, elem.fint_in, elem.gap);
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
     drift<T>(pos, l1);
-    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator, false);
+    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator);
     drift<T>(pos, l2);
-    if (accelerator.quantdiff_on){
-      rn = distr(generator);
-    }
-    bndthinkick<T>(pos, k2, polynom_a, polynom_b, irho, accelerator,
-    accelerator.quantdiff_on, rn);
+    bndthinkick<T>(pos, k2, polynom_a, polynom_b, irho, accelerator, d_factor);
     drift<T>(pos, l2);
-    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator, false);
+    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator);
     drift<T>(pos, l1);
   }
   edge_fringe(pos, irho, elem.angle_out, elem.fint_out, elem.gap);
