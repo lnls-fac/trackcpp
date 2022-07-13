@@ -127,7 +127,8 @@ template <typename T>
 void strthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_a,
                  const std::vector<double>& polynom_b,
-                 const Accelerator& accelerator) {
+                 const Accelerator& accelerator,
+                 const double d_factor=0) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
@@ -139,9 +140,19 @@ void strthinkick(Pos<T>& pos, const double& length,
     T  py = pos.py * pnorm;
     T b2p = b2_perp(imag_sum, real_sum, rx, px, ry, py, 0);
     double radiation_constant =
-      CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m]/[GeV^3] M.Sands(4.1)*/
+      CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
     pos.de -=
       radiation_constant*SQR(1+pos.de)*b2p*(1+(px*px + py*py)/2)*length;
+
+    if (d_factor != 0) {
+      // quantum excitation kick
+      T dl_ds = (1 + rx*sqrt(b2p));
+      T d = pow(sqrt(b2p), 3) * d_factor * dl_ds;
+      double random_number = gen_random_number();
+      T qkick = sqrt(d) * random_number;
+      pos.de += qkick;
+    }
+
     pnorm  = 1 / (1 + pos.de);
     pos.px = px / pnorm;
     pos.py = py / pnorm;
@@ -170,14 +181,14 @@ void bndthinkick(Pos<T>& pos, const double& length,
     T  py = pos.py * pnorm;
     T b2p = b2_perp(imag_sum, real_sum + irho, rx, px, ry, py, irho);
     double radiation_constant =
-      CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m]/[GeV^3] M.Sands(4.1)*/
+      CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
     pos.de -=
       radiation_constant*SQR(1+pos.de)*b2p*(1+irho*rx + (px*px+py*py)/2)*length;
 
     if (d_factor != 0) {
       // quantum excitation kick
       T dl_ds = (1 + rx*irho);
-      T d = d_factor * dl_ds * length;
+      T d = d_factor * dl_ds;
       double random_number = gen_random_number();
       T qkick = sqrt(d) * random_number;
       pos.de += qkick;
@@ -271,11 +282,21 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   double k2 = sl * KICK2;
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
+  double d_factor=0; // quantum excitation scale factor
+
+  if (accelerator.quantdiff_on){
+    const double p0 = accelerator.energy/light_speed;
+    const double p0_SI = p0 * electron_charge;
+    const double gamma = accelerator.energy/M0C2;
+    d_factor = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
+        *pow(p0, 2)*p0_SI/pow(accelerator.energy, 2)*sl;
+  }
+
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
     drift<T>(pos, l1);
     strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
     drift<T>(pos, l2);
-    strthinkick<T>(pos, k2, polynom_a, polynom_b, accelerator);
+    strthinkick<T>(pos, k2, polynom_a, polynom_b, accelerator, d_factor);
     drift<T>(pos, l2);
     strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
     drift<T>(pos, l1);
@@ -303,7 +324,7 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
     d_factor = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
-      * pow(abs(irho), 3)*pow(p0, 2)*p0_SI/pow(accelerator.energy, 2) / KICK2;
+      * pow(abs(irho), 3)*pow(p0, 2)*p0_SI/pow(accelerator.energy, 2)*sl;
   }
 
   global_2_local(pos, elem);
