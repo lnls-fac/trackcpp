@@ -22,10 +22,10 @@
 //
 // TPSA
 // ====
-// Author: 		  Ximenes R. Resende
-// email:  		  xresende@gmail.com, ximenes.resende@lnls.br
+// Author: 	    Ximenes R. Resende
+// email:  	    xresende@gmail.com, ximenes.resende@lnls.br
 // affiliation:	LNLS - Laboratorio Nacional de Luz Sincrotron
-// Date: 		    August 31st, 2006 @ LNLS
+// Date:        August 31st, 2006 @ LNLS
 //
 // Notes:
 //
@@ -189,6 +189,7 @@ template <unsigned int V, unsigned int N, typename TYPE> unsigned int Tpsa<V,N,T
 template <unsigned int V, unsigned int N, typename TYPE> unsigned int Tpsa<V,N,TYPE>::powers[et_osip<V,N,N>::val][V];
 
 
+
 // Implementations: CONSTRUCTORS
 // -----------------------------
 
@@ -248,6 +249,7 @@ Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator /= (const TYPE& o_) {
 	for(unsigned int i=0; i<get_size(); i++) c[i] /= o_;
 	return *this;
 }
+
 
 
 // Implementations: ALGEBRA OF CLASS ELEMENTS
@@ -334,6 +336,7 @@ Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator /= (const Tpsa<V,N,TYPE>& o_) {
 }
 
 
+
 // Implementation: BOOLEAN OPERATORS
 // ---------------------------------
 
@@ -403,6 +406,7 @@ bool Tpsa<V,N,TYPE>::operator >= (const Tpsa<V,N,TYPE>& o_) const {
 }
 
 
+
 // Implementation: AUXILIARY MEMBER FUNCTIONS
 // ------------------------------------------
 
@@ -459,6 +463,7 @@ void Tpsa<V,N,TYPE>::get_power(unsigned int idx_, unsigned int* power_) {
 		power_[i-1] -= power_[i];
 	}
 }
+
 
 
 // Implementation: NON-MEMBER FUNCTIONS AND OPERATORS WITH ARGUMENTS OF CLASS TYPE
