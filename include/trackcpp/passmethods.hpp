@@ -128,7 +128,7 @@ void strthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_a,
                  const std::vector<double>& polynom_b,
                  const Accelerator& accelerator,
-                 const double d_factor=0) {
+                 const double d_factor = 0) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
@@ -166,7 +166,7 @@ void bndthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_b,
                  const double& irho,
                  const Accelerator& accelerator,
-                 const double d_factor=0) {
+                 const double d_factor = 0) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
@@ -281,7 +281,7 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   double k2 = sl * KICK2;
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
-  double d_factor=0; // quantum excitation scale factor
+  double d_factor = 0; // quantum excitation scale factor
 
   if (accelerator.quantdiff_on){
     const double p0 = accelerator.energy/light_speed;
