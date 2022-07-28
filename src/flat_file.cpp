@@ -26,6 +26,7 @@ static const int hw = 18; // header field width
 static const int pw = 16; // parameter field width
 static const int np = 17; // number precision
 static bool read_boolean_string(std::istringstream& ss);
+static int process_rad_property(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
 static bool has_t_vector(const double* t);
 static bool has_r_matrix(const double* r);
@@ -85,8 +86,6 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
   fp << std::setw(hw) << "% harmonic_number" << accelerator.harmonic_number << "\n";
   fp << std::setw(hw) << "% cavity_on" << get_boolean_string(accelerator.cavity_on) << "\n";
   fp << std::setw(hw) << "% radiation_on" << accelerator.radiation_on << "\n";
-  // fp << std::setw(hw) << "% radiation_on" << get_boolean_string(accelerator.radiation_on) << "\n";
-  // fp << std::setw(hw) << "% quantdiff_on" << get_boolean_string(accelerator.quantdiff_on) << "\n";
   fp << std::setw(hw) << "% vchamber_on" << get_boolean_string(accelerator.vchamber_on) << "\n";
   fp << '\n';
 
@@ -185,9 +184,8 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       if (cmd.compare("energy") == 0) { ss >> accelerator.energy; continue; }
       if (cmd.compare("harmonic_number") == 0) { ss >> accelerator.harmonic_number; continue; }
       if (cmd.compare("cavity_on") == 0) { accelerator.cavity_on = read_boolean_string(ss); continue; }
-      if (cmd.compare("radiation_on") == 0) { ss >> accelerator.radiation_on; continue; }
-      // if (cmd.compare("radiation_on") == 0) { accelerator.radiation_on = read_boolean_string(ss); continue; }
-      // if (cmd.compare("quantdiff_on") == 0) { accelerator.quantdiff_on = read_boolean_string(ss); continue; }
+      // radiation_on needs its own processing function due backward compatibility
+      if (cmd.compare("radiation_on") == 0){ accelerator.radiation_on = process_rad_property(ss); continue; }
       if (cmd.compare("vchamber_on") == 0) { accelerator.vchamber_on = read_boolean_string(ss); continue; }
       continue;
     }
@@ -454,6 +452,18 @@ static bool read_boolean_string(std::istringstream& ss) {
     return true;
   else
     return false;
+}
+
+static int process_rad_property(std::istringstream& ss){
+  std::string s;
+  ss >> s;
+  if (std::isdigit(s[0])){
+    return std::stoi(s);
+  }else if(s.compare("true") == 0){
+    return 1;
+  }else{
+    return 0;
+  }
 }
 
 static std::string get_boolean_string(bool value) {
