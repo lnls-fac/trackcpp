@@ -141,14 +141,14 @@ void strthinkick(Pos<T>& pos, const double& length,
     T b2p = b2_perp(imag_sum, real_sum, rx, px, ry, py, 0);
     double radiation_constant =
       CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
-    pos.de -=
-      radiation_constant*SQR(1+pos.de)*b2p*(1+(px*px + py*py)/2)*length;
+    T delta_factor = SQR(1 + pos.de);
+    T dl_ds = (1 + (px*px + py*py)/2);
+    pos.de -= radiation_constant*delta_factor*b2p*dl_ds*length;
 
     if (d_factor != 0) {
       // quantum excitation kick
-      T d = pow(sqrt(b2p), 3) * d_factor;
-      double random_number = gen_random_number();
-      T qkick = sqrt(d) * random_number;
+      T d = delta_factor * sqrt(d_factor * pow(sqrt(b2p), 3) * dl_ds);
+      T qkick = d * gen_random_number();
       pos.de += qkick;
     }
 
@@ -181,15 +181,14 @@ void bndthinkick(Pos<T>& pos, const double& length,
     T b2p = b2_perp(imag_sum, real_sum + irho, rx, px, ry, py, irho);
     double radiation_constant =
       CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
-    pos.de -=
-      radiation_constant*SQR(1+pos.de)*b2p*(1+irho*rx + (px*px+py*py)/2)*length;
+    T delta_factor = SQR(1 + pos.de);
+    T dl_ds = (1 + irho*rx + (px*px+py*py)/2);
+    pos.de -= radiation_constant*delta_factor*b2p*dl_ds*length;
 
     if (d_factor != 0) {
       // quantum excitation kick
-      T dl_ds = (1 + rx*irho);
-      T d = d_factor * pow(sqrt(b2p), 3) * dl_ds;
-      double random_number = gen_random_number();
-      T qkick = sqrt(d) * random_number;
+      T d = delta_factor * sqrt(d_factor * pow(sqrt(b2p), 3) * dl_ds);
+      T qkick = d * gen_random_number();
       pos.de += qkick;
     }
 
@@ -283,7 +282,7 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   const std::vector<double> &polynom_b = elem.polynom_b;
   double d_factor = 0; // quantum excitation scale factor
 
-  if (accelerator.quantdiff_on){
+  if (accelerator.radiation_on && accelerator.quantdiff_on){
     const double p0 = accelerator.energy/light_speed;
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
@@ -318,7 +317,7 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   const std::vector<double> &polynom_b = elem.polynom_b;
   double d_factor = 0; // quantum excitation scale factor
 
-  if (accelerator.quantdiff_on) {
+  if (accelerator.radiation_on && accelerator.quantdiff_on) {
     const double p0 = accelerator.energy/light_speed;
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
