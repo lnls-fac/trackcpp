@@ -87,6 +87,20 @@ const std::vector<std::string> pm_dict = {
     "matrix_pass"
 };
 
+struct RadiationState {
+    enum type {
+        off                    = 0,
+        damping                = 1,
+        full                   = 2,
+    };
+};
+
+const std::vector<std::string> rad_dict = {
+    "off",
+    "damping",
+    "full"
+};
+
 struct Status {
     enum type {
         success = 0,

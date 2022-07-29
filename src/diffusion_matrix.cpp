@@ -118,7 +118,7 @@ void thinkick_symplectic(const Pos<double>& pos, Matrix& bdiff,
 
 void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
                 const Vector& pol_b, const double frac, const double irho,
-                const int max_order, const double energy, const bool radon){
+                const int max_order, const double energy, const int radon){
 
   const double CRAD = CGAMMA * energy * energy * energy / (TWOPI*1e27);
   const double p_norm = (1+pos.de);
@@ -179,7 +179,7 @@ void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
 
 // Find Ohmi's diffusion matrix b_diff of a thick multipole.
 void propagate_b_diff(const Element& ele, const Pos<double>& pos,
-                      const double energy, const bool radon, Matrix& bdiff) {
+                      const double energy, const int radon, Matrix& bdiff) {
 
   const double irho = ele.angle / ele.length;
   const std::vector<double>& pola = ele.polynom_a;
@@ -236,7 +236,7 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
   const double energy = accelerator.energy;
-  const bool radon = accelerator.radiation_on;
+  const int radon = accelerator.radiation_on;
 
   Pos<double> fp = fixed_point;
 
