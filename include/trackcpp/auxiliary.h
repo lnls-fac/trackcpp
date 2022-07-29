@@ -87,6 +87,21 @@ const std::vector<std::string> pm_dict = {
     "matrix_pass"
 };
 
+struct RadState {
+    enum type {
+        off                    = 0,
+        damping                = 1,
+        damping_and_qexcit     = 2,
+    };
+};
+
+const std::vector<std::string> rad_dict = {
+    // this vector has to have the same number of entries as enum above
+    "off",
+    "damping",
+    "damping_and_qexcit"
+};
+
 struct Status {
     enum type {
         success = 0,

@@ -282,7 +282,7 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   const std::vector<double> &polynom_b = elem.polynom_b;
   double d_factor=0; // quantum excitation scale factor
 
-  if (accelerator.radiation_on == 2){
+  if (accelerator.radiation_on == RadState::damping_and_qexcit){
     const double p0 = accelerator.energy/light_speed;
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
@@ -317,7 +317,7 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   const std::vector<double> &polynom_b = elem.polynom_b;
   double d_factor = 0; // quantum excitation scale factor
 
-  if (accelerator.radiation_on == 2) {
+  if (accelerator.radiation_on == RadState::damping_and_qexcit) {
     const double p0 = accelerator.energy/light_speed;
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
