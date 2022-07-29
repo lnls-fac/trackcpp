@@ -91,7 +91,7 @@ int cmd_dynap_xy(const std::vector<std::string>& args) {
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on") ? RadState::damping : RadState::off;
+  accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
   accelerator.vchamber_on = (vchamber_state == "on");
 
   // calcs dynamical aperture
@@ -177,7 +177,7 @@ int cmd_dynap_ex(const std::vector<std::string>& args) {
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on") ? RadState::damping : RadState::off;
+  accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
   accelerator.vchamber_on = (vchamber_state == "on");
 
   // calcs dynamical aperture
@@ -369,7 +369,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on") ? RadState::damping : RadState::off;
+  accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
   accelerator.vchamber_on = (vchamber_state == "on");
 
   // calcs dynamical aperture
@@ -910,7 +910,7 @@ int cmd_dynap_xyfmap(const std::vector<std::string>& args) {
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on") ? RadState::damping : RadState::off;
+  accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
   accelerator.vchamber_on = (vchamber_state == "on");
 
   // calcs dynamical aperture
@@ -993,7 +993,7 @@ int cmd_dynap_exfmap(const std::vector<std::string>& args) {
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on") ? RadState::damping : RadState::off;
+  accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
   accelerator.vchamber_on = (vchamber_state == "on");
 
   // calcs dynamical aperture
@@ -1076,7 +1076,7 @@ int cmd_track_linepass(const std::vector<std::string>& args) {
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
-  accelerator.radiation_on = (radiation_state == "on") ? RadState::damping : RadState::off;
+  accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
   accelerator.vchamber_on = (vchamber_state == "on");
 
   // does tracking

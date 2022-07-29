@@ -115,7 +115,7 @@ int test_findorbit4() {
   std::string fname("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt");
   read_flat_file(fname, accelerator);
   accelerator.cavity_on = false;
-  accelerator.radiation_on = RadState::off;
+  accelerator.radiation_on = RadiationState::off;
   accelerator.vchamber_on = false;
 
   accelerator.lattice[10].polynom_b[0] = 1e-3;
@@ -138,7 +138,7 @@ int test_findorbit6() {
   std::string fname("/home/fac_files/code/trackcpp/tests/si_v07_c05.txt");
   read_flat_file(fname, accelerator);
   accelerator.cavity_on = true;
-  accelerator.radiation_on = RadState::damping;
+  accelerator.radiation_on = RadiationState::damping;
   accelerator.vchamber_on = false;
 
   std::vector<Pos<double> > orbit;
@@ -330,7 +330,7 @@ int test_simple_drift() {
 
   accelerator.energy = 3e9; // [ev]
   accelerator.harmonic_number = 864;
-  accelerator.radiation_on = RadState::off;
+  accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
   accelerator.vchamber_on = false;
 
@@ -358,7 +358,7 @@ int test_simple_quadrupole() {
 
   accelerator.energy = 3e9; // [ev]
   accelerator.harmonic_number = 864;
-  accelerator.radiation_on = RadState::off;
+  accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
   accelerator.vchamber_on = false;
 
@@ -385,7 +385,7 @@ int test_linepass2() {
   //sirius_v500(accelerator.lattice);
   accelerator.energy = 3e9; // [ev]
   accelerator.harmonic_number = 864;
-  accelerator.radiation_on = RadState::off;
+  accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
   accelerator.vchamber_on = false;
 
@@ -425,7 +425,7 @@ int test_flatfile() {
   accelerator.energy = 0.0;
   accelerator.harmonic_number = 0;
   accelerator.cavity_on = false;
-  accelerator.radiation_on = RadState::off;
+  accelerator.radiation_on = RadiationState::off;
   accelerator.vchamber_on = false;
 
 
@@ -457,7 +457,7 @@ int test_calc_twiss() {
   }
 
   accelerator.cavity_on = true;
-  accelerator.radiation_on = RadState::damping;
+  accelerator.radiation_on = RadiationState::damping;
   accelerator.vchamber_on = false;
 
   Pos<double> fixed_point_guess;
@@ -551,7 +551,7 @@ int test_new_write_flat_file() {
 
 
   accelerator.cavity_on = true;
-  accelerator.radiation_on = RadState::damping;
+  accelerator.radiation_on = RadiationState::damping;
   accelerator.vchamber_on = false;
 
   std::string a;
