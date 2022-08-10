@@ -18,14 +18,30 @@
 
 static std::random_device rand_dev;
 static std::mt19937 generator(rand_dev());
-static std::normal_distribution<double>  distr(0., 1.);
+static std::normal_distribution<double>  distr_gauss(0., 1.);
+static std::uniform_real_distribution<double> distr_uniform(-sqrt(3.0), sqrt(3.0));
+int choosen_distribution = Distributions::normal;
+
+void set_random_distribution(unsigned value){
+  if (value == Distributions::normal){
+    choosen_distribution = value;
+  }else if (value == Distributions::uniform){
+    choosen_distribution = value;
+  }else{
+    std::cout<<"Not valid input"<<"\n";
+  }
+}
 
 void set_random_seed(unsigned rnd_seed) {
     generator.seed(rnd_seed);
 }
 
 double gen_random_number() {
-  return distr(generator);
+  if (choosen_distribution==Distributions::uniform){
+    return distr_uniform(generator);
+  }else{
+    return distr_gauss(generator);
+  }
   // Box-Muller Transform
   //
   // z1 = sqrt(-2*ln(u1)) * cos(2*pi*u2)

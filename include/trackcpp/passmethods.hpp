@@ -128,26 +128,26 @@ void strthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_a,
                  const std::vector<double>& polynom_b,
                  const Accelerator& accelerator,
-                 const double d_factor = 0) {
+                 const double rad_const = 0,
+                 const double qexcit_const = 0) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
-  if (accelerator.radiation_on) {
+  
+  if (rad_const != 0) {
     T pnorm = 1 / (1 + pos.de);
     const T& rx = pos.rx;
     T  px = pos.px * pnorm;
     const T& ry = pos.ry;
     T  py = pos.py * pnorm;
     T b2p = b2_perp(imag_sum, real_sum, rx, px, ry, py, 0);
-    double radiation_constant =
-      CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
-    T delta_factor = SQR(1 + pos.de);
-    T dl_ds = (1 + (px*px + py*py)/2);
-    pos.de -= radiation_constant*delta_factor*b2p*dl_ds*length;
+    T delta_factor = SQR(1+pos.de);
+    T dl_ds = (1+(px*px + py*py)/2);
+    pos.de -= rad_const*delta_factor*b2p*dl_ds*length;
 
-    if (d_factor != 0) {
+    if (qexcit_const != 0) {
       // quantum excitation kick
-      T d = delta_factor * sqrt(d_factor * pow(sqrt(b2p), 3) * dl_ds);
+      T d = delta_factor * sqrt(qexcit_const * pow(sqrt(b2p), 3) * dl_ds);
       T qkick = d * gen_random_number();
       pos.de += qkick;
     }
@@ -166,28 +166,27 @@ void bndthinkick(Pos<T>& pos, const double& length,
                  const std::vector<double>& polynom_b,
                  const double& irho,
                  const Accelerator& accelerator,
-                 const double d_factor = 0) {
+                 const double rad_const = 0,
+                 const double qexcit_const = 0) {
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
   T de = pos.de;
 
-  if (accelerator.radiation_on) {
+  if (rad_const != 0) {
     T pnorm = 1 / (1 + pos.de);
     const T& rx = pos.rx;
     T  px = pos.px * pnorm;
     const T& ry = pos.ry;
     T  py = pos.py * pnorm;
     T b2p = b2_perp(imag_sum, real_sum + irho, rx, px, ry, py, irho);
-    double radiation_constant =
-      CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
     T delta_factor = SQR(1 + pos.de);
     T dl_ds = (1 + irho*rx + (px*px+py*py)/2);
-    pos.de -= radiation_constant*delta_factor*b2p*dl_ds*length;
+    pos.de -= rad_const*delta_factor*b2p*dl_ds*length;
 
-    if (d_factor != 0) {
+    if (qexcit_const != 0) {
       // quantum excitation kick
-      T d = delta_factor * sqrt(d_factor * pow(sqrt(b2p), 3) * dl_ds);
+      T d = delta_factor * sqrt(qexcit_const * pow(sqrt(b2p), 3) * dl_ds);
       T qkick = d * gen_random_number();
       pos.de += qkick;
     }
@@ -280,23 +279,28 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   double k2 = sl * KICK2;
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
-  double d_factor = 0; // quantum excitation scale factor
+  double rad_const = 0;
+  double qexcit_const = 0; // quantum excitation scale factor
 
+  if (accelerator.radiation_on){
+    rad_const = CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
+  }
+  
   if (accelerator.radiation_on == RadiationState::full){
     const double p0 = accelerator.energy/light_speed;
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
-    d_factor = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
+    qexcit_const = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
         *pow(p0, 2)*p0_SI/pow(accelerator.energy, 2)*sl;
   }
 
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
     drift<T>(pos, l1);
-    strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
+    strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator, rad_const, 0);
     drift<T>(pos, l2);
-    strthinkick<T>(pos, k2, polynom_a, polynom_b, accelerator, d_factor);
+    strthinkick<T>(pos, k2, polynom_a, polynom_b, accelerator, rad_const, qexcit_const);
     drift<T>(pos, l2);
-    strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator);
+    strthinkick<T>(pos, k1, polynom_a, polynom_b, accelerator, rad_const, 0);
     drift<T>(pos, l1);
   }
   local_2_global(pos, elem);
@@ -315,13 +319,18 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   double irho = elem.angle / elem.length;
   const std::vector<double> &polynom_a = elem.polynom_a;
   const std::vector<double> &polynom_b = elem.polynom_b;
-  double d_factor = 0; // quantum excitation scale factor
+  double rad_const = 0;
+  double qexcit_const = 0; // quantum excitation scale factor
+
+  if (accelerator.radiation_on){
+    rad_const = CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI);
+  }
 
   if (accelerator.radiation_on == RadiationState::full) {
     const double p0 = accelerator.energy/light_speed;
     const double p0_SI = p0 * electron_charge;
     const double gamma = accelerator.energy/M0C2;
-    d_factor = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
+    qexcit_const = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
       *pow(p0, 2)*p0_SI/pow(accelerator.energy, 2)*sl;
   }
 
@@ -329,11 +338,11 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   edge_fringe(pos, irho, elem.angle_in, elem.fint_in, elem.gap);
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
     drift<T>(pos, l1);
-    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator);
+    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator, rad_const, 0);
     drift<T>(pos, l2);
-    bndthinkick<T>(pos, k2, polynom_a, polynom_b, irho, accelerator, d_factor);
+    bndthinkick<T>(pos, k2, polynom_a, polynom_b, irho, accelerator, rad_const, qexcit_const);
     drift<T>(pos, l2);
-    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator);
+    bndthinkick<T>(pos, k1, polynom_a, polynom_b, irho, accelerator, rad_const, 0);
     drift<T>(pos, l1);
   }
   edge_fringe(pos, irho, elem.angle_out, elem.fint_out, elem.gap);

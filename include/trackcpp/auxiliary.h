@@ -101,6 +101,18 @@ const std::vector<std::string> rad_dict = {
     "full"
 };
 
+struct Distributions {
+    enum type {
+        normal =  0,
+        uniform  =  1,
+    };
+};
+
+const std::vector<std::string> distributions_dict = {
+    "normal",
+    "uniform",
+};
+
 struct Status {
     enum type {
         success = 0,
@@ -183,6 +195,7 @@ int sgn(T val) {
 
 
 void set_random_seed(unsigned rnd_seed);
+void set_random_distribution(unsigned value);
 double gen_random_number();
 
 
