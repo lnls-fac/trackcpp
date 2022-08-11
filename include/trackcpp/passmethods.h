@@ -49,6 +49,9 @@ const double KICK2 = -0.1702414383919314656e01;
   const double CU = 55/(24*std::sqrt(3));
 #endif
 
+const double CQEXT = sqrt(CU * CER * reduced_planck_constant *
+  electron_charge * light_speed) * electron_charge * electron_charge /
+  pow(electron_mass*light_speed*light_speed, 3);  // for quant. diff. kick
 
 double get_magnetic_rigidity(const double energy);
 

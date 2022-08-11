@@ -141,15 +141,15 @@ void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
 
   // calculate |B x n|^3 - the third power of the B field component
   // orthogonal to the normalized velocity vector n
-  const double& b2p = b2_perp(
-    im_sum, re_sum+irho, pos.rx, xl, pos.ry, yl, irho);
+  const double& curv = 1 + pos.rx*irho;
+  const double& b2p = b2_perp(im_sum, re_sum+irho, xl, yl, curv);
   const double& b3p = b2p*std::sqrt(b2p);
 
   const double& gamma = energy/M0C2;
   const double& gamma2 = gamma*gamma;
   const double& gamma4 = gamma2*gamma2;
   const double& bb_ = CU*CER*LAMBDABAR*gamma*gamma4*frac*b3p*p_norm2*p_norm2 *
-                      (1 + pos.rx*irho + (xl*xl + yl*yl)/2);
+                      (curv + (xl*xl + yl*yl)/2);
 
   // Add rad kick to bdiff
   bdiff[1][1] += bb_*xl*xl;

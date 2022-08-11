@@ -81,12 +81,17 @@ void fastdrift(Pos<T> &pos, const T& norml) {
 }
 
 template <typename T>
-T b2_perp(const T& bx, const T& by, const T& rx, const T& px,
-          const T& ry, const T& py, const double& irho = 0) {
+T b2_perp(const T& bx, const T& by, const T& px, const T& py, const T& curv=1) {
 
   // Calculates sqr(|B x e|) , where e is a unit vector in the direction of velocity
-  T v_norm2 = 1 /(SQR(1+irho*rx) + SQR(px) + SQR(py));
-  return((SQR(by*(1+irho*rx)) + SQR(bx*(1+irho*rx)) + SQR(bx*py - by*px))*v_norm2);
+  const T& curv2 = SQR(curv);
+  const T& v_norm2_inv = (curv2 + SQR(px) + SQR(py));
+  T&& b2p = SQR(by);
+  b2p += SQR(bx);
+  b2p *= curv2;
+  b2p += SQR(bx*py - by*px);
+  b2p /= v_norm2_inv;
+  return b2p;
 }
 
 template <typename T>
@@ -133,28 +138,27 @@ void strthinkick(Pos<T>& pos, const double& length,
 
   T real_sum, imag_sum;
   calcpolykick<T>(pos, polynom_a, polynom_b, real_sum, imag_sum);
-  
+
   if (rad_const != 0) {
-    T pnorm = 1 / (1 + pos.de);
+    T&& pnorm = 1 / (1 + pos.de);
     const T& rx = pos.rx;
-    T  px = pos.px * pnorm;
+    const T&  px = pos.px * pnorm;
     const T& ry = pos.ry;
-    T  py = pos.py * pnorm;
-    T b2p = b2_perp(imag_sum, real_sum, rx, px, ry, py, 0);
-    T delta_factor = SQR(1+pos.de);
-    T dl_ds = (1+(px*px + py*py)/2);
+    const T&  py = pos.py * pnorm;
+    const T& b2p = b2_perp(imag_sum, real_sum, px, py);
+    const T& delta_factor = SQR(1+pos.de);
+    const T& dl_ds = (1+(px*px + py*py)/2);
     pos.de -= rad_const*delta_factor*b2p*dl_ds*length;
 
     if (qexcit_const != 0) {
       // quantum excitation kick
-      T d = delta_factor * sqrt(qexcit_const * pow(sqrt(b2p), 3) * dl_ds);
-      T qkick = d * gen_random_number();
-      pos.de += qkick;
+      const T& d = delta_factor * qexcit_const * sqrt(POW3(sqrt(b2p)) * dl_ds);
+      pos.de += d * gen_random_number();
     }
 
-    pnorm  = 1 / (1 + pos.de);
-    pos.px = px / pnorm;
-    pos.py = py / pnorm;
+    pnorm = (1 + pos.de);  // actually this is the inverse of pnorm
+    pos.px = px * pnorm;
+    pos.py = py * pnorm;
   }
   pos.px -= length * real_sum;
   pos.py += length * imag_sum;
@@ -174,26 +178,26 @@ void bndthinkick(Pos<T>& pos, const double& length,
   T de = pos.de;
 
   if (rad_const != 0) {
-    T pnorm = 1 / (1 + pos.de);
+    T&& pnorm = 1 / (1 + pos.de);
     const T& rx = pos.rx;
-    T  px = pos.px * pnorm;
+    const T& px = pos.px * pnorm;
     const T& ry = pos.ry;
-    T  py = pos.py * pnorm;
-    T b2p = b2_perp(imag_sum, real_sum + irho, rx, px, ry, py, irho);
-    T delta_factor = SQR(1 + pos.de);
-    T dl_ds = (1 + irho*rx + (px*px+py*py)/2);
+    const T& py = pos.py * pnorm;
+    const T& curv = 1 + irho*rx;
+    const T& b2p = b2_perp(imag_sum, real_sum+irho, px, py, curv);
+    const T& delta_factor = SQR(1 + pos.de);
+    const T& dl_ds = (curv + (px*px+py*py)/2);
     pos.de -= rad_const*delta_factor*b2p*dl_ds*length;
 
     if (qexcit_const != 0) {
       // quantum excitation kick
-      T d = delta_factor * sqrt(qexcit_const * pow(sqrt(b2p), 3) * dl_ds);
-      T qkick = d * gen_random_number();
-      pos.de += qkick;
+      const T& d = delta_factor * qexcit_const * sqrt(POW3(sqrt(b2p)) * dl_ds);
+      pos.de += d * gen_random_number();
     }
 
-    pnorm = 1 / (1 + pos.de);
-    pos.px = px / pnorm;
-    pos.py = py / pnorm;
+    pnorm = (1 + pos.de);  // actually this is the inverse of pnorm
+    pos.px = px * pnorm;
+    pos.py = py * pnorm;
   }
   pos.px -= length * (real_sum - (de - pos.rx * irho) * irho);
   pos.py += length * imag_sum;
@@ -285,13 +289,9 @@ Status::type pm_str_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   if (accelerator.radiation_on){
     rad_const = CGAMMA*POW3(accelerator.energy/1e9)/(TWOPI); /*[m] M.Sands(4.1)*/
   }
-  
+
   if (accelerator.radiation_on == RadiationState::full){
-    const double p0 = accelerator.energy/light_speed;
-    const double p0_SI = p0 * electron_charge;
-    const double gamma = accelerator.energy/M0C2;
-    qexcit_const = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
-        *pow(p0, 2)*p0_SI/pow(accelerator.energy, 2)*sl;
+    qexcit_const = CQEXT*SQR(accelerator.energy)*sqrt(accelerator.energy*sl);
   }
 
   for(unsigned int i=0; i<elem.nr_steps; ++i) {
@@ -327,11 +327,7 @@ Status::type pm_bnd_mpole_symplectic4_pass(Pos<T> &pos, const Element &elem,
   }
 
   if (accelerator.radiation_on == RadiationState::full) {
-    const double p0 = accelerator.energy/light_speed;
-    const double p0_SI = p0 * electron_charge;
-    const double gamma = accelerator.energy/M0C2;
-    qexcit_const = CU * CER * reduced_planck_constant*pow(gamma, 4)/pow(electron_mass, 2)
-      *pow(p0, 2)*p0_SI/pow(accelerator.energy, 2)*sl;
+    qexcit_const = CQEXT*SQR(accelerator.energy)*sqrt(accelerator.energy*sl);
   }
 
   global_2_local(pos, elem);
