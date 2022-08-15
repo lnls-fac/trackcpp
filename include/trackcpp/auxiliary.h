@@ -22,7 +22,7 @@
 #include <ostream>
 #include <iostream>
 #include <cmath>
-
+#include <random>
 
 class PassMethodsClass {
 public:
@@ -85,6 +85,32 @@ const std::vector<std::string> pm_dict = {
     "thinsext_pass",
     "kicktable_pass",
     "matrix_pass"
+};
+
+struct RadiationState {
+    enum type {
+        off                    = 0,
+        damping                = 1,
+        full                   = 2,
+    };
+};
+
+const std::vector<std::string> rad_dict = {
+    "off",
+    "damping",
+    "full"
+};
+
+struct Distributions {
+    enum type {
+        normal =  0,
+        uniform  =  1,
+    };
+};
+
+const std::vector<std::string> distributions_dict = {
+    "normal",
+    "uniform",
 };
 
 struct Status {
@@ -166,6 +192,11 @@ template <typename T>
 int sgn(T val) {
     if (val >= 0) return 1; else return -1;
 }
+
+
+void set_random_seed(unsigned rnd_seed);
+void set_random_distribution(unsigned value);
+double gen_random_number();
 
 
 #if __GNUC__ < 6

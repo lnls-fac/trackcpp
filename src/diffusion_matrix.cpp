@@ -118,7 +118,7 @@ void thinkick_symplectic(const Pos<double>& pos, Matrix& bdiff,
 
 void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
                 const Vector& pol_b, const double frac, const double irho,
-                const int max_order, const double energy, const bool radon){
+                const int max_order, const double energy, const int radon){
 
   const double CRAD = CGAMMA * energy * energy * energy / (TWOPI*1e27);
   const double p_norm = (1+pos.de);
@@ -141,15 +141,15 @@ void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
 
   // calculate |B x n|^3 - the third power of the B field component
   // orthogonal to the normalized velocity vector n
-  const double& b2p = b2_perp(
-    im_sum, re_sum+irho, pos.rx, xl, pos.ry, yl, irho);
+  const double& curv = 1 + pos.rx*irho;
+  const double& b2p = b2_perp(im_sum, re_sum+irho, xl, yl, curv);
   const double& b3p = b2p*std::sqrt(b2p);
 
   const double& gamma = energy/M0C2;
   const double& gamma2 = gamma*gamma;
   const double& gamma4 = gamma2*gamma2;
   const double& bb_ = CU*CER*LAMBDABAR*gamma*gamma4*frac*b3p*p_norm2*p_norm2 *
-                      (1 + pos.rx*irho + (xl*xl + yl*yl)/2);
+                      (curv + (xl*xl + yl*yl)/2);
 
   // Add rad kick to bdiff
   bdiff[1][1] += bb_*xl*xl;
@@ -179,7 +179,7 @@ void thinkick_rad(Pos<double>& pos, Matrix& bdiff, const Vector& pol_a,
 
 // Find Ohmi's diffusion matrix b_diff of a thick multipole.
 void propagate_b_diff(const Element& ele, const Pos<double>& pos,
-                      const double energy, const bool radon, Matrix& bdiff) {
+                      const double energy, const int radon, Matrix& bdiff) {
 
   const double irho = ele.angle / ele.length;
   const std::vector<double>& pola = ele.polynom_a;
@@ -236,7 +236,7 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
   const double energy = accelerator.energy;
-  const bool radon = accelerator.radiation_on;
+  const int radon = accelerator.radiation_on;
 
   Pos<double> fp = fixed_point;
 
