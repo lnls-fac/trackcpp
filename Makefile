@@ -63,8 +63,10 @@ BINSOURCES_CPP =	exec.cpp \
 
 AUXFILES  = VERSION
 
-LIBS = -lgsl -lgslcblas -lpthread -lm
-INC  = -I./include
+LIBS = $(shell gsl-config --libs)
+LIBS += -lpthread
+INC = $(shell gsl-config --cflags)
+INC += -I./include
 
 ifeq ($(CONDA_PREFIX),)
     PREFIX = /usr/local
