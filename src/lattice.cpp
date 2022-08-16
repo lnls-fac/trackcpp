@@ -98,7 +98,7 @@ std::vector<int> latt_findcells_fam_name(const std::vector<Element>& lattice, co
     }
   };
   return r;
-};
+}
 
 std::vector<int> latt_findcells_frequency(const std::vector<Element>& lattice, const double& value, bool reverse) {
   std::vector<int> r;
@@ -108,7 +108,7 @@ std::vector<int> latt_findcells_frequency(const std::vector<Element>& lattice, c
     }
   };
   return r;
-};
+}
 
 std::vector<int> latt_findcells_angle(const std::vector<Element>& lattice, const double& value, bool reverse) {
   std::vector<int> r;
@@ -118,7 +118,7 @@ std::vector<int> latt_findcells_angle(const std::vector<Element>& lattice, const
     }
   };
   return r;
-};
+}
 
 std::vector<int> latt_findcells_polynom_b(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse) {
   std::vector<int> r;

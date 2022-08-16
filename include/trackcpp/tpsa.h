@@ -22,10 +22,10 @@
 //
 // TPSA
 // ====
-// Author: 		  Ximenes R. Resende
-// email:  		  xresende@gmail.com, ximenes.resende@lnls.br
+// Author: 	    Ximenes R. Resende
+// email:  	    xresende@gmail.com, ximenes.resende@lnls.br
 // affiliation:	LNLS - Laboratorio Nacional de Luz Sincrotron
-// Date: 		    August 31st, 2006 @ LNLS
+// Date:        August 31st, 2006 @ LNLS
 //
 // Notes:
 //
@@ -189,6 +189,7 @@ template <unsigned int V, unsigned int N, typename TYPE> unsigned int Tpsa<V,N,T
 template <unsigned int V, unsigned int N, typename TYPE> unsigned int Tpsa<V,N,TYPE>::powers[et_osip<V,N,N>::val][V];
 
 
+
 // Implementations: CONSTRUCTORS
 // -----------------------------
 
@@ -199,7 +200,7 @@ Tpsa<V,N,TYPE>::Tpsa(const TYPE& a_, const unsigned int v_) {
 	//for(unsigned int i=1; i<get_size(); i++) c[i] = 0;
 	c[0] = a_;
 	if (v_<V) c[v_+1] = 1;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>::Tpsa(const Tpsa<V,N,TYPE>& a_)  {
@@ -216,38 +217,39 @@ Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator * (const TYPE& o_) const {
 	Tpsa<V,N,TYPE> r(*this);
 	for(unsigned int i=0; i<get_size(); i++) r.c[i] *= o_;
 	return r;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator / (const TYPE& o_) const {
 	Tpsa<V,N,TYPE> r(*this);
 	for(unsigned int i=0; i<get_size(); i++) r.c[i] /= o_;
 	return r;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator += (const TYPE& o_) {
 	c[0] += o_;
 	return *this;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator -= (const TYPE& o_) {
 	c[0] -= o_;
 	return *this;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator *= (const TYPE& o_) {
 	for(unsigned int i=0; i<get_size(); i++) c[i] *= o_;
 	return *this;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator /= (const TYPE& o_) {
 	for(unsigned int i=0; i<get_size(); i++) c[i] /= o_;
 	return *this;
-};
+}
+
 
 
 // Implementations: ALGEBRA OF CLASS ELEMENTS
@@ -258,21 +260,21 @@ Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator - () const {
 	Tpsa<V,N,TYPE> r(*this);
 	for(unsigned int i=0; i<get_size(); i++) r.c[i] = -r.c[i];
 	return r;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator + (const Tpsa<V,N,TYPE>& o_) const {
 	Tpsa<V,N,TYPE> r(*this);
 	for(unsigned int i=0; i<get_size(); i++) r.c[i] += o_.c[i];
 	return r;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator - (const Tpsa<V,N,TYPE>& o_) const {
 	Tpsa<V,N,TYPE> r(*this);
 	for(unsigned int i=0; i<get_size(); i++) r.c[i] -= o_.c[i];
 	return r;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator * (const Tpsa<V,N,TYPE>& o_) const {
@@ -289,7 +291,7 @@ Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator * (const Tpsa<V,N,TYPE>& o_) const {
 		}
 	}
 	return r;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::inverse() const {
@@ -307,31 +309,32 @@ Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::inverse() const {
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> Tpsa<V,N,TYPE>::operator / (const Tpsa<V,N,TYPE>& o_) const {
 	return *this * o_.inverse();
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator += (const Tpsa<V,N,TYPE>& o_) {
 	for(unsigned int i=0; i<get_size(); i++) c[i] += o_.c[i];
 	return *this;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator -= (const Tpsa<V,N,TYPE>& o_) {
 	for(unsigned int i=0; i<get_size(); i++) c[i] -= o_.c[i];
 	return *this;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator *= (const Tpsa<V,N,TYPE>& o_) {
 	*this = *this * o_;
 	return *this;
-};
+}
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE>& Tpsa<V,N,TYPE>::operator /= (const Tpsa<V,N,TYPE>& o_) {
 	*this = *this * o_.inverse();
 	return *this;
-};
+}
+
 
 
 // Implementation: BOOLEAN OPERATORS
@@ -403,6 +406,7 @@ bool Tpsa<V,N,TYPE>::operator >= (const Tpsa<V,N,TYPE>& o_) const {
 }
 
 
+
 // Implementation: AUXILIARY MEMBER FUNCTIONS
 // ------------------------------------------
 
@@ -459,6 +463,7 @@ void Tpsa<V,N,TYPE>::get_power(unsigned int idx_, unsigned int* power_) {
 		power_[i-1] -= power_[i];
 	}
 }
+
 
 
 // Implementation: NON-MEMBER FUNCTIONS AND OPERATORS WITH ARGUMENTS OF CLASS TYPE
@@ -709,8 +714,6 @@ template <unsigned int V, unsigned int N, typename TYPE>
 bool isfinite(const Tpsa<V,N,TYPE>& a_) {
 	return std::isfinite(a_.c[0]);
 }
-
-
 
 
 #endif

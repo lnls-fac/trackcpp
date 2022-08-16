@@ -27,10 +27,10 @@ public:
   // energy < electron_rest_energy -> energy = electron_rest_energy:
   Accelerator(const double& energy=-1);
   double                  energy;              // [eV]
-  bool                    cavity_on;
-  int                     radiation_on;
-  bool                    vchamber_on;
-  int                     harmonic_number;
+  bool                    cavity_on = false;
+  int                     radiation_on = RadiationState::off;
+  bool                    vchamber_on = false;
+  int                     harmonic_number = 0;
   std::vector<Element>    lattice;
 
   bool operator==(const Accelerator& o) const;
