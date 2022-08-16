@@ -42,7 +42,7 @@ int main() {
     accelerator.energy = 2.99792462e9;
     accelerator.harmonic_number = 864;
     accelerator.cavity_on = true;
-    accelerator.radiation_on = true;
+    accelerator.radiation_on = RadiationState::damping;
     accelerator.vchamber_on = true;
 
 

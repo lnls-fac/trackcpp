@@ -28,7 +28,7 @@ public:
   Accelerator(const double& energy=-1);
   double                  energy;              // [eV]
   bool                    cavity_on = false;
-  bool                    radiation_on = false;
+  int                     radiation_on = RadiationState::off;
   bool                    vchamber_on = false;
   int                     harmonic_number = 0;
   std::vector<Element>    lattice;
