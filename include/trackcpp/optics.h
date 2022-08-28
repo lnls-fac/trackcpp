@@ -45,7 +45,7 @@ friend std::ostream& operator<< (std::ostream &out, const Twiss& tw);
 
 };
 
-Status::type calc_twiss(const Accelerator& accelerator,
+Status::type calc_twiss(Accelerator& accelerator,
                         const Pos<double>& fixed_point,
                         Matrix& m66,
                         std::vector<Twiss>& twiss,
