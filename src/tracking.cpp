@@ -49,8 +49,8 @@ Status::type track_findm66 (Accelerator& accelerator,
   Pos<double> fp = fixed_point;
   
   const int radsts = accelerator.radiation_on;
-  if (radsts == 2){
-    accelerator.radiation_on = 1;
+  if (radsts == RadiationState::full){
+    accelerator.radiation_on = RadiationState::damping;
   }
   // case no closed_orbit has been defined
   if (std::isnan(fp.rx)) fp = Pos<double>(0,0,0,0,0,0);
@@ -143,8 +143,8 @@ Status::type track_findorbit6(
   int    max_nr_iters = 50;
 
   const int radsts = accelerator.radiation_on;
-  if (radsts == 2){
-    accelerator.radiation_on = 1;
+  if (radsts == RadiationState::full){
+    accelerator.radiation_on = RadiationState::damping;
   }
   // calcs longitudinal fixed point
   double L0 = latt_findspos(the_ring, 1+the_ring.size());
@@ -232,8 +232,8 @@ Status::type track_findorbit4(
   int    max_nr_iters = 50;
 
   const int radsts = accelerator.radiation_on;
-  if (radsts == 2){
-    accelerator.radiation_on = 1;
+  if (radsts == RadiationState::full){
+    accelerator.radiation_on = RadiationState::damping;
   }
   // temporary vectors and matrices
   // std::vector<Pos<double> > co(7,0); // no initial guess
