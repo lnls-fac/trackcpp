@@ -67,7 +67,7 @@ Status::type track_ringpass_wrapper (
         RingPassArgs& args);
 
 Status::type calc_twiss_wrapper (
-        const Accelerator& accelerator,
+        Accelerator& accelerator,
         const Pos<double>& fixed_point,
         Matrix& m66,
         double *twiss, int n1, int n2,
@@ -94,7 +94,7 @@ Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, boo
 Status::type kicktable_getkicks_wrapper(const int& kicktable_idx, const double& rx, const double& ry, double& hkick__, double& vkick__);
 
 Status::type track_findm66_wrapper(
-    const Accelerator& accelerator,
+    Accelerator& accelerator,
     const Pos<double>& fixed_point,
     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
     double *m66, int n1_m66, int n2_m66,

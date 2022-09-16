@@ -36,7 +36,7 @@
 //
 //    RETURN:      status do tracking (see 'auxiliary.h')
 
-Status::type track_findm66 (const Accelerator& accelerator,
+Status::type track_findm66 (Accelerator& accelerator,
                             const Pos<double>& fixed_point,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
@@ -47,7 +47,11 @@ Status::type track_findm66 (const Accelerator& accelerator,
   const std::vector<Element>& lattice = accelerator.lattice;
 
   Pos<double> fp = fixed_point;
-
+  
+  const int radsts = accelerator.radiation_on;
+  if (radsts == RadiationState::full){
+    accelerator.radiation_on = RadiationState::damping;
+  }
   // case no closed_orbit has been defined
   if (std::isnan(fp.rx)) fp = Pos<double>(0,0,0,0,0,0);
 
@@ -103,13 +107,15 @@ Status::type track_findm66 (const Accelerator& accelerator,
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
-
+  
+  accelerator.radiation_on = radsts;
+  
   return status;
 
 }
 
 
-Status::type track_findm66 (const Accelerator& accelerator,
+Status::type track_findm66 (Accelerator& accelerator,
                             const Pos<double>& fixed_point,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
@@ -126,7 +132,7 @@ Status::type track_findm66 (const Accelerator& accelerator,
 
 
 Status::type track_findorbit6(
-    const Accelerator& accelerator,
+    Accelerator& accelerator,
     std::vector<Pos<double> >& closed_orbit,
     const Pos<double>& fixed_point_guess) {
 
@@ -136,6 +142,10 @@ Status::type track_findorbit6(
   double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
 
+  const int radsts = accelerator.radiation_on;
+  if (radsts == RadiationState::full){
+    accelerator.radiation_on = RadiationState::damping;
+  }
   // calcs longitudinal fixed point
   double L0 = latt_findspos(the_ring, 1+the_ring.size());
   double T0 = L0 / light_speed;
@@ -205,12 +215,13 @@ Status::type track_findorbit6(
   unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
+  accelerator.radiation_on = radsts;
   return Status::success;
 
 }
 
 Status::type track_findorbit4(
-    const Accelerator& accelerator,
+    Accelerator& accelerator,
     std::vector<Pos<double> >& closed_orbit,
     const Pos<double>& fixed_point_guess) {
 
@@ -220,6 +231,10 @@ Status::type track_findorbit4(
   double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
 
+  const int radsts = accelerator.radiation_on;
+  if (radsts == RadiationState::full){
+    accelerator.radiation_on = RadiationState::damping;
+  }
   // temporary vectors and matrices
   // std::vector<Pos<double> > co(7,0); // no initial guess
   std::vector<Pos<double> > co(7,fixed_point_guess);
@@ -272,6 +287,7 @@ Status::type track_findorbit4(
   unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
+  accelerator.radiation_on = radsts;
   return Status::success;
 
 }

@@ -60,7 +60,7 @@ double get_magnetic_rigidity(const double energy) {
 #include <chrono>
 #endif
 
-Status::type calc_twiss(const Accelerator& accelerator,
+Status::type calc_twiss(Accelerator& accelerator,
                         const Pos<double>& fixed_point,
                         Matrix& m66,
                         std::vector<Twiss>& twiss,
