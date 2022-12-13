@@ -88,6 +88,7 @@ public:
   static Element vcorrector (const std::string& fam_name_, const double& length_, const double& vkick_);
   static Element corrector  (const std::string& fam_name_, const double& length_, const double& hkick_, const double& vkick_);
   static Element drift      (const std::string& fam_name_, const double& length_);
+  static Element drift_g2l  (const std::string& fam_name_, const double& length_);
   static Element matrix     (const std::string& fam_name_, const double& length_);
   static Element rbend      (const std::string& fam_name_, const double& length_,
                              const double& angle_, const double& angle_in_ = 0, const double& angle_out_ = 0,
@@ -109,6 +110,7 @@ public:
 void initialize_marker(Element& element);
 void initialize_corrector(Element& element, const double& hkick, const double& vkick);
 void initialize_drift(Element& element);
+void initialize_drift_g2l(Element& element);
 void initialize_matrix(Element& element);
 void initialize_rbend(Element& element, const double& angle, const double& angle_in, const double& angle_out,
             const double& gap, const double& fint_in, const double& fint_out,

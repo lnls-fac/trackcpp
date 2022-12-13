@@ -70,6 +70,12 @@ Element Element::drift (const std::string& fam_name_, const double& length_) {
   return e;
 }
 
+Element Element::drift_g2l (const std::string& fam_name_, const double& length_) {
+  Element e = Element(fam_name_, length_);
+    initialize_drift_g2l(e);
+  return e;
+}
+
 Element Element::matrix(const std::string& fam_name_, const double& length_) {
   Element e = Element(fam_name_, length_);
     initialize_matrix(e);
@@ -159,6 +165,8 @@ bool Element::operator==(const Element& o) const {
 
     // the optimization bellow breaks true object comparison but
     // keeps physical comparison between elements.
+    // NOTE: the following line should be adapted depending on whether
+    //       drift will be kept as it is, without using g2l, l2g or not.
     if ((this->pass_method == PassMethod::pm_drift_pass) or
        (this->pass_method == PassMethod::pm_identity_pass)) return true;
 
@@ -238,6 +246,10 @@ void initialize_drift(Element &element) {
 
 void initialize_matrix(Element &element) {
     element.pass_method = PassMethod::pm_matrix_pass;
+}
+
+void initialize_drift_g2l(Element &element) {
+    element.pass_method = PassMethod::pm_drift_g2l_pass;
 }
 
 void initialize_rbend(Element &element, const double &angle, const double &angle_in, const double &angle_out, const double &gap, const double &fint_in, const double &fint_out, const std::vector<double> &polynom_a, const std::vector<double> &polynom_b, const double &K, const double &S, const int nr_steps) {
