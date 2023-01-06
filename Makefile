@@ -65,8 +65,8 @@ AUXFILES  = VERSION
 
 LIBS = $(shell gsl-config --libs)
 LIBS += -lpthread
-INC = $(shell gsl-config --cflags)
-INC += -I./include
+INC = -I./include
+INC += $(shell gsl-config --cflags)
 
 ifeq ($(CONDA_PREFIX),)
     PREFIX = /usr/local
