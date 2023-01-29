@@ -20,6 +20,7 @@
 #include "kicktable.h"
 #include "elements.h"
 #include <vector>
+#include <string>
 
 //struct Accelerator {
 class Accelerator {
@@ -32,6 +33,7 @@ public:
   bool                    vchamber_on = false;
   int                     harmonic_number = 0;
   std::vector<Element>    lattice;
+  std::string             lattice_version = "";
 
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
