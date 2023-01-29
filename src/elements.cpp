@@ -165,8 +165,6 @@ bool Element::operator==(const Element& o) const {
 
     // the optimization bellow breaks true object comparison but
     // keeps physical comparison between elements.
-    // NOTE: the following line should be adapted depending on whether
-    //       drift will be kept as it is, without using g2l, l2g or not.
     if ((this->pass_method == PassMethod::pm_drift_pass) or
        (this->pass_method == PassMethod::pm_identity_pass)) return true;
 

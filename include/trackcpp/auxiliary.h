@@ -57,7 +57,7 @@ private:
     std::vector<std::string> passmethods;
 };
 
-// this is to be superseede by PassMethodClass
+// this is to be superseeded by PassMethodClass
 struct PassMethod {
     enum type {
         pm_identity_pass                  = 0,

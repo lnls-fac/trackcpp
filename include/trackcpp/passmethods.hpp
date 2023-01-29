@@ -259,8 +259,6 @@ void local_2_global(Pos<T> &pos, const Element &elem) {
 template <typename T>
 Status::type pm_identity_pass(Pos<T> &pos, const Element &elem,
                               const Accelerator& accelerator) {
-  global_2_local(pos, elem);
-  local_2_global(pos, elem);
   return Status::success;
 }
 
@@ -277,10 +275,7 @@ Status::type pm_drift_g2l_pass(Pos<T> &pos, const Element &elem,
 template <typename T>
 Status::type pm_drift_pass(Pos<T> &pos, const Element &elem,
                            const Accelerator& accelerator) {
-
-  global_2_local(pos, elem);
   drift<T>(pos, elem.length);
-  local_2_global(pos, elem);
   return Status::success;
 }
 

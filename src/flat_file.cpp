@@ -414,7 +414,6 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
 
     }
 
-
     accelerator.lattice.push_back(e); idx++;
 
   };
