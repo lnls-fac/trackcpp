@@ -170,6 +170,10 @@ Element drift_wrapper(const std::string &fam_name_, const double &length_) {
     return Element::drift(fam_name_, length_);
 }
 
+Element drift_g2l_wrapper(const std::string &fam_name_, const double &length_) {
+    return Element::drift_g2l(fam_name_, length_);
+}
+
 Element matrix_wrapper(const std::string &fam_name_, const double &length_) {
     return Element::matrix(fam_name_, length_);
 }

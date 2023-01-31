@@ -79,6 +79,7 @@ Element hcorrector_wrapper(const std::string& fam_name_, const double& length_, 
 Element vcorrector_wrapper(const std::string& fam_name_, const double& length_, const double& vkick_);
 Element corrector_wrapper(const std::string& fam_name_, const double& length_, const double& hkick_, const double& vkick_);
 Element drift_wrapper(const std::string& fam_name_, const double& length_);
+Element drift_g2l_wrapper(const std::string& fam_name_, const double& length_);
 Element matrix_wrapper(const std::string& fam_name_, const double& length_);
 Element quadrupole_wrapper(const std::string& fam_name_, const double& length_, const double& K_, const int nr_steps_ = 10);
 Element sextupole_wrapper(const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);

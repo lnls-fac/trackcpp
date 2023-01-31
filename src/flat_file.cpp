@@ -350,6 +350,8 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
       }; break;
       case FlatFileType::drift:
       {
+        // NOTE: which one?
+        // e.pass_method = PassMethod::pm_drift_g2l_pass;
         e.pass_method = PassMethod::pm_drift_pass;
         fp >> e.length;
       }; break;
@@ -411,7 +413,6 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         break;
 
     }
-
 
     accelerator.lattice.push_back(e); idx++;
 
