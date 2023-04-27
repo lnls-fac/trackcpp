@@ -135,7 +135,7 @@ Status::type print_dynapgrid(const Accelerator& accelerator, const std::vector<D
 	fprintf(fp, "# ebeam_energy[eV]  : %f\n", accelerator.energy);
 	fprintf(fp, "# harmonic_number   : %i\n", accelerator.harmonic_number);
 	fprintf(fp, "# cavity_state      : %s\n", accelerator.cavity_on ? "on" : "off");
-	fprintf(fp, "# radiation_state   : %s\n", rad_dict[accelerator.radiation_on]);
+	fprintf(fp, "# radiation_state   : %s\n", rad_dict[accelerator.radiation_on].c_str());
 	fprintf(fp, "# chamber_state     : %s\n", accelerator.vchamber_on ? "on" : "off");
 	fprintf(fp, "\n");
 	if (print_tunes) {
