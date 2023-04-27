@@ -126,6 +126,10 @@ ifeq ($(shell hostname), uv100)
     INC         = -I../bin/GSL/include/
 endif
 
+ifeq ($(shell hostname), Lins-MBP-2.abtlus.org.br)
+    OPT_FLAG    = -O3 -std=c++11 -fPIC -lcurl
+endif
+
 
 .PHONY: all alllibs trackcpp clean cleanall
 
