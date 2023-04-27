@@ -129,7 +129,7 @@ endif
 #### DERIVED CONDITIONALS AND VARIABLES : Apple/clang ####
 ifneq ($(shell gcc --version | grep clang), )
     OPT_FLAG    = -O3 -std=c++11 -fPIC
-    LIBS        = /usr/local/lib/libgsl.a -lpthread
+    LIBS        = /usr/local/Cellar/gsl/2.7.1/lib/libgsl.a -lpthread
 endif
 
 
