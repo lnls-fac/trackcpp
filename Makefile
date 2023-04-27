@@ -126,8 +126,9 @@ ifeq ($(shell hostname), uv100)
     INC         = -I../bin/GSL/include/
 endif
 
-ifeq ($(shell hostname), Lins-MBP-2.abtlus.org.br)
-    OPT_FLAG    = -O3 -std=c++11 -fPIC -lcurl
+#### DERIVED CONDITIONALS AND VARIABLES : Apple/clang ####
+ifneq ($(shell gcc --version | grep clang), )
+    OPT_FLAG    = -O3 -std=c++11 -fPIC
 endif
 
 
