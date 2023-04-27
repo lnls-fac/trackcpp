@@ -40,7 +40,7 @@ Status::type print_closed_orbit(const Accelerator& accelerator, const std::vecto
 	fprintf(fp, "# ebeam_energy[eV] : %f\n", accelerator.energy);
 	fprintf(fp, "# harmonic_number  : %i\n", accelerator.harmonic_number);
 	fprintf(fp, "# cavity_state     : %s\n", accelerator.cavity_on ? "on" : "off");
-	fprintf(fp, "# radiation_state  : %s\n", rad_dict[accelerator.radiation_on]);
+	fprintf(fp, "# radiation_state  : %s\n", rad_dict[accelerator.radiation_on].c_str());
 	fprintf(fp, "# chamber_state    : %s\n", accelerator.vchamber_on ? "on" : "off");
 	fprintf(fp, "\n");
 	fprintf(fp, "%-5s %-15s %-24s %-24s %-24s %-24s %-24s %-24s %-24s\n", "# idx", "fam_name", "s[m]", "rx[m]", "px[rad]", "ry[m]", "py[rad]", "de", "dl[m]");
@@ -70,7 +70,7 @@ Status::type print_tracking_linepass(const Accelerator& accelerator, const std::
 	fprintf(fp, "# ebeam_energy[eV]  : %f\n", accelerator.energy);
 	fprintf(fp, "# harmonic_number   : %i\n", accelerator.harmonic_number);
 	fprintf(fp, "# cavity_state      : %s\n", accelerator.cavity_on ? "on" : "off");
-	fprintf(fp, "# radiation_state   : %s\n", rad_dict[accelerator.radiation_on]);
+	fprintf(fp, "# radiation_state   : %s\n", rad_dict[accelerator.radiation_on].c_str());
 	fprintf(fp, "# chamber_state     : %s\n", accelerator.vchamber_on ? "on" : "off");
 	fprintf(fp, "\n");
 
@@ -104,7 +104,7 @@ Status::type print_tracking_ringpass(const Accelerator& accelerator, const std::
 	fprintf(fp, "# ebeam_energy[eV]  : %f\n", accelerator.energy);
 	fprintf(fp, "# harmonic_number   : %i\n", accelerator.harmonic_number);
 	fprintf(fp, "# cavity_state      : %s\n", accelerator.cavity_on ? "on" : "off");
-	fprintf(fp, "# radiation_state   : %s\n", rad_dict[accelerator.radiation_on]);
+	fprintf(fp, "# radiation_state   : %s\n", rad_dict[accelerator.radiation_on].c_str());
 	fprintf(fp, "# chamber_state     : %s\n", accelerator.vchamber_on ? "on" : "off");
 	fprintf(fp, "\n");
 
