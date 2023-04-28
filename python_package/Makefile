@@ -34,10 +34,15 @@ INC += -I../include $(PYTHON_INCLUDES) $(NUMPY_INCLUDE)
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
 
+FLAG_WHOLE_ARCHIVE = -Wl,--whole-archive
+FLAG_NO_WHOLE_ARCHIVE = -Wl,--no-whole-archive
+
 #### DERIVED CONDITIONALS AND VARIABLES : macOS ####
 ifneq ($(shell gcc --version | grep clang), )
-	CC          = gcc-12
-	CXX         = g++-12
+    CC          = gcc-12
+    CXX         = g++-12
+    FLAG_WHOLE_ARCHIVE = -Wl
+    FLAG_NO_WHOLE_ARCHIVE = -Wl
     # OPT_FLAG    = -O3 -std=c++11 -fPIC
     # CFLAGS      = $(OPT_FLAG) $(DFLAGS) -pthread
     # CFLAGS      += $(WARNINGS_CFLAGS)
@@ -52,7 +57,7 @@ $(shell $(CXX) -MM $(INTERFACESRCS) > .depend)
 -include .depend
 
 trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
-	$(CXX) -shared -Wl,--whole-archive $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
+	$(CXX) -shared $(FLAG_WHOLE_ARCHIVE) $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
 	[ -f ./numpy.i ] && echo "numpy.i already here, good" || \
