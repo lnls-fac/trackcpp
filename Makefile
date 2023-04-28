@@ -126,9 +126,11 @@ ifeq ($(shell hostname), uv100)
     INC         = -I../bin/GSL/include/
 endif
 
-#### DERIVED CONDITIONALS AND VARIABLES : Apple/clang ####
+#### DERIVED CONDITIONALS AND VARIABLES : macOS ####
 ifneq ($(shell gcc --version | grep clang), )
     OPT_FLAG    = -O3 -std=c++11 -fPIC
+	CFLAGS      = $(OPT_FLAG) $(DFLAGS) -pthread
+    CFLAGS      += $(WARNINGS_CFLAGS)
     LIBS        = /usr/local/Cellar/gsl/2.7.1/lib/libgsl.a -lpthread
 endif
 
