@@ -57,7 +57,7 @@ $(shell $(CXX) -MM $(INTERFACESRCS) > .depend)
 -include .depend
 
 trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
-	$(CXX) -shared $(FLAG_WHOLE_ARCHIVE) $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
+	$(CXX) -shared $(FLAG_WHOLE_ARCHIVE) $(TRACKCPPLIB) $(FLAG_NO_WHOLE_ARCHIVE) $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
 	[ -f ./numpy.i ] && echo "numpy.i already here, good" || \
