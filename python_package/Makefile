@@ -34,6 +34,16 @@ INC += -I../include $(PYTHON_INCLUDES) $(NUMPY_INCLUDE)
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
 
+#### DERIVED CONDITIONALS AND VARIABLES : macOS ####
+ifneq ($(shell gcc --version | grep clang), )
+	CC          = gcc-12
+	CXX         = g++-12
+    # OPT_FLAG    = -O3 -std=c++11 -fPIC
+    # CFLAGS      = $(OPT_FLAG) $(DFLAGS) -pthread
+    # CFLAGS      += $(WARNINGS_CFLAGS)
+    # LIBS        = /usr/local/Cellar/gsl/2.7.1/lib/libgsl.a /usr/local/Cellar/gsl/2.7.1/lib/libgslcblas.a -lpthread
+endif
+
 .NOTPARALLEL:
 
 all: trackcpp/_trackcpp.so
