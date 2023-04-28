@@ -41,8 +41,8 @@ FLAG_NO_WHOLE_ARCHIVE = -Wl,--no-whole-archive
 ifneq ($(shell gcc --version | grep clang), )
     CC          = gcc-12
     CXX         = g++-12
-    FLAG_WHOLE_ARCHIVE = -Wl
-    FLAG_NO_WHOLE_ARCHIVE = -Wl
+    FLAG_WHOLE_ARCHIVE = -W
+    FLAG_NO_WHOLE_ARCHIVE = -W
     # OPT_FLAG    = -O3 -std=c++11 -fPIC
     # CFLAGS      = $(OPT_FLAG) $(DFLAGS) -pthread
     # CFLAGS      += $(WARNINGS_CFLAGS)
