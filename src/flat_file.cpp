@@ -112,11 +112,11 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     }
     if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a", e.polynom_a);
     if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b", e.polynom_b);
-    if (e.vchamber != 0) { fp << std::setw(pw) << "vchamber" << e.vchamber << '\n'; }
-    if (e.hmin != 0) { fp << std::setw(pw) << "hmin" << e.hmin << '\n'; }
-    if (e.hmax != 0) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
-    if (e.vmin != 0) { fp << std::setw(pw) << "vmin" << e.vmin << '\n'; }
-    if (e.vmax != 0) { fp << std::setw(pw) << "vmax" << e.vmax << '\n'; }
+    if (e.vchamber != VChamberShape::rectangle) { fp << std::setw(pw) << "vchamber" << e.vchamber << '\n'; }
+    if (e.hmin != -DBL_MAX) { fp << std::setw(pw) << "hmin" << e.hmin << '\n'; }
+    if (e.hmax != DBL_MAX) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
+    if (e.vmin != -DBL_MAX) { fp << std::setw(pw) << "vmin" << e.vmin << '\n'; }
+    if (e.vmax != DBL_MAX) { fp << std::setw(pw) << "vmax" << e.vmax << '\n'; }
     if (e.hkick != 0) { fp << std::setw(pw) << "hkick" << e.hkick << '\n'; }
     if (e.vkick != 0) { fp << std::setw(pw) << "vkick" << e.vkick << '\n'; }
     if (e.angle != 0) { fp << std::setw(pw) << "angle" << e.angle << '\n'; }
