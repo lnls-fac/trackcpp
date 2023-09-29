@@ -191,11 +191,11 @@ Status::type track_linepass (
 				status = Status::particle_lost;
 			} else if (element.vchamber == VChamberShape::rectangle) {
 				// rectangular vacuum chamber
-				if (((rx < element.hmin) or (rx > element.hmax))) {
+				if (((rx <= element.hmin) or (rx >= element.hmax))) {
 					lost_plane = Plane::x;
 					status = Status::particle_lost;
 				}
-				if (((ry < element.vmin) or (ry > element.vmax))) {
+				if (((ry <= element.vmin) or (ry >= element.vmax))) {
 					if (status != Status::particle_lost) {
 						lost_plane = Plane::y;
 						status = Status::particle_lost;
