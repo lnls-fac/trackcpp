@@ -41,16 +41,16 @@ std::vector<int>     latt_findcells_pass_method (const std::vector<Element>& lat
 
 template <typename T>
 std::vector<T> latt_getcellstruct(const std::vector<Element>& lattice, const std::string& field, std::vector<int> idx) {
-	std::vector<T> r;
-	if (field == "fam_name") {
-		for(unsigned int i=0; i<idx.size(); ++i) {
-			r.push_back(*((T*)(&(lattice[idx[i]].fam_name))));
-		}
-	} else if (field == "length") {
-		for(unsigned int i=0; i<idx.size(); ++i) {
-			r.push_back(*((T*)(&(lattice[idx[i]].length))));
-		}
-	}
-	return r;
+    std::vector<T> r;
+    if (field == "fam_name") {
+        for(unsigned int i=0; i<idx.size(); ++i) {
+            r.push_back(*((T*)(&(lattice[idx[i]].fam_name))));
+        }
+    } else if (field == "length") {
+        for(unsigned int i=0; i<idx.size(); ++i) {
+            r.push_back(*((T*)(&(lattice[idx[i]].length))));
+        }
+    }
+    return r;
 }
 #endif

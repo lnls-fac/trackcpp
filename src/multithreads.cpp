@@ -55,8 +55,8 @@ void start_all_threads(ThreadSharedData& thread_data, unsigned int nr_threads) {
   int thread_id[nr_threads];
 
   for(int i=0; i<nr_threads-1; i++) {
-  	thread_id[i] = i;
-  	int iret = pthread_create(&(threads[i]), NULL, start_thread, (void*) &thread_data);
+    thread_id[i] = i;
+    int iret = pthread_create(&(threads[i]), NULL, start_thread, (void*) &thread_data);
   }
 
   thread_id[nr_threads-1] = current_thread_id;
