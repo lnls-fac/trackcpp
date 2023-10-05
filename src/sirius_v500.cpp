@@ -21,29 +21,29 @@
 
 void sirius_v500(std::vector<Element>& the_ring) {
 
-	int  harmonic_number = 864;
+    int  harmonic_number = 864;
 
-	//double energy = 3e9;
+    //double energy = 3e9;
 
-	// AC10_5
-	double qaf_strength       =  2.536876;
-	double qad_strength       = -2.730416;
-	double qbd2_strength      = -3.961194;
-	double qbf_strength       =  3.902838;
-	double qbd1_strength      = -2.966239;
-	double qf1_strength       =  2.367821;
-	double qf2_strength       =  3.354286;
-	double qf3_strength       =  3.080632;
-	double qf4_strength       =  2.707639;
-	double sa1_strength       = -115.7829759411277/2;
-	double sa2_strength       =   49.50386128829739/2;
-	double sb1_strength       = -214.5386552515188/2;
-	double sb2_strength       =  133.1252391065637/2;
-	double sd1_strength       = -302.6188062085843/2;
-	double sf1_strength       =  369.5045185071228/2;
-	double sd2_strength       = -164.3042864671946/2;
-	double sd3_strength       = -289.9270429064217/2;
-	double sf2_strength       =  333.7039740852999/2;
+    // AC10_5
+    double qaf_strength       =  2.536876;
+    double qad_strength       = -2.730416;
+    double qbd2_strength      = -3.961194;
+    double qbf_strength       =  3.902838;
+    double qbd1_strength      = -2.966239;
+    double qf1_strength       =  2.367821;
+    double qf2_strength       =  3.354286;
+    double qf3_strength       =  3.080632;
+    double qf4_strength       =  2.707639;
+    double sa1_strength       = -115.7829759411277/2;
+    double sa2_strength       =   49.50386128829739/2;
+    double sb1_strength       = -214.5386552515188/2;
+    double sb2_strength       =  133.1252391065637/2;
+    double sd1_strength       = -302.6188062085843/2;
+    double sf1_strength       =  369.5045185071228/2;
+    double sd2_strength       = -164.3042864671946/2;
+    double sd3_strength       = -289.9270429064217/2;
+    double sf2_strength       =  333.7039740852999/2;
 
 
     //""" --- drift spaces --- """
@@ -70,36 +70,36 @@ void sirius_v500(std::vector<Element>& the_ring) {
 
     //""" --- markers --- """
     Element mc     = Element::marker("mc");
-	Element mia    = Element::marker("mia");
-	Element mib    = Element::marker("mib");
-	Element mb1    = Element::marker("mb1");
-	Element mb2    = Element::marker("mb2");
-	Element mb3    = Element::marker("mb3");
-	Element inicio = Element::marker("inicio");
-	Element fim    = Element::marker("fim");
-	Element mida   = Element::marker("id_enda");
-	Element midb   = Element::marker("id_endb");
+    Element mia    = Element::marker("mia");
+    Element mib    = Element::marker("mib");
+    Element mb1    = Element::marker("mb1");
+    Element mb2    = Element::marker("mb2");
+    Element mb3    = Element::marker("mb3");
+    Element inicio = Element::marker("inicio");
+    Element fim    = Element::marker("fim");
+    Element mida   = Element::marker("id_enda");
+    Element midb   = Element::marker("id_endb");
 
     //""" --- beam position monitors --- """
-	Element mon    = Element::marker("BPM");
+    Element mon    = Element::marker("BPM");
 
     //""" --- quadrupoles --- """
     Element qaf      = Element::quadrupole("qaf",  0.340000, qaf_strength);
-	Element qad      = Element::quadrupole("qad",  0.140000, qad_strength);
-	Element qbd2     = Element::quadrupole("qbd2", 0.140000, qbd2_strength);
-	Element qbf      = Element::quadrupole("qbf",  0.340000, qbf_strength);
-	Element qbd1     = Element::quadrupole("qbd1", 0.140000, qbd1_strength);
-	Element qf1      = Element::quadrupole("qf1",  0.250000, qf1_strength);
-	Element qf2      = Element::quadrupole("qf2",  0.250000, qf2_strength);
-	Element qf3      = Element::quadrupole("qf3",  0.250000, qf3_strength);
-	Element qf4      = Element::quadrupole("qf4",  0.250000, qf4_strength);
+    Element qad      = Element::quadrupole("qad",  0.140000, qad_strength);
+    Element qbd2     = Element::quadrupole("qbd2", 0.140000, qbd2_strength);
+    Element qbf      = Element::quadrupole("qbf",  0.340000, qbf_strength);
+    Element qbd1     = Element::quadrupole("qbd1", 0.140000, qbd1_strength);
+    Element qf1      = Element::quadrupole("qf1",  0.250000, qf1_strength);
+    Element qf2      = Element::quadrupole("qf2",  0.250000, qf2_strength);
+    Element qf3      = Element::quadrupole("qf3",  0.250000, qf3_strength);
+    Element qf4      = Element::quadrupole("qf4",  0.250000, qf4_strength);
 
     //""" --- bending magnets --- """
 
     double deg_2_rad = (M_PI/180.0);
 
     std::string dip_nam;
-	double      dip_len, dip_ang, dip_K, dip_S;
+    double      dip_len, dip_ang, dip_K, dip_S;
     Element     h1, h2;
 
     //""" -- b1 -- """
@@ -171,21 +171,21 @@ void sirius_v500(std::vector<Element>& the_ring) {
 
     //""" Injection Section """
     Element dmiainj  = Element::drift("dmiainj", 0.3);
-	Element dinjk3   = Element::drift("dinjk3" , 0.3);
-	Element dk3k4    = Element::drift("dk3k4"  , 0.6);
-	Element dk4pmm   = Element::drift("dk4pmm" , 0.2);
-	Element dpmmcv   = Element::drift("dpmmcv" , (3.2692 + 3.65e-3 - 0.3 - 0.3 - 0.6 - 0.2 - 3*0.6));
-	Element dcvk1    = Element::drift("dcvk1"  , (3.2692 + 3.65e-3 - 0.6 - 1.4 - 2*0.6));
+    Element dinjk3   = Element::drift("dinjk3" , 0.3);
+    Element dk3k4    = Element::drift("dk3k4"  , 0.6);
+    Element dk4pmm   = Element::drift("dk4pmm" , 0.2);
+    Element dpmmcv   = Element::drift("dpmmcv" , (3.2692 + 3.65e-3 - 0.3 - 0.3 - 0.6 - 0.2 - 3*0.6));
+    Element dcvk1    = Element::drift("dcvk1"  , (3.2692 + 3.65e-3 - 0.6 - 1.4 - 2*0.6));
 
-	Element dk1k2    = Element::drift("dk1k2"  , 0.6);
-	Element sef      = Element::sextupole("sef", 0.6, 0.0, 5);
-	Element dk2sef   = Element::drift("dk2mia" , 0.8);
+    Element dk1k2    = Element::drift("dk1k2"  , 0.6);
+    Element sef      = Element::sextupole("sef", 0.6, 0.0, 5);
+    Element dk2sef   = Element::drift("dk2mia" , 0.8);
 
-	Element kick     = Element::corrector("kick", 0.6, 0, 0);
-	Element pmm      = Element::sextupole("pmm", 0.6, 0.0, 5);
-	Element inj      = Element::marker("inj");
+    Element kick     = Element::corrector("kick", 0.6, 0, 0);
+    Element pmm      = Element::sextupole("pmm", 0.6, 0.0, 5);
+    Element inj      = Element::marker("inj");
 
-	std::vector<Element> insaend  = {cv, d12, ch, d12, sa2, d12, mon, d12, qaf, d23, qad, d17, sa1, d17};
+    std::vector<Element> insaend  = {cv, d12, ch, d12, sa2, d12, mon, d12, qaf, d23, qad, d17, sa1, d17};
     std::vector<Element> insainj  = latt_join({{dmiainj, inj, dinjk3, kick, dk3k4, kick, dk4pmm, pmm, dpmmcv}, insaend});
     std::vector<Element> injinsa  = latt_join({latt_reverse(insaend), {dcvk1, kick, dk1k2, kick, dk2sef, sef}});
 
@@ -245,16 +245,16 @@ void sirius_v500(std::vector<Element>& the_ring) {
     //""" shift lattice to start at the marker "inicio" """
     std::vector<int> idx = latt_findcells_fam_name(the_ring, "inicio");
     if (idx.size() > 0) {
-    	std::vector<Element>::iterator it = the_ring.begin() + idx[0];
-    	std::rotate(the_ring.begin(), it, the_ring.end());
+        std::vector<Element>::iterator it = the_ring.begin() + idx[0];
+        std::rotate(the_ring.begin(), it, the_ring.end());
     };
 
     //""" check if there are elements with negative lengths """
     std::vector<double> lens = latt_getcellstruct<double>(the_ring, "length", latt_range(the_ring));
     for(unsigned int i=0; i<lens.size(); ++i) {
-    	if (lens[i] < 0) {
-    		std::cerr << "negative drift in lattice!" << std::endl;
-    	}
+        if (lens[i] < 0) {
+            std::cerr << "negative drift in lattice!" << std::endl;
+        }
     }
 
     //""" sets cavity frequency according to lattice length """
@@ -264,7 +264,7 @@ void sirius_v500(std::vector<Element>& the_ring) {
     std::vector<int> rf_idx = latt_findcells_fam_name(the_ring, "cav");
 
     for(unsigned int idx = 0; idx<rf_idx.size(); ++idx) {
-    	the_ring[rf_idx[idx]].frequency = rev_freq * harmonic_number;
+        the_ring[rf_idx[idx]].frequency = rev_freq * harmonic_number;
     }
     latt_setcavity(the_ring, "on");
     //latt_setradiation(the_ring, "on", 3e9);

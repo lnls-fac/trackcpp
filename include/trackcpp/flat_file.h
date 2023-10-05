@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <cfloat>
 
 struct FlatFileType {
     enum type_ {

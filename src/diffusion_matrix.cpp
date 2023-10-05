@@ -241,7 +241,7 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
   Pos<double> fp = fixed_point;
 
   const int nr_elements  = lattice.size();
-	std::vector<bool> indcs;
+  std::vector<bool> indcs;
 
   bmat.clear(); bmat.reserve(nr_elements+1);
   Matrix bdiff (6);

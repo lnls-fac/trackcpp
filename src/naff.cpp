@@ -341,7 +341,7 @@ void Get_NAFF(const std::vector<Pos<double>>& Tab, int nr_ff, int win, double *f
 !      2)  CALL INITNAF
 !             CALCULE UNIANG,FREFON, EPSM, PI
 !             CREE LES TABLEAUX DYNAMIQUES ((ZTABS)), ((TFS)), ((ZAMP)),
-!	     ((ZALP)) et((TWIN))
+!         ((ZALP)) et((TWIN))
 !             APPELLE INIWIN
 !  - PHASE D'UTILISATION
 !      1)  EMPLIR LE TABLEAU ZTABS
@@ -375,7 +375,7 @@ void Get_NAFF(const std::vector<Pos<double>>& Tab, int nr_ff, int win, double *f
 !  - PHASE DE SORTIE (POUR RECUPERER DE LA PLACE OU POUR REINITIALISER)
 !      1) CALL CLEANNAF
 !         DESALLOUE LES TABLEAUX DYNAMIQUES ((ZTABS)), ((TFS)), ((ZAMP)),
-!	  ((ZALP)) et ((TWIN))
+!      ((ZALP)) et ((TWIN))
 !-------------------------------------------------------------------------
 !  VARIABLES INDISPENSABLES
 !  NTERM                : LE NOMBRE MAXIMAL DE FREQUENCES A RECHERCHER
@@ -500,7 +500,7 @@ static void naf_initnaf(t_naf& g_NAFVariable) {
       g_NAFVariable.EPSM = DBL_EPSILON;
       /*PI = ATAN2(1.D0,0.D0)*2*/
       g_NAFVariable.UNIANG = g_NAFVariable.DTOUR/(2*M_PI) ;
-      g_NAFVariable.FREFON = g_NAFVariable.DTOUR/(g_NAFVariable.KTABS*g_NAFVariable.XH)	;
+      g_NAFVariable.FREFON = g_NAFVariable.DTOUR/(g_NAFVariable.KTABS*g_NAFVariable.XH);
       SYSCHECKMALLOCSIZE(g_NAFVariable.TFS, double, g_NAFVariable.NTERM+1);/*allocate(TFS(1:NTERM),stat = NERROR)*/
       SYSCHECKMALLOCSIZE(g_NAFVariable.ZAMP, t_complexe, g_NAFVariable.NTERM+1); /*allocate(ZAMP(1:NTERM),stat = NERROR)*/
       DIM2(g_NAFVariable.ZALP, (g_NAFVariable.NTERM+1), (g_NAFVariable.NTERM+1), t_complexe,"ZALP"); /*allocate(ZALP(1:NTERM,1:NTERM),stat = NERROR)*/
@@ -540,7 +540,7 @@ void naf_initnaf_notab(t_naf& g_NAFVariable) {
       /*!----------------- PREMIERES INITIALISATIONS*/
       g_NAFVariable.EPSM = DBL_EPSILON;
       g_NAFVariable.UNIANG = g_NAFVariable.DTOUR/(2*M_PI) ;
-      g_NAFVariable.FREFON = g_NAFVariable.DTOUR/(g_NAFVariable.KTABS*g_NAFVariable.XH)	;
+      g_NAFVariable.FREFON = g_NAFVariable.DTOUR/(g_NAFVariable.KTABS*g_NAFVariable.XH);
       DIM2(g_NAFVariable.ZALP, (g_NAFVariable.NTERM+1), (g_NAFVariable.NTERM+1), t_complexe,"ZALP"); /*allocate(ZALP(1:NTERM,1:NTERM),stat = NERROR)*/
       SYSCHECKMALLOCSIZE(g_NAFVariable.TWIN, double, g_NAFVariable.KTABS+1); /*allocate(TWIN(0:KTABS),stat = NERROR)*/
       /*v0.96 M. GASTINEAU 18/12/98 : modification du prototype */
@@ -1801,8 +1801,8 @@ void naf_secantes(t_naf& g_NAFVariable, double X, double PASS, double EPS, doubl
         integer :: IPRT,NFPRT
  !       interface
  !         function fonc(x)
- ! 	   real (8) :: x,fonc
- ! 	 end function fonc
+ !        real (8) :: x,fonc
+ !      end function fonc
  !       end interface
  !
         integer, parameter :: NMAX=30, IENC=1
@@ -1834,7 +1834,7 @@ void naf_secantes(t_naf& g_NAFVariable, double X, double PASS, double EPS, doubl
        {
           FA=FB;
           FB=naf_funcp(g_NAFVariable, B);
-          /*! 	  FB=FONC(B)*/
+          /*!       FB=FONC(B)*/
           DELTA= FB-FA;
           if (IPRT>=2)
           {
@@ -1957,8 +1957,8 @@ void naf_maxiqua(t_naf& g_NAFVariable, double X, double PASS, double EPS, double
 
  !      interface
  !        function fonc (x)
- ! 	  real (8) :: x,fonc
- ! 	end function fonc
+ !       real (8) :: x,fonc
+ !     end function fonc
  !      end interface
  !
        integer, parameter :: NMAX=200, NFATAL=100
@@ -2191,7 +2191,7 @@ void naf_frefin(t_naf& g_NAFVariable, double *FR, double *A, double *B, double *
       {
          X=XM;
          naf_secantes(g_NAFVariable, X,PASS,EPS,&XM,g_NAFVariable.IPRT,g_NAFVariable.NFPRT);
-         /*! 	 CALL SECANTES(X,PASS,EPS,XM,FUNCP,g_NAFVariable.IPRT,g_NAFVariable.NFPRT)*/
+         /*!      CALL SECANTES(X,PASS,EPS,XM,FUNCP,g_NAFVariable.IPRT,g_NAFVariable.NFPRT)*/
          YM=naf_func(g_NAFVariable, XM);
       }
       *FR=XM;
@@ -2923,60 +2923,56 @@ t_complexe i_compl_conj(t_complexe *c1){
 /* division de deux complexes : c1/=c2                         */
 /*-------------------------------------------------------------*/
 void i_compl_pdiv(t_complexe * const c1,const t_complexe * const c2){
-	double ratio, den;
-	double abr, abi, cr;
+    double ratio, den;
+    double abr, abi, cr;
 
-	if( (abr = c2->reel) < 0.)
-		abr = - abr;
-	if( (abi = c2->imag) < 0.)
-		abi = - abi;
-	if( abr <= abi )
-		{
-		ratio = (double)c2->reel / c2->imag ;
-		den = c2->imag * (1 + ratio*ratio);
-		cr = (c1->reel*ratio + c1->imag) / den;
-		c1->imag = (c1->imag*ratio - c1->reel) / den;
-		}
+    if( (abr = c2->reel) < 0.)
+        abr = - abr;
+    if( (abi = c2->imag) < 0.)
+        abi = - abi;
+    if( abr <= abi )
+        {
+        ratio = (double)c2->reel / c2->imag ;
+        den = c2->imag * (1 + ratio*ratio);
+        cr = (c1->reel*ratio + c1->imag) / den;
+        c1->imag = (c1->imag*ratio - c1->reel) / den;
+        }
 
-	else
-		{
-		ratio = (double)c2->imag / c2->reel ;
-		den = c2->reel * (1 + ratio*ratio);
-		cr = (c1->reel + c1->imag*ratio) / den;
-		c1->imag = (c1->imag - c1->reel*ratio) / den;
-		}
-	c1->reel = cr;
+    else
+        {
+        ratio = (double)c2->imag / c2->reel ;
+        den = c2->reel * (1 + ratio*ratio);
+        cr = (c1->reel + c1->imag*ratio) / den;
+        c1->imag = (c1->imag - c1->reel*ratio) / den;
+        }
+    c1->reel = cr;
 }
 
 /*----------------i_compl_div2d--------------------------------*/
 /* division d'un reel par un complexe c1/(c2_r+i*c2_i)         */
 /*-------------------------------------------------------------*/
 t_complexe i_compl_div2d(const double c1, const double c2_r, const double c2_i){
-	//double ratio, den;
-	//double abr, abi;
+    //double ratio, den;
+    //double abr, abi;
   double ratio, den;
-	double abr, abi;
+    double abr, abi;
     t_complexe zres;
 
-	if( (abr = c2_r) < 0.)
-		abr = - abr;
-	if( (abi = c2_i) < 0.)
-		abi = - abi;
-	if( abr <= abi )
-		{
-		ratio = (double)c2_r / c2_i ;
-		den = c2_i * (1 + ratio*ratio);
-		zres.reel = (c1*ratio) / den;
-		zres.imag =  - c1 / den;
-		}
-
-	else
-		{
-		ratio = (double)c2_i / c2_r ;
-		den = c2_r * (1 + ratio*ratio);
-		zres.reel = c1 / den;
-		zres.imag =  (- c1*ratio) / den;
-		}
+    if( (abr = c2_r) < 0.)
+        abr = - abr;
+    if( (abi = c2_i) < 0.)
+        abi = - abi;
+    if( abr <= abi ) {
+        ratio = (double)c2_r / c2_i ;
+        den = c2_i * (1 + ratio*ratio);
+        zres.reel = (c1*ratio) / den;
+        zres.imag =  - c1 / den;
+    } else {
+        ratio = (double)c2_i / c2_r ;
+        den = c2_r * (1 + ratio*ratio);
+        zres.reel = c1 / den;
+        zres.imag =  (- c1*ratio) / den;
+    }
     return zres;
 }
 
@@ -2984,30 +2980,26 @@ t_complexe i_compl_div2d(const double c1, const double c2_r, const double c2_i){
 /* division de deux complexes : (c1_r+i*c1_i)/(c2_r+i*c2_i)    */
 /*-------------------------------------------------------------*/
 t_complexe i_compl_div4d(const double c1_r,const double c1_i, const double  c2_r,const double c2_i){
-	double ratio, den;
-	double abr, abi;
+    double ratio, den;
+    double abr, abi;
     t_complexe zres;
 
-	if( (abr = c2_r) < 0.)
-		abr = - abr;
-	if( (abi = c2_i) < 0.)
-		abi = - abi;
-	if( abr <= abi )
-		{
-		ratio = (double)c2_r / c2_i ;
-		den = c2_i * (1 + ratio*ratio);
-		zres.reel = (c1_r*ratio + c1_i) / den;
-		zres.imag = (c1_i*ratio - c1_r) / den;
-		}
-
-	else
-		{
-		ratio = (double)c2_i / c2_r ;
-		den = c2_r * (1 + ratio*ratio);
-		zres.reel = (c1_r + c1_i*ratio) / den;
-		zres.imag = (c1_i - c1_r*ratio) / den;
-		}
- return zres;
+    if( (abr = c2_r) < 0.)
+        abr = - abr;
+    if( (abi = c2_i) < 0.)
+        abi = - abi;
+    if( abr <= abi ) {
+        ratio = (double)c2_r / c2_i ;
+        den = c2_i * (1 + ratio*ratio);
+        zres.reel = (c1_r*ratio + c1_i) / den;
+        zres.imag = (c1_i*ratio - c1_r) / den;
+    } else {
+        ratio = (double)c2_i / c2_r ;
+        den = c2_r * (1 + ratio*ratio);
+        zres.reel = (c1_r + c1_i*ratio) / den;
+        zres.imag = (c1_i - c1_r*ratio) / den;
+    }
+    return zres;
 }
 
 /*----------------i_compl_div----------------------------------*/
@@ -3024,47 +3016,47 @@ t_complexe i_compl_div(const t_complexe c1,const t_complexe c2){
 /*retourne la puissance (p_r+i*p_i)**b                         */
 /*-------------------------------------------------------------*/
 t_complexe i_compl_pow2d(const double p_r, const double p_i,int n){
-	unsigned long u;
-	double t;
-	double q_r=1,q_i=0,x_r,x_i;
+    unsigned long u;
+    double t;
+    double q_r=1,q_i=0,x_r,x_i;
     t_complexe zq;
 
-	if(n == 0)
-		goto done;
-	if(n < 0)
-		{
-		n = -n;
-		zq = i_compl_div2d(1,p_r,p_i);
-		x_r = zq.reel;
-		x_i = zq.imag;
-		}
-	else
-		{
-		x_r = p_r;
-		x_i = p_i;
-		}
+    if(n == 0)
+        goto done;
+    if(n < 0)
+        {
+        n = -n;
+        zq = i_compl_div2d(1,p_r,p_i);
+        x_r = zq.reel;
+        x_i = zq.imag;
+        }
+    else
+        {
+        x_r = p_r;
+        x_i = p_i;
+        }
 
-	for(u = n; ; )
-		{
-		if(u & 01)
-			{
-			t = q_r * x_r - q_i * x_i;
-			q_i = q_r * x_i + q_i * x_r;
-			q_r = t;
-			}
-		if(u >>= 1)
-			{
-			t = x_r * x_r - x_i * x_i;
-			x_i = 2 * x_r * x_i;
-			x_r = t;
-			}
-		else
-			break;
-		}
+    for(u = n; ; )
+        {
+        if(u & 01)
+            {
+            t = q_r * x_r - q_i * x_i;
+            q_i = q_r * x_i + q_i * x_r;
+            q_r = t;
+            }
+        if(u >>= 1)
+            {
+            t = x_r * x_r - x_i * x_i;
+            x_i = 2 * x_r * x_i;
+            x_r = t;
+            }
+        else
+            break;
+        }
  done:
-	zq.reel=q_r;
-	zq.imag=q_i;
-	return zq;
+    zq.reel=q_r;
+    zq.imag=q_i;
+    return zq;
 }
 
 
@@ -3086,60 +3078,60 @@ t_complexe i_compl_powreel(const t_complexe z,double p_dK){
 /*-------------------------------------------------------------*/
 t_complexe i_compl_pow(const t_complexe a,int n){
  #if 1
-	unsigned long u;
-	double t;
-	t_complexe q={1.0, 0.0}, x;
+    unsigned long u;
+    double t;
+    t_complexe q={1.0, 0.0}, x;
 
-	if(n == 0)
-		goto done;
-	if(n < 0)
-		{
-		n = -n;
-		x.reel = 1.0;
-		x.imag=0.0;
-		i_compl_pdiv(&x, &a);
-		}
-	else
-		{
-		x.reel = a.reel;
-		x.imag = a.imag;
-		}
+    if(n == 0)
+        goto done;
+    if(n < 0)
+        {
+        n = -n;
+        x.reel = 1.0;
+        x.imag=0.0;
+        i_compl_pdiv(&x, &a);
+        }
+    else
+        {
+        x.reel = a.reel;
+        x.imag = a.imag;
+        }
 
-	for(u = n; ; )
-		{
-		if(u & 01)
-			{
-			t = q.reel * x.reel - q.imag * x.imag;
-			q.imag = q.reel * x.imag + q.imag * x.reel;
-			q.reel = t;
-			}
-		if(u >>= 1)
-			{
-			t = x.reel * x.reel - x.imag * x.imag;
-			x.imag = 2 * x.reel * x.imag;
-			x.reel = t;
-			}
-		else
-			break;
-		}
+    for(u = n; ; )
+        {
+        if(u & 01)
+            {
+            t = q.reel * x.reel - q.imag * x.imag;
+            q.imag = q.reel * x.imag + q.imag * x.reel;
+            q.reel = t;
+            }
+        if(u >>= 1)
+            {
+            t = x.reel * x.reel - x.imag * x.imag;
+            x.imag = 2 * x.reel * x.imag;
+            x.reel = t;
+            }
+        else
+            break;
+        }
  done:
-	return q;
+    return q;
  #else
-	t_complexe q;
+    t_complexe q;
 
-	if(n == 0)
-	{
-	 q.reel=1;
-	 q.imag=0;
-	}
-	else
-	{
-	 double dpow=pow(i_compl_module(a),n);
-	 double anglea=i_compl_angle(a);
-	 q.reel=dpow*cos(anglea*n);
-	 q.imag=dpow*sin(anglea*n);
-	}
-	return q;
+    if(n == 0)
+    {
+     q.reel=1;
+     q.imag=0;
+    }
+    else
+    {
+     double dpow=pow(i_compl_module(a),n);
+     double anglea=i_compl_angle(a);
+     q.reel=dpow*cos(anglea*n);
+     q.imag=dpow*sin(anglea*n);
+    }
+    return q;
  #endif /*0*/
 }
 
