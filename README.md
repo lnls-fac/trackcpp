@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/33890374.svg)](https://zenodo.org/badge/latestdoi/33890374)
+[![DOI](https://zenodo.org/badge/33890374.svg)](https://zenodo.org/doi/10.5281/zenodo.6412032)
 
 # trackcpp
 
