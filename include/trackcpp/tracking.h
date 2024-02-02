@@ -55,7 +55,7 @@ template <typename T>
 Status::type track_elementpass (
              const Element& el,                 // element through which to track particle
              Pos<T> &orig_pos,                  // initial electron coordinates
-             const Accelerator& accelerator) {
+             const Accelerator& accelerator, int turn_number = 0) {
 
     Status::type status = Status::success;
 
@@ -76,7 +76,7 @@ Status::type track_elementpass (
         if ((status = pm_corrector_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
     case PassMethod::pm_cavity_pass:
-        if ((status = pm_cavity_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+        if ((status = pm_cavity_pass<T>(orig_pos, el, accelerator, turn_number)) != Status::success) return status;
         break;
     case PassMethod::pm_thinquad_pass:
         if ((status = pm_thinquad_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
@@ -105,12 +105,12 @@ template <typename T>
 Status::type track_elementpass (
              const Element& el,  // element through which to track particle
              std::vector<Pos<T> >& orig_pos,  // initial electron coordinates
-             const Accelerator& accelerator) {
+             const Accelerator& accelerator, int turn_number = 0) {
 
     Status::type status  = Status::success;
 
     for(auto&& pos: orig_pos) {
-        Status::type status2 = track_elementpass(el, pos, accelerator);
+        Status::type status2 = track_elementpass(el, pos, accelerator, turn_number);
         if (status2 != Status::success) status = status2;
     }
     return status;
@@ -140,7 +140,8 @@ Status::type track_linepass (
         std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
-        std::vector<unsigned int >& indices) {// indices to return;
+        std::vector<unsigned int >& indices, // indices to return;
+        int turn_number = 0) { // include turn count -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
 
     Status::type status = Status::success;
     lost_plane = Plane::no_plane;
@@ -165,7 +166,7 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
-        status = track_elementpass (element, orig_pos, accelerator);
+        status = track_elementpass (element, orig_pos, accelerator, turn_number); // include turn count -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
 
         const T& rx = orig_pos.rx;
         const T& ry = orig_pos.ry;
@@ -256,7 +257,8 @@ Status::type track_linepass (
         std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
-        bool trajectory) {             // whether function should return coordinates at all elements
+        bool trajectory,  // whether function should return coordinates at all elements
+        int turn_number = 0) {  // turn count -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
 
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -269,7 +271,7 @@ Status::type track_linepass (
     }
 
     return track_linepass (
-        accelerator, orig_pos, pos, element_offset, lost_plane, indices);
+        accelerator, orig_pos, pos, element_offset, lost_plane, indices, turn_number);
 }
 
 
@@ -281,7 +283,8 @@ Status::type track_linepass (
         unsigned int element_offset,
         std::vector<unsigned int >& lost_plane,
         std::vector<unsigned int >& lost_element,
-        std::vector<unsigned int >& indices) {
+        std::vector<unsigned int >& indices,
+        int turn_number = 0) {
 
     int nr_elements = accelerator.lattice.size();
     Status::type status  = Status::success;
@@ -297,7 +300,7 @@ Status::type track_linepass (
         unsigned int le = element_offset;
 
         status2 = track_linepass (
-            accelerator, orig_pos[i], final_pos, le, lp, indices);
+            accelerator, orig_pos[i], final_pos, le, lp, indices, turn_number);
 
         if (status2 != Status::success) status = status2;
 
@@ -340,15 +343,16 @@ Status::type track_ringpass (
 
     Status::type status  = Status::success;
     std::vector<Pos<T> > final_pos;
+    int turn_number = 0;
 
     if (trajectory) pos.reserve(nr_turns+1);
 
     for(lost_turn=0; lost_turn<nr_turns; ++lost_turn) {
-
+        
         // stores trajectory at beggining of each turn
         if (trajectory) pos.push_back(orig_pos);
 
-        if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false)) != Status::success) {
+        if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false, turn_number)) != Status::success) {
 
             // fill last of vector with nans
             pos.emplace_back(
@@ -359,6 +363,7 @@ Status::type track_ringpass (
                 }
             return status;
         }
+        turn_number++;
         final_pos.clear();
     }
     pos.push_back(orig_pos);

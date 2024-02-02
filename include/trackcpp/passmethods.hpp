@@ -388,15 +388,21 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
-                            const Accelerator& accelerator) {
+                            const Accelerator& accelerator, int turn_number) { // include necessary args
 
   if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
 
   global_2_local(pos, elem);
   double nv = elem.voltage / accelerator.energy;
+  double philag = elem.phase_lag;
+  double frf = elem.frequency;
+  double harmonic_number = accelerator.harmonic_number;
+  double velocity = light_speed; // the correct is: v = bc -> fix in next commit -> T0, L0 and frf dependencies
+  double L0 = accelerator.get_length();
+  double T0 = L0/velocity; // velocity/L0 = frf -> the correct velocity is bc
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    de +=  -nv * sin(TWOPI*elem.frequency * dl/ light_speed - elem.phase_lag);
+    de +=  -nv * sin(TWOPI * frf * (dl/velocity - (harmonic_number/frf - T0)*turn_number) - philag); // new mod
     } else {
     T &rx = pos.rx, &px = pos.px;
     T &ry = pos.ry, &py = pos.py;
@@ -408,7 +414,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     ry += norml * py;
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
-    de += -nv * sin(TWOPI*elem.frequency*dl/light_speed - elem.phase_lag);
+    de += -nv * sin(TWOPI * frf * (dl/velocity - (harmonic_number/frf - T0)*turn_number) - philag); // new mod
     // drift half length
     pnorm   = 1.0 / (1.0 + de);
     norml   = (0.5 * elem.length) * pnorm;
