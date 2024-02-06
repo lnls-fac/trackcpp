@@ -9,7 +9,7 @@ authors:
   given-names: "Fernando Henrique"
 
 title: "Trackcpp. C++ codes for particle tracking in accelerators."
-version: v4.10.2
+version: v4.10.3
 doi: 10.5281/zenodo.10392675
 date-released: 2023-12-15
 url: "https://github.com/lnls-fac/trackcpp"
