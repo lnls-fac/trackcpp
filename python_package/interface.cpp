@@ -21,7 +21,7 @@
 Status::type track_elementpass_wrapper (
          const Element& el,
          double *pos, int n1, int n2,
-         const Accelerator& accelerator, int turn_number) {
+         const Accelerator& accelerator, unsigned int turn_number) {
 
     std::vector<Pos<double> > post;
 
