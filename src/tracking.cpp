@@ -150,7 +150,8 @@ Status::type track_findorbit6(
   double L0 = latt_findspos(the_ring, 1+the_ring.size());
   std::vector<int>    cav_idx = latt_findcells_frequency(the_ring, 0, true);
   double frf = the_ring[cav_idx[0]].frequency;
-  double velocity = light_speed; // should be (beta * light_speed) !!! but the accelerator's frequency must be set in terms of (beta)
+  // double velocity = light_speed; // should be (beta * light_speed) !!! but the accelerator's frequency must be set in terms of (beta)
+  double velocity = accelerator.velocity;
   double fixedpoint = velocity*accelerator.harmonic_number/frf - L0;
 
   // temporary vectors and matrices
@@ -242,7 +243,7 @@ Status::type track_findorbit4(
   std::vector<Pos<double> > D(7,0);
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,0.0,0.0);
-  Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
+  // Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0); // unnecessary vector for find_orbit4
   matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;

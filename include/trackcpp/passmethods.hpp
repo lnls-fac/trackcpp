@@ -397,7 +397,8 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
   double philag = elem.phase_lag;
   double frf = elem.frequency;
   double harmonic_number = accelerator.harmonic_number;
-  double velocity = light_speed; // the correct is: v = bc -> fix in next commit -> T0, L0 and frf dependencies
+  // double velocity = light_speed; // the correct is: v = bc -> T0, L0 and frf dependencies
+  double velocity = accelerator.velocity; //
   double L0 = accelerator.get_length();
   double T0 = L0/velocity; // velocity/L0 = frf -> the correct velocity is bc
   if (elem.length == 0) {
