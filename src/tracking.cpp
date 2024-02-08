@@ -148,10 +148,10 @@ Status::type track_findorbit6(
   }
   // calcs longitudinal fixed point
   double L0 = latt_findspos(the_ring, 1+the_ring.size());
-  double T0 = L0 / light_speed;
   std::vector<int>    cav_idx = latt_findcells_frequency(the_ring, 0, true);
   double frf = the_ring[cav_idx[0]].frequency;
-  double fixedpoint = light_speed*((1.0*accelerator.harmonic_number)/frf - T0);
+  double velocity = light_speed; // should be (beta * light_speed) !!! but the accelerator's frequency must be set in terms of (beta)
+  double fixedpoint = velocity*accelerator.harmonic_number/frf - L0;
 
   // temporary vectors and matrices
   std::vector<Pos<double> > co(7,0);
