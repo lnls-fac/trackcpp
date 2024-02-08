@@ -35,11 +35,23 @@ public:
   std::vector<Element>    lattice;
   std::string             lattice_version = "";
 
+  // New properties (non-mutable)
+  const double&           gamma_factor;
+  const double&           beta_factor;
+  const double&           velocity;
+
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
+
+private:
+  // Private member variables to store calculated values
+  double                  _gamma_factor;
+  double                  _beta_factor;
+  double                  _velocity;
+
 };
 
 #endif

@@ -16,9 +16,25 @@
 
 #include <trackcpp/accelerator.h>
 #include <trackcpp/auxiliary.h>
+#include <cmath>
 
-Accelerator::Accelerator(const double& energy) {
-  this->energy = (energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy;
+// Accelerator::Accelerator(const double& energy) {
+//   this->energy = (energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy;
+// }
+ 
+Accelerator::Accelerator(const double& energy)
+  : energy((energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy),
+    gamma_factor(this->_gamma_factor),
+    beta_factor(this->_beta_factor),
+    velocity(this->_velocity) {
+  // Calculate derived properties initially
+  double gamma = energy / (electron_rest_energy_MeV*1e6);
+  double beta = sqrt(1 - 1 / (gamma * gamma));
+  double velocity = beta * light_speed; // Speed of light in m/s
+  
+  this->_velocity = velocity;
+  this->_gamma_factor = gamma;
+  this->_beta_factor = beta;
 }
 
 double Accelerator::get_length() const {
@@ -41,7 +57,6 @@ bool Accelerator::operator==(const Accelerator& o) const {
 
 }
 
-
 std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out <<              "energy         : " << a.energy;
   out << std::endl << "cavity_on      : " << a.cavity_on;
@@ -50,5 +65,8 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "harmonic_number: " << a.harmonic_number;
   out << std::endl << "lattice        : " << a.lattice.size() << " elements";
   out << std::endl << "lattice_version: " << a.lattice_version;
+  out << std::endl << "velocity       : " << a.velocity;
+  out << std::endl << "beta_factor    : " << a.beta_factor;
+  out << std::endl << "gamma_factor   : " << a.gamma_factor;
   return out;
 }
