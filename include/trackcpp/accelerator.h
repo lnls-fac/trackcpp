@@ -27,7 +27,7 @@ class Accelerator {
 public:
   // energy < electron_rest_energy -> energy = electron_rest_energy:
   Accelerator(const double& energy=-1);
-  double                  energy;              // [eV]
+  const double&           energy;              // [eV]
   bool                    cavity_on = false;
   int                     radiation_on = RadiationState::off;
   bool                    vchamber_on = false;
@@ -45,9 +45,11 @@ public:
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
+  void setEnergy(double);
 
 private:
   // Private member variables to store calculated values
+  double                  _energy;
   double                  _gamma_factor;
   double                  _beta_factor;
   double                  _velocity;
