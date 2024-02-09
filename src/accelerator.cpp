@@ -27,15 +27,18 @@ Accelerator::Accelerator(const double& energy)
     energy(this->_energy),
     gamma_factor(this->_gamma_factor),
     beta_factor(this->_beta_factor),
-    velocity(this->_velocity) {
+    velocity(this->_velocity),
+    brho(this->_brho) {
   // Calculate derived properties initially
   double gamma = energy / (electron_rest_energy_MeV*1e6);
   double beta = sqrt(1 - 1 / (gamma * gamma));
   double velocity = beta * light_speed; // Speed of light in m/s
-  
+  double beam_rigidity = beta * energy / light_speed; 
+
   this->_velocity = velocity;
   this->_gamma_factor = gamma;
   this->_beta_factor = beta;
+  this->_brho = beam_rigidity;
 }
 
 void Accelerator::setEnergy(double energy){

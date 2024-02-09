@@ -39,6 +39,7 @@ public:
   const double&           gamma_factor;
   const double&           beta_factor;
   const double&           velocity;
+  const double&           brho;
 
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
@@ -53,6 +54,7 @@ private:
   double                  _gamma_factor;
   double                  _beta_factor;
   double                  _velocity;
+  double                  _brho;
 
 };
 
