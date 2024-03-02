@@ -139,7 +139,7 @@ Status::type track_findorbit6(
   const std::vector<Element>& the_ring = accelerator.lattice;
 
   double delta        = 1e-9;              // [m],[rad],[dE/E]
-  double tolerance    = 2.22044604925e-14;
+  double tolerance    = 5e-16;//2.22044604925e-14;
   int    max_nr_iters = 50;
 
   const int radsts = accelerator.radiation_on;
@@ -147,12 +147,12 @@ Status::type track_findorbit6(
     accelerator.radiation_on = RadiationState::damping;
   }
   // calcs longitudinal fixed point
-  double L0 = latt_findspos(the_ring, 1+the_ring.size());
+  double L0 = accelerator.get_length(); //latt_findspos(the_ring, 1+the_ring.size());
   std::vector<int>    cav_idx = latt_findcells_frequency(the_ring, 0, true);
   double frf = the_ring[cav_idx[0]].frequency;
   // double velocity = light_speed; // should be (beta * light_speed) !!! but the accelerator's frequency must be set in terms of (beta)
-  double velocity = accelerator.velocity;
-  double fixedpoint = velocity*accelerator.harmonic_number/frf - L0;
+  double velocity = accelerator.velocity/1e8;
+  double fixedpoint = velocity*accelerator.harmonic_number/frf*1e8 - L0;
 
   // temporary vectors and matrices
   std::vector<Pos<double> > co(7,0);

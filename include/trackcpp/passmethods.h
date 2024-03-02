@@ -34,7 +34,7 @@ const double KICK2 = -0.1702414383919314656e01;
 
 // Physical constants used in the calculations
 #ifdef ATCOMPATIBLE
-  const double TWOPI = 6.28318530717959;   // 2*pi
+  const double TWOPI = 6.283185307179586e0;   // 2*pi
   const double CGAMMA = 8.846056192e-05;   // cgamma, [m]/[GeV^3] Ref[1] (4.1)
   const double M0C2 = 5.10999060e5;        // Electron rest mass [eV]
   const double LAMBDABAR = 3.86159323e-13; // Compton wavelength/2pi [m]

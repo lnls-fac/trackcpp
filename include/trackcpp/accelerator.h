@@ -26,7 +26,7 @@
 class Accelerator {
 public:
   // energy < electron_rest_energy -> energy = electron_rest_energy:
-  Accelerator(const double& energy=-1);
+  Accelerator(double energy=-1);
   const double&           energy;              // [eV]
   bool                    cavity_on = false;
   int                     radiation_on = RadiationState::off;
