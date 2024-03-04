@@ -492,7 +492,7 @@ Tpsa<V,N,TYPE> pow(const Tpsa<V,N,TYPE>& a_, const int n) {
         for(unsigned int i=0; i<n-1; i++) r *= a_;
         return r;
     } else {
-        // for more efficient computatino when n >~ N,
+        // for more efficient computation when n >~ N,
         // multiplication implemented as N-truncated binomial expansion a0^n*(1 + x/a0)^n, x^(N+1) = 0
         Tpsa<V,N,TYPE> r, prodx(1);
         Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
