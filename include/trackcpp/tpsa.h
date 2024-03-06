@@ -697,9 +697,13 @@ Tpsa<V,N,TYPE> D(const Tpsa<V,N,TYPE>& a_, const unsigned int v_) {
 }
 
 #include <iostream>
-template <int V, int N, typename TYPE>
+template <unsigned int V, unsigned int N, typename TYPE>
 std::ostream& operator << (std::ostream& out, const Tpsa<V,N,TYPE>& o) {
-    //out << Tpsa<V,N,TYPE>::get_v() << " " << Tpsa<V,N,TYPE>::get_n() << " " << Tpsa<V,N,TYPE>::get_size() << std::endl;
+    // first column: linearized coefficient vector index
+    // last column: polynomial coefficient value
+    // V columns in between: variables 1..V exponents
+    //
+    // out << Tpsa<V,N,TYPE>::get_v() << " " << Tpsa<V,N,TYPE>::get_n() << " " << Tpsa<V,N,TYPE>::get_size() << std::endl;
     unsigned int p[V];
     for(unsigned int i=0; i<Tpsa<V,N,TYPE>::get_size(); i++) {
         out << i << "  ";
