@@ -494,13 +494,14 @@ Tpsa<V,N,TYPE> pow(const Tpsa<V,N,TYPE>& a_, const int n) {
     } else {
         // for more efficient computation when n >~ N,
         // multiplication implemented as N-truncated binomial expansion a0^n*(1 + x/a0)^n, x^(N+1) = 0
-        Tpsa<V,N,TYPE> r, prodx(1);
+        Tpsa<V,N,TYPE> r;
         Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
-        float binomial_coeff = 1;
+        Tpsa<V,N,TYPE> p(1);
+        TYPE           f = 1; // binomial coefficient
         for(unsigned int i=0; i<=N; i++) {
-            r += prodx * binomial_coeff;
-            binomial_coeff *= (n - i) / (i + 1);
-            prodx *= x;
+            r += p * f;
+            f *= (n - i) / (i + 1);
+            p *= x;
         }
         r *= std::pow(a_.c[0], n);
         return r;
@@ -518,7 +519,7 @@ Tpsa<V,N,TYPE> sqrt(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> r;
     Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
     Tpsa<V,N,TYPE> p(1);
-    TYPE          f = 1;
+    TYPE           f = 1;
     for(unsigned int i=0; i<=N; i++) {
         r += p * f;
         f *= (0.5 - i)/(i+1);
