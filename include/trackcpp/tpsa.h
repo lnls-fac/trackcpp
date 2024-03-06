@@ -500,7 +500,7 @@ Tpsa<V,N,TYPE> pow(const Tpsa<V,N,TYPE>& a_, const int n) {
         TYPE           f = 1; // binomial coefficient
         for(unsigned int i=0; i<=N; i++) {
             r += p * f;
-            f *= (n - i) / (i + 1);
+            f *= TYPE (n - i) / (i + 1);
             p *= x;
         }
         r *= std::pow(a_.c[0], n);
