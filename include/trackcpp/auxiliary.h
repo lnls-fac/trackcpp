@@ -199,6 +199,7 @@ int sgn(T val) {
 
 
 void set_random_seed(unsigned rnd_seed);
+void set_random_seed_with_random_device();
 void set_random_distribution(unsigned value);
 double gen_random_number();
 

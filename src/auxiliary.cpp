@@ -28,12 +28,18 @@ void set_random_distribution(unsigned value){
   }else if (value == Distributions::uniform){
     choosen_distribution = value;
   }else{
-    std::cout<<"Not valid input"<<"\n";
+    std::cerr << "Not valid input!" << std::endl;
   }
 }
 
 void set_random_seed(unsigned rnd_seed) {
+    distr_gauss.reset();
     generator.seed(rnd_seed);
+}
+
+void set_random_seed_with_random_device() {
+    distr_gauss.reset();
+    generator.seed(rand_dev());
 }
 
 double gen_random_number() {

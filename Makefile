@@ -179,12 +179,6 @@ install: clean install-cpp install-py
 
 uninstall: uninstall-cpp uninstall-py
 
-develop-install-py: develop-uninstall-py all
-	$(MAKE) develop-install -C $(PYTHON_PACKAGE_DIR)
-
-develop-uninstall-py:
-	$(MAKE) develop-uninstall -C $(PYTHON_PACKAGE_DIR)
-
 $(BINDEST_DIR):
 	mkdir $(BINDEST_DIR)
 
@@ -197,10 +191,6 @@ $(INCDEST_DIR):
 clean:
 	-rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~ *.o *.a
 	$(MAKE) clean -C $(PYTHON_PACKAGE_DIR)
-
-cleanall: clean
-	cd tracking_mp; make clean;
-
 
 #### RULES ####
 
