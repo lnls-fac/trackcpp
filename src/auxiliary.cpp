@@ -28,7 +28,7 @@ void set_random_distribution(unsigned value){
   }else if (value == Distributions::uniform){
     choosen_distribution = value;
   }else{
-    std::cout<<"Not valid input"<<"\n";
+    std::cerr << "Not valid input!" << std::endl;
   }
 }
 
