@@ -25,7 +25,7 @@
 //struct Accelerator {
 class Accelerator {
 public:
-  // energy < electron_rest_energy -> energy = electron_rest_energy:
+  // energy < electron_rest_energy_eV -> energy = electron_rest_energy_eV:
   Accelerator(const double& energy=-1);
   double                  energy;              // [eV]
   bool                    cavity_on = false;
