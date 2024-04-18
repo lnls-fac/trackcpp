@@ -486,14 +486,26 @@ Tpsa<V,N,TYPE> operator / (const T& o1, const Tpsa<V,N,TYPE>& o2) { return o2.in
 
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> pow(const Tpsa<V,N,TYPE>& a_, const int n) {
-    Tpsa<V,N,TYPE> r;
-    Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
-    int n_ = N < n ? N : n;
-    for(unsigned int i=0; i<=n_; i++) {
-        r *= 1 + x;
-    }
-    r *= std::pow(a_.c[0], n);
-    return r;
+    if (n <= N) {
+        // simple tpsa multiplication
+        Tpsa<V,N,TYPE> r(a_);
+        for(unsigned int i=0; i<n-1; i++) r *= a_;
+        return r;
+    } else {
+        // for more efficient computation when n >~ N,
+        // multiplication implemented as N-truncated binomial expansion a0^n*(1 + x/a0)^n, x^(N+1) = 0
+        Tpsa<V,N,TYPE> r;
+        Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
+        Tpsa<V,N,TYPE> p(1);
+        TYPE           f = 1; // binomial coefficient
+        for(unsigned int i=0; i<=N; i++) {
+            r += p * f;
+            f *= TYPE (n - i) / (i + 1);
+            p *= x;
+        }
+        r *= std::pow(a_.c[0], n);
+        return r;
+    };
 }
 
 template <unsigned int V, unsigned int N, typename TYPE>
@@ -507,7 +519,7 @@ Tpsa<V,N,TYPE> sqrt(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> r;
     Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
     Tpsa<V,N,TYPE> p(1);
-    TYPE          f = 1;
+    TYPE           f = 1;
     for(unsigned int i=0; i<=N; i++) {
         r += p * f;
         f *= (0.5 - i)/(i+1);
@@ -697,9 +709,13 @@ Tpsa<V,N,TYPE> D(const Tpsa<V,N,TYPE>& a_, const unsigned int v_) {
 }
 
 #include <iostream>
-template <int V, int N, typename TYPE>
+template <unsigned int V, unsigned int N, typename TYPE>
 std::ostream& operator << (std::ostream& out, const Tpsa<V,N,TYPE>& o) {
-    //out << Tpsa<V,N,TYPE>::get_v() << " " << Tpsa<V,N,TYPE>::get_n() << " " << Tpsa<V,N,TYPE>::get_size() << std::endl;
+    // first column: linearized coefficient vector index
+    // last column: polynomial coefficient value
+    // V columns in between: variables 1..V exponents
+    //
+    // out << Tpsa<V,N,TYPE>::get_v() << " " << Tpsa<V,N,TYPE>::get_n() << " " << Tpsa<V,N,TYPE>::get_size() << std::endl;
     unsigned int p[V];
     for(unsigned int i=0; i<Tpsa<V,N,TYPE>::get_size(); i++) {
         out << i << "  ";
