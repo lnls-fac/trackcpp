@@ -21,7 +21,7 @@
 Status::type track_elementpass_wrapper (
          const Element& el,
          double *pos, int n1, int n2,
-         const Accelerator& accelerator, unsigned int turn_number) {
+         const Accelerator& accelerator, bool wallclock) {
 
     std::vector<Pos<double> > post;
 
@@ -33,7 +33,7 @@ Status::type track_elementpass_wrapper (
             pos[4*n2 + i], pos[5*n2 + i]);
     }
     Status::type status = track_elementpass(
-        el, post, accelerator, turn_number);
+        el, post, accelerator, wallclock);
 
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
@@ -65,8 +65,8 @@ Status::type track_linepass_wrapper(
                           args.element_offset,
                           args.lost_plane,
                           args.lost_element,
-                          args.indices, 
-                          args.turn_number);
+                          args.indices,
+                          args.wallclock);
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
         pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;

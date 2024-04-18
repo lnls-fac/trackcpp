@@ -47,7 +47,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   const std::vector<Element>& lattice = accelerator.lattice;
 
   Pos<double> fp = fixed_point;
-  
+
   const int radsts = accelerator.radiation_on;
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;
@@ -107,9 +107,9 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
-  
+
   accelerator.radiation_on = radsts;
-  
+
   return status;
 
 }
@@ -139,20 +139,13 @@ Status::type track_findorbit6(
   const std::vector<Element>& the_ring = accelerator.lattice;
 
   double delta        = 1e-9;              // [m],[rad],[dE/E]
-  double tolerance    = 5e-16;//2.22044604925e-14;
+  double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
 
   const int radsts = accelerator.radiation_on;
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;
   }
-  // calcs longitudinal fixed point
-  double L0 = accelerator.get_length(); //latt_findspos(the_ring, 1+the_ring.size());
-  std::vector<int>    cav_idx = latt_findcells_frequency(the_ring, 0, true);
-  double frf = the_ring[cav_idx[0]].frequency;
-  // double velocity = light_speed; // should be (beta * light_speed) !!! but the accelerator's frequency must be set in terms of (beta)
-  double velocity = accelerator.velocity/1e8;
-  double fixedpoint = velocity*accelerator.harmonic_number/frf*1e8 - L0;
 
   // temporary vectors and matrices
   std::vector<Pos<double> > co(7,0);
@@ -161,8 +154,6 @@ Status::type track_findorbit6(
   std::vector<Pos<double> > D(7,0);
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,1.0,1.0);
-  Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
-  theta.dl = fixedpoint;
   matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;
@@ -174,13 +165,13 @@ Status::type track_findorbit6(
     Plane::type lost_plane;
     Status::type status = Status::success;
 
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, false, true));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false, true));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false, true));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false, true));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false, true));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false, true));
+    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false, true));
 
     if (status != Status::success) {
       return Status::findorbit_one_turn_matrix_problem;
@@ -195,7 +186,7 @@ Status::type track_findorbit6(
     M[4] = (co2[4] - Rf) / delta;
     M[5] = (co2[5] - Rf) / delta;
 
-    Pos<double> b = Rf - Ri - theta;
+    Pos<double> b = Rf - Ri;
     std::vector<Pos<double> > M_1(6,0);
     matrix6_set_identity_posvec(M_1);
     M_1 = M_1 - M;
@@ -215,7 +206,7 @@ Status::type track_findorbit6(
   closed_orbit.clear();
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
+  track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true, true);
   accelerator.radiation_on = radsts;
   return Status::success;
 
@@ -243,7 +234,6 @@ Status::type track_findorbit4(
   std::vector<Pos<double> > D(7,0);
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,0.0,0.0);
-  // Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0); // unnecessary vector for find_orbit4
   matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;

@@ -388,7 +388,7 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
-                            const Accelerator& accelerator, int turn_number) { // include necessary args
+                            const Accelerator& accelerator, bool wallclock) { // include necessary args
 
   if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
 
@@ -397,16 +397,15 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
   double philag = elem.phase_lag;
   double frf = elem.frequency;
   double harmonic_number = accelerator.harmonic_number;
-  // double velocity = light_speed; // the correct is: v = beta * c -> T0, L0 and frf dependencies
-  double velocity = accelerator.velocity / 1e8; //
+  // the correct is: v = beta * c -> T0, L0 and frf dependencies
+  double velocity = light_speed;
+  // double velocity = accelerator.velocity;
   double L0 = accelerator.get_length();
-  // double T0 = L0/velocity; // velocity/L0 = frf -> the correct velocity is bc
-  double factor = (velocity*harmonic_number/frf*1e8 - L0) / velocity / 1e8;
-  //std::cout << "factor =" << factor << std::endl;
-  double tn = turn_number*1e0;
+  double ddl = (velocity*harmonic_number/frf - L0);
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    de +=  -nv * sin(TWOPI * frf * (dl/velocity/1e8 - factor*tn) - philag); // new mod
+    if (wallclock) {dl -= ddl;}
+    de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
     } else {
     T &rx = pos.rx, &px = pos.px;
     T &ry = pos.ry, &py = pos.py;
@@ -418,7 +417,8 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     ry += norml * py;
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
-    de += -nv * sin(TWOPI * frf * (dl/velocity/1e8 - factor*tn) - philag); // new mod
+    if (wallclock) {dl -= ddl;}
+    de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
     // drift half length
     pnorm   = 1.0 / (1.0 + de);
     norml   = (0.5 * elem.length) * pnorm;
