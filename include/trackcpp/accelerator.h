@@ -23,21 +23,21 @@
 #include <string>
 
 class Accelerator {
+
 public:
   Accelerator(double energy=-1);
   const double&           energy; // [eV]
+  const double&           gamma_factor;
+  const double&           beta_factor;
+  const double&           velocity;
+  const double&           brho;
   bool                    cavity_on = false;
   int                     radiation_on = RadiationState::off;
   bool                    vchamber_on = false;
   int                     harmonic_number = 0;
   std::vector<Element>    lattice;
   std::string             lattice_version = "";
-
-  // New properties (non-mutable)
-  const double&           gamma_factor;
-  const double&           beta_factor;
-  const double&           velocity;
-  const double&           brho;
+  
 
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
@@ -47,7 +47,7 @@ public:
   void setEnergy(double);
 
 private:
-  // Private member variables to store calculated values
+  // Private members to store calculated values
   double                  _energy;
   double                  _gamma_factor;
   double                  _beta_factor;

@@ -34,9 +34,9 @@ Accelerator::Accelerator(const double energy) :
 void Accelerator::setEnergy(double energy){
     // Calculate derived properties initially
 
-  this->_energy = (energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy;
+  this->_energy = (energy < electron_rest_energy_eV) ? electron_rest_energy_eV : energy;
   
-  double gamma = energy / (electron_rest_energy_MeV*1e6);
+  double gamma = energy / (electron_rest_energy_eV);
   double beta = sqrt(1 - 1 / (gamma * gamma));
   double velocity = beta * light_speed; // Speed of light in m/s
   double beam_rigidity = beta * energy / light_speed;

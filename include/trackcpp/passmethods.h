@@ -43,7 +43,7 @@ const double KICK2 = -0.1702414383919314656e01;
 #else
   const double TWOPI_ = 2*M_PI;
   const double CGAMMA_ = 4*M_PI*electron_radius/pow(electron_rest_energy/electron_charge/1e9,3)/3;
-  const double M0C2 = electron_rest_energy_MeV * 1e6;
+  const double M0C2 = electron_rest_energy_eV;
   const double LAMBDABAR = reduced_planck_constant / light_speed / electron_mass;
   const double CER = electron_radius;
   const double CU = 55/(24*std::sqrt(3));
