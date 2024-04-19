@@ -18,7 +18,7 @@
 #include <trackcpp/auxiliary.h>
 
 Accelerator::Accelerator(const double& energy) {
-  this->energy = (energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy;
+  this->energy = (energy < electron_rest_energy_eV) ? electron_rest_energy_eV : energy;
 }
 
 double Accelerator::get_length() const {
