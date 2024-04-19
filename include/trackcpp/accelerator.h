@@ -22,12 +22,10 @@
 #include <vector>
 #include <string>
 
-//struct Accelerator {
 class Accelerator {
 public:
-  // energy < electron_rest_energy -> energy = electron_rest_energy:
   Accelerator(double energy=-1);
-  const double&           energy;              // [eV]
+  const double&           energy; // [eV]
   bool                    cavity_on = false;
   int                     radiation_on = RadiationState::off;
   bool                    vchamber_on = false;

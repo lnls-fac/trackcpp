@@ -388,7 +388,7 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
-                            const Accelerator& accelerator, bool wallclock) { // include necessary args
+                            const Accelerator& accelerator, bool wallclock) {
 
   if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
 
@@ -397,14 +397,13 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
   double philag = elem.phase_lag;
   double frf = elem.frequency;
   double harmonic_number = accelerator.harmonic_number;
-  // the correct is: v = beta * c -> T0, L0 and frf dependencies
   double velocity = light_speed;
   // double velocity = accelerator.velocity;
   double L0 = accelerator.get_length();
   double ddl = (velocity*harmonic_number/frf - L0);
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    if (wallclock) {dl -= ddl;}
+    if (wallclock && accelerator.radiation_on) {dl -= ddl;}
     de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
     } else {
     T &rx = pos.rx, &px = pos.px;
@@ -417,7 +416,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     ry += norml * py;
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
-    if (wallclock) {dl -= ddl;}
+    if (wallclock && accelerator.radiation_on) {dl -= ddl;}
     de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
     // drift half length
     pnorm   = 1.0 / (1.0 + de);

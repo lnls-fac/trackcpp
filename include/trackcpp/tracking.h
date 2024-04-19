@@ -55,7 +55,9 @@ template <typename T>
 Status::type track_elementpass (
              const Element& el,                 // element through which to track particle
              Pos<T> &orig_pos,                  // initial electron coordinates
-             const Accelerator& accelerator, bool wallclock = false) {
+             const Accelerator& accelerator,    // the accelerator
+             bool wallclock = false             // boolean to use wallclock in cavity pass
+             ) {
 
     Status::type status = Status::success;
 
@@ -103,9 +105,10 @@ Status::type track_elementpass (
 
 template <typename T>
 Status::type track_elementpass (
-             const Element& el,  // element through which to track particle
+             const Element& el,               // element through which to track particle
              std::vector<Pos<T> >& orig_pos,  // initial electron coordinates
-             const Accelerator& accelerator, bool wallclock = false) {
+             const Accelerator& accelerator,  // the accelerator
+             bool wallclock = false) {        // boolean to use wallclock in cavity pass
 
     Status::type status  = Status::success;
 
@@ -141,7 +144,8 @@ Status::type track_linepass (
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
         std::vector<unsigned int >& indices, // indices to return;
-        bool wallclock = false) { // include turn count -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
+        bool wallclock = false         // boolean to use wallclock in cavity pass
+        ) {
 
     Status::type status = Status::success;
     lost_plane = Plane::no_plane;
@@ -252,13 +256,13 @@ T get_norm_amp_in_vchamber(const Element& elem, const T& rx, const T& ry) {
 
 template <typename T>
 Status::type track_linepass (
-        const Accelerator& accelerator,
-        Pos<T>& orig_pos,              // initial electron coordinates
-        std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
-        unsigned int& element_offset,  // index of starting element for tracking
-        Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
-        bool trajectory,  // whether function should return coordinates at all elements
-        bool wallclock = false) {  // wallclock -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
+        const Accelerator& accelerator,  // the accelerator
+        Pos<T>& orig_pos,                // initial electron coordinates
+        std::vector<Pos<T> >& pos,       // vector with tracked electron coordinates at start of every element and at the end of last one.
+        unsigned int& element_offset,    // index of starting element for tracking
+        Plane::type& lost_plane,         // return plane in which particle was lost, if the case.
+        bool trajectory,            // whether function should return coordinates at all elements
+        bool wallclock = false) {   // boolean to use wallclock in cavity pass
 
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
