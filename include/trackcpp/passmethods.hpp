@@ -245,15 +245,24 @@ inline void rotate_pos(Pos<T> &pos, const double* R) {
 template <typename T>
 void global_2_local(Pos<T> &pos, const Element &elem) {
 
-  translate_pos(pos, elem.t_in);
-  rotate_pos(pos, elem.r_in);
+  if (elem.t_in != nullptr) {
+    translate_pos(pos, elem.t_in);
+  }
+  if (elem.r_in != nullptr) {
+    rotate_pos(pos, elem.r_in);
+  }
 }
 
 template <typename T>
 void local_2_global(Pos<T> &pos, const Element &elem) {
 
-  rotate_pos(pos, elem.r_out);
-  translate_pos(pos, elem.t_out);
+  if (elem.r_out != nullptr) {
+    rotate_pos(pos, elem.r_out);
+  }
+  if (elem.t_out != nullptr) {
+    translate_pos(pos, elem.t_out);
+  }
+  
 }
 
 template <typename T>

@@ -29,16 +29,6 @@
 class Element {
 public:
 
-//  fam_name(fam_name_), pass_method(PassMethod::pm_drift_pass),
-//    nr_steps(1), length(length_),
-//    hkick(0), vkick(0),
-//    angle(0), angle_in(0), angle_out(0),
-//    gap(0), fint_in(0), fint_out(0),
-//    thin_KL(0), thin_SL(0),
-//    frequency(0), voltage(0), phase_lag(0),
-//    polynom_a(default_polynom), polynom_b(default_polynom),
-//    hmax(DBL_MAX), vmax(DBL_MAX)
-
   std::string   fam_name;
   int           pass_method = PassMethod::pm_drift_pass;
   double        length      = 0;  // [m]
@@ -68,12 +58,13 @@ public:
   std::vector<double> polynom_b = default_polynom;
   Matrix              matrix66 = Matrix(6);
 
-  double              t_in[6],  t_out[6];
-  double              r_in[36], r_out[36];
+  double* t_in;
+  double* t_out;
+  double* r_in;
+  double* r_out;
 
   const std::string& get_pass_method();
   void set_pass_method(const std::string& pass_method_);
-
 
   // default constructor (builds a drift-type element)
   Element(const std::string& fam_name_ = "", const double& length_ = 0);

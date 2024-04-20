@@ -52,6 +52,14 @@ namespace std {
 }
 
 %inline %{
+bool check_is_nullptr(double* v){
+    if (v == nullptr) {return true;}
+    return false;
+}
+double* c_array_create(int arrsize){
+    double* arr = new double[arrsize];
+    return arr;
+}
 double c_array_get(double* v, int i) {
     return v[i];
 }
