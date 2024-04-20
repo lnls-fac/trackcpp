@@ -17,11 +17,8 @@
 #include <trackcpp/accelerator.h>
 #include <trackcpp/auxiliary.h>
 #include <cmath>
-
-// Accelerator::Accelerator(const double& energy) {
-//   this->energy = (energy < electron_rest_energy_MeV*1e6) ? electron_rest_energy_MeV*1e6 : energy;
-// }
  
+
 Accelerator::Accelerator(const double energy) :
     energy(this->_energy),
     gamma_factor(this->_gamma_factor),
@@ -29,22 +26,6 @@ Accelerator::Accelerator(const double energy) :
     velocity(this->_velocity),
     brho(this->_brho) {
     setEnergy(energy);
-}
-
-void Accelerator::setEnergy(double energy){
-    // Calculate derived properties initially
-
-  this->_energy = (energy < electron_rest_energy_eV) ? electron_rest_energy_eV : energy;
-  
-  double gamma = energy / (electron_rest_energy_eV);
-  double beta = sqrt(1 - 1 / (gamma * gamma));
-  double velocity = beta * light_speed; // Speed of light in m/s
-  double beam_rigidity = beta * energy / light_speed;
-  
-  this->_velocity = velocity;
-  this->_gamma_factor = gamma;
-  this->_beta_factor = beta;
-  this->_brho = beam_rigidity;
 }
 
 double Accelerator::get_length() const {
@@ -79,4 +60,141 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "beta_factor    : " << a.beta_factor;
   out << std::endl << "gamma_factor   : " << a.gamma_factor;
   return out;
+}
+
+void Accelerator::setEnergy(const double _energy_) {
+
+  if (_energy_ <= electron_rest_energy_eV) {
+
+    this->_energy = electron_rest_energy_eV;
+    this->_velocity = 0.0;
+    this->_gamma_factor = 1.0;
+    this->_beta_factor = 0.0;
+    this->_brho = 0.0;
+
+  } else {
+
+    this->_energy = _energy_;
+
+    double gamma_ = _energy_ / electron_rest_energy_eV;
+    double beta_ = sqrt(1.0 - (1.0 / (gamma_ * gamma_)));
+    double velocity_ = beta_ * light_speed;
+    double beam_rigidity_ = beta_ * _energy_ / light_speed;
+    
+    this->_velocity = velocity_;
+    this->_gamma_factor = gamma_;
+    this->_beta_factor = beta_;
+    this->_brho = beam_rigidity_;
+  }
+  
+}
+
+void Accelerator::setGammaFactor(const double _gamma_) {
+
+  if (_gamma_ <= 1.0) {
+
+    this->_energy = electron_rest_energy_eV;
+    this->_velocity = 0.0;
+    this->_gamma_factor = 1.0;
+    this->_beta_factor = 0.0;
+    this->_brho = 0.0;
+
+  } else {
+
+    this->_gamma_factor = _gamma_;
+    
+    double energy_ = _gamma_ * electron_rest_energy_eV;
+    double beta_ = sqrt(1.0 - (1.0 / (_gamma_ * _gamma_)));
+    double velocity_ = beta_ * light_speed;
+    double beam_rigidity_ = beta_ * energy_ / light_speed;
+    
+    this->_energy = energy_;
+    this->_velocity = velocity_;
+    this->_beta_factor = beta_;
+    this->_brho = beam_rigidity_;
+  }
+  
+}
+
+void Accelerator::setBetaFactor(const double _beta_) {
+
+  if (_beta_ <= 0.0) {
+
+    this->_energy = electron_rest_energy_eV;
+    this->_velocity = 0.0;
+    this->_gamma_factor = 1.0;
+    this->_beta_factor = 0.0;
+    this->_brho = 0.0;
+
+  } else {
+
+    this->_beta_factor = _beta_;
+
+    double gamma_ = 1.0 / sqrt(1.0 - (_beta_ * _beta_));
+    double energy_ = gamma_ * electron_rest_energy_eV;
+    double velocity_ = _beta_ * light_speed;
+    double beam_rigidity_ = _beta_ * energy_ / light_speed;
+    
+    this->_energy = energy_;
+    this->_velocity = velocity_;
+    this->_gamma_factor = gamma_;
+    this->_brho = beam_rigidity_;
+  }
+  
+}
+
+void Accelerator::setVelocity(const double _velocity_) {
+
+  if (_velocity_ <= 0.0) {
+
+    this->_energy = electron_rest_energy_eV;
+    this->_velocity = 0.0;
+    this->_gamma_factor = 1.0;
+    this->_beta_factor = 0.0;
+    this->_brho = 0.0;
+
+  } else {
+
+    this->_velocity = _velocity_;
+
+    double beta_ = _velocity_ / light_speed;
+    double gamma_ = 1.0 / sqrt(1.0 - (beta_ * beta_));
+    double energy_ = gamma_ * electron_rest_energy_eV;
+    double beam_rigidity_ = beta_ * energy_ / light_speed;
+
+    this->_energy = energy_;
+    this->_gamma_factor = gamma_;
+    this->_beta_factor = beta_;
+    this->_brho = beam_rigidity_;
+  }
+  
+}
+
+void Accelerator::setMagneticRigidity(const double _brho_) {
+
+  if (_brho_ <= 0.0) {
+
+    this->_energy = electron_rest_energy_eV;
+    this->_velocity = 0.0;
+    this->_gamma_factor = 1.0;
+    this->_beta_factor = 0.0;
+    this->_brho = 0.0;
+
+  } else {
+
+    this->_brho = _brho_;
+
+    double k = _brho_ / (electron_rest_energy_eV / light_speed);
+    double gamma_ = sqrt(1.0 + (k * k));
+    double energy_ = gamma_ * electron_rest_energy_eV;
+    double beta_ = sqrt(1.0 - (1.0 / (gamma_ * gamma_)));
+    double velocity_ = beta_ * light_speed;
+
+    this->_energy = energy_;
+    this->_velocity = velocity_;
+    this->_gamma_factor = gamma_;
+    this->_beta_factor = beta_;
+    
+  }
+  
 }

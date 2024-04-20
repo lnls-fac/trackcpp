@@ -45,6 +45,10 @@ public:
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
   void setEnergy(double);
+  void setGammaFactor(const double);
+  void setBetaFactor(const double);
+  void setVelocity(const double);
+  void setMagneticRigidity(const double);
 
 private:
   // Private members to store calculated values
