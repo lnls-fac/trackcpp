@@ -222,15 +222,18 @@ void edge_fringe(Pos<T>& pos, const double& inv_rho,
 
 template <typename T>
 inline void translate_pos(Pos<T> &pos, const double* t) {
-
-  pos.rx += t[0]; pos.px += t[1];
-  pos.ry += t[2]; pos.py += t[3];
-  pos.de += t[4]; pos.dl += t[5];
+  // std::cout<<"translating"<<std::endl;
+  pos.rx += t[0];
+  pos.px += t[1];
+  pos.ry += t[2];
+  pos.py += t[3];
+  pos.de += t[4];
+  pos.dl += t[5];
 }
 
 template <typename T>
 inline void rotate_pos(Pos<T> &pos, const double* R) {
-
+  // std::cout<<"rotating"<<std::endl;
   const T rx0 = pos.rx, px0 = pos.px;
   const T ry0 = pos.ry, py0 = pos.py;
   const T de0 = pos.de, dl0 = pos.dl;
@@ -242,28 +245,54 @@ inline void rotate_pos(Pos<T> &pos, const double* R) {
   pos.dl = R[5*6+0] * rx0 + R[5*6+1] * px0 + R[5*6+2] * ry0 + R[5*6+3] * py0 + R[5*6+4] * de0 + R[5*6+5] * dl0;
 }
 
+// template <typename T>
+// inline void translate_and_rotate_pos(Pos<T> &pos, const double* t, const double* R) {
+//   // std::cout<<"translating and rotating"<<std::endl;
+//   const T rx0 = pos.rx + t[0], px0 = pos.px + t[1];
+//   const T ry0 = pos.ry + t[2], py0 = pos.py + t[3];
+//   const T de0 = pos.de + t[4], dl0 = pos.dl + t[5];
+//   pos.rx = R[0*6+0] * rx0 + R[0*6+1] * px0 + R[0*6+2] * ry0 + R[0*6+3] * py0 + R[0*6+4] * de0 + R[0*6+5] * dl0;
+//   pos.px = R[1*6+0] * rx0 + R[1*6+1] * px0 + R[1*6+2] * ry0 + R[1*6+3] * py0 + R[1*6+4] * de0 + R[1*6+5] * dl0;
+//   pos.ry = R[2*6+0] * rx0 + R[2*6+1] * px0 + R[2*6+2] * ry0 + R[2*6+3] * py0 + R[2*6+4] * de0 + R[2*6+5] * dl0;
+//   pos.py = R[3*6+0] * rx0 + R[3*6+1] * px0 + R[3*6+2] * ry0 + R[3*6+3] * py0 + R[3*6+4] * de0 + R[3*6+5] * dl0;
+//   pos.de = R[4*6+0] * rx0 + R[4*6+1] * px0 + R[4*6+2] * ry0 + R[4*6+3] * py0 + R[4*6+4] * de0 + R[4*6+5] * dl0;
+//   pos.dl = R[5*6+0] * rx0 + R[5*6+1] * px0 + R[5*6+2] * ry0 + R[5*6+3] * py0 + R[5*6+4] * de0 + R[5*6+5] * dl0;
+// }
+
+// template <typename T>
+// inline void rotate_and_translate_pos(Pos<T> &pos, const double* R, const double* t) {
+//   // std::cout<<"rotating and translating"<<std::endl;
+//   const T rx0 = pos.rx, px0 = pos.px;
+//   const T ry0 = pos.ry, py0 = pos.py;
+//   const T de0 = pos.de, dl0 = pos.dl;
+//   pos.rx = t[0] + R[0*6+0] * rx0 + R[0*6+1] * px0 + R[0*6+2] * ry0 + R[0*6+3] * py0 + R[0*6+4] * de0 + R[0*6+5] * dl0;
+//   pos.px = t[1] + R[1*6+0] * rx0 + R[1*6+1] * px0 + R[1*6+2] * ry0 + R[1*6+3] * py0 + R[1*6+4] * de0 + R[1*6+5] * dl0;
+//   pos.ry = t[2] + R[2*6+0] * rx0 + R[2*6+1] * px0 + R[2*6+2] * ry0 + R[2*6+3] * py0 + R[2*6+4] * de0 + R[2*6+5] * dl0;
+//   pos.py = t[3] + R[3*6+0] * rx0 + R[3*6+1] * px0 + R[3*6+2] * ry0 + R[3*6+3] * py0 + R[3*6+4] * de0 + R[3*6+5] * dl0;
+//   pos.de = t[4] + R[4*6+0] * rx0 + R[4*6+1] * px0 + R[4*6+2] * ry0 + R[4*6+3] * py0 + R[4*6+4] * de0 + R[4*6+5] * dl0;
+//   pos.dl = t[5] + R[5*6+0] * rx0 + R[5*6+1] * px0 + R[5*6+2] * ry0 + R[5*6+3] * py0 + R[5*6+4] * de0 + R[5*6+5] * dl0;
+// }
+
 template <typename T>
 void global_2_local(Pos<T> &pos, const Element &elem) {
-
-  if (elem.t_in != nullptr) {
-    translate_pos(pos, elem.t_in);
-  }
-  if (elem.r_in != nullptr) {
-    rotate_pos(pos, elem.r_in);
-  }
+    if (elem.has_t_in) {
+        translate_pos(pos, elem.t_in);
+    }
+    if (elem.has_r_in) {
+        rotate_pos(pos, elem.r_in);
+    }
 }
 
 template <typename T>
 void local_2_global(Pos<T> &pos, const Element &elem) {
-
-  if (elem.r_out != nullptr) {
-    rotate_pos(pos, elem.r_out);
-  }
-  if (elem.t_out != nullptr) {
-    translate_pos(pos, elem.t_out);
-  }
-  
+    if (elem.has_r_out) {
+        rotate_pos(pos, elem.r_out);
+    }
+    if (elem.has_t_out) {
+        translate_pos(pos, elem.t_out);
+    }
 }
+
 
 template <typename T>
 Status::type pm_identity_pass(Pos<T> &pos, const Element &elem,

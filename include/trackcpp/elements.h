@@ -58,10 +58,15 @@ public:
   std::vector<double> polynom_b = default_polynom;
   Matrix              matrix66 = Matrix(6);
 
-  double* t_in;
-  double* t_out;
-  double* r_in;
-  double* r_out;
+  double t_in[6];
+  double t_out[6];
+  double r_in[36];
+  double r_out[36];
+
+  bool has_t_in = false;
+  bool has_t_out = false; 
+  bool has_r_in = false;
+  bool has_r_out = false;
 
   const std::string& get_pass_method();
   void set_pass_method(const std::string& pass_method_);

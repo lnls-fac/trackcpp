@@ -25,10 +25,23 @@ const std::vector<double> Element::default_polynom = std::vector<double>(3,0);
 
 // default constructor (constructs a drift element)
 Element::Element(const std::string& fam_name_, const double& length_) :
-    fam_name(fam_name_), length(length_),
-    t_in(nullptr), t_out(nullptr),
-    r_in(nullptr), r_out(nullptr) 
-    {matrix66.eye();}
+    fam_name(fam_name_), length(length_)
+    {
+      for (unsigned int i=0; i<6; i++){
+        t_in[i] = 0.0;
+        t_out[i] = 0.0;
+        for (unsigned int j=0; j<6; j++){
+          if (i == j){
+            r_in[i*6+j] = 1.0;
+            r_out[i*6+j] = 1.0;
+          } else {
+            r_in[i*6+j] = 0.0;
+            r_out[i*6+j] = 0.0;
+          }
+        };
+      };
+      matrix66.eye();
+  };
 
 const std::string& Element::get_pass_method() {
     return pm_dict[pass_method];
