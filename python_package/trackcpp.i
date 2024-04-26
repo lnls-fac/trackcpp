@@ -67,7 +67,7 @@ double get_double_max() {
 
 
 %extend std::vector<double> {
-    double* my_beautiful_pointer() {
+    double* data_() {
         return $self->data();
     }
 }
