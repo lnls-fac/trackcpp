@@ -18,6 +18,7 @@
 #include <trackcpp/elements.h>
 #include <trackcpp/kicktable.h>
 #include <cfloat>
+#include <cstring>
 
 
 const std::vector<double> Element::default_polynom = std::vector<double>(3,0);
@@ -294,3 +295,26 @@ void initialize_kickmap(Element& element, const int& kicktable_idx, const int& n
     element.kicktable_idx = kicktable_idx;
     element.rescale_kicks = rescale_kicks;
 }
+
+const double id6[6] = {0, 0, 0, 0, 0, 0};
+const double id66[36] = {
+                          1, 0, 0, 0, 0, 0,
+                          0, 1, 0, 0, 0, 0,
+                          0, 0, 1, 0, 0, 0,
+                          0, 0, 0, 1, 0, 0,
+                          0, 0, 0, 0, 1, 0,
+                          0, 0, 0, 0, 0, 1
+                        };
+
+void Element::reflag_t_in(void){
+  this->has_t_in = std::memcmp(this->t_in, id6, 6*8) ;
+};
+void Element::reflag_t_out(void){
+  this->has_t_out = std::memcmp(this->t_out, id6, 6*8) ;
+};
+void Element::reflag_r_in(void){
+  this->has_r_in = std::memcmp(this->r_in, id66, 36*8) ;
+};
+void Element::reflag_r_out(void){
+  this->has_r_out = std::memcmp(this->r_out, id66, 36*8) ;
+};

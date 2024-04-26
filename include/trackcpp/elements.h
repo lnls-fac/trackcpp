@@ -68,6 +68,11 @@ public:
   bool has_r_in = false;
   bool has_r_out = false;
 
+  void reflag_t_in(void);
+  void reflag_t_out(void);
+  void reflag_r_in(void);
+  void reflag_r_out(void);
+
   const std::string& get_pass_method();
   void set_pass_method(const std::string& pass_method_);
 
