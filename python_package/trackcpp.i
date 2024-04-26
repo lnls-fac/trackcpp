@@ -18,6 +18,7 @@
 
 %{
 #define SWIG_FILE_WITH_INIT
+#include <vector>
 #include <trackcpp/elements.h>
 #include <trackcpp/kicktable.h>
 #include <trackcpp/auxiliary.h>
@@ -34,7 +35,7 @@
 
 %include "carrays.i"
 %include "std_string.i"
-%include "std_vector.i"
+// %include "std_vector.i"
 %include "stl.i"
 %include "typemaps.i"
 
@@ -52,14 +53,6 @@ namespace std {
 }
 
 %inline %{
-bool check_is_nullptr(double* v){
-    if (v == nullptr) {return true;}
-    return false;
-}
-double* c_array_create(int arrsize){
-    double* arr = new double[arrsize];
-    return arr;
-}
 double c_array_get(double* v, int i) {
     return v[i];
 }
@@ -71,6 +64,13 @@ double get_double_max() {
 }
 
 %}
+
+
+%extend std::vector<double> {
+    double* my_beautiful_pointer() {
+        return $self->data();
+    }
+}
 
 %include "numpy.i"
 
