@@ -191,6 +191,15 @@ const double electron_rest_energy     = electron_mass * pow(light_speed,2);     
 const double electron_rest_energy_eV  = electron_rest_energy / electron_charge;  // [eV] - derived
 const double vacuum_permitticity      = 1/(vacuum_permeability * pow(light_speed,2));   // [V.s/(A.m)]  - derived
 const double electron_radius          = pow(electron_charge,2)/(4*M_PI*vacuum_permitticity*electron_rest_energy); // [m] - derived
+const double id6[6] = {0, 0, 0, 0, 0, 0}; // translation identity
+const double id66[36] = {
+    1, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0,
+    0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 1, 0,
+    0, 0, 0, 0, 0, 1
+}; // rotation identity
 
 template <typename T>
 int sgn(T val) {
