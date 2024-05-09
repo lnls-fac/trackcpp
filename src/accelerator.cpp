@@ -17,6 +17,7 @@
 #include <trackcpp/accelerator.h>
 #include <trackcpp/auxiliary.h>
 #include <cmath>
+#include <algorithm>
  
 
 Accelerator::Accelerator(const double energy) :
@@ -197,4 +198,14 @@ void Accelerator::setMagneticRigidity(const double _brho_) {
     
   }
   
+}
+
+double Accelerator::time_aware_fraction() const {
+  int time_aware_count = 0;
+  for (const Element &el : this->lattice) {
+    if (el.pass_method == PassMethod::pm_cavity_pass){
+      time_aware_count++;
+    }
+  }
+  return 1.0/time_aware_count;
 }

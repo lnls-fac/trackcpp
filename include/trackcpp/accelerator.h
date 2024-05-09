@@ -50,6 +50,8 @@ public:
   void setVelocity(const double);
   void setMagneticRigidity(const double);
 
+  double time_aware_fraction() const;
+
 private:
   // Private members to store calculated values
   double                  _energy;
