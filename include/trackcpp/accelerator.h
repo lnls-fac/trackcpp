@@ -37,20 +37,20 @@ public:
   int                     harmonic_number = 0;
   std::vector<Element>    lattice;
   std::string             lattice_version = "";
-  
+
 
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
-  void setEnergy(double);
+  void setEnergy(const double);
   void setGammaFactor(const double);
   void setBetaFactor(const double);
   void setVelocity(const double);
   void setMagneticRigidity(const double);
 
-  double time_aware_fraction() const;
+  double get_time_aware_fraction() const;
 
 private:
   // Private members to store calculated values

@@ -53,7 +53,7 @@ public:
 Status::type track_elementpass_wrapper (
         const Element& el,
         double *pos, int n1, int n2,
-        const Accelerator& accelerator, bool wallclock);
+        const Accelerator& accelerator, bool wallclock, double time_aware_fraction);
 
 Status::type track_linepass_wrapper (
         const Accelerator& accelerator,
