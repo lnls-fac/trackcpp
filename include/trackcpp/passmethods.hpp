@@ -402,7 +402,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
   double L0 = accelerator.get_length();
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    if (wallclock && accelerator.radiation_on) {
+    if (wallclock) {
       dl -= (velocity*harmonic_number/frf - L0);
     }
     de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
@@ -417,7 +417,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     ry += norml * py;
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
-    if (wallclock && accelerator.radiation_on) {
+    if (wallclock) {
       dl -= (velocity*harmonic_number/frf - L0);
     }
     de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
