@@ -16,30 +16,33 @@
 
 #include "commands.h"
 #include <trackcpp/trackcpp.h>
+#include <trackcpp/output.h>
+#include <iostream>
 
 int main(int argc, char *argv[]) {
     if (argc == 1) {
-        print_header (stdout);
+        print_header();
         return EXIT_SUCCESS;
-    };
+    } else {
 
     std::vector<std::string> args;
     for(int i=0; i<argc; ++i) args.push_back(std::string(argv[i]));
 
     std::string cmd(args[1]);
     if (cmd == "help") return cmd_help(args);
-    if (cmd == "tests") return cmd_tests(args);
-    if (cmd == "dynap_xy") return cmd_dynap_xy(args);
-    if (cmd == "dynap_ex") return cmd_dynap_ex(args);
-    // if (cmd == "dynap_ma") return cmd_dynap_ma(args);
-    // if (cmd == "dynap_pxa") return cmd_dynap_pxa(args);
-    // if (cmd == "dynap_pya") return cmd_dynap_pya(args);
-    if (cmd == "dynap_ma") return cmd_dynap_acceptance(args);
-    if (cmd == "dynap_pxa") return cmd_dynap_acceptance(args);
-    if (cmd == "dynap_pya") return cmd_dynap_acceptance(args);
-    if (cmd == "dynap_xyfmap") return cmd_dynap_xyfmap(args);
-    if (cmd == "dynap_exfmap") return cmd_dynap_exfmap(args);
-    if (cmd == "track_linepass") return cmd_track_linepass(args);
-    std::cerr << "trackcpp: invalid command!" << std::endl;
+    // if (cmd == "tests") return cmd_tests(args);
+    // if (cmd == "dynap_xy") return cmd_dynap_xy(args);
+    // if (cmd == "dynap_ex") return cmd_dynap_ex(args);
+    // // if (cmd == "dynap_ma") return cmd_dynap_ma(args);
+    // // if (cmd == "dynap_pxa") return cmd_dynap_pxa(args);
+    // // if (cmd == "dynap_pya") return cmd_dynap_pya(args);
+    // if (cmd == "dynap_ma") return cmd_dynap_acceptance(args);
+    // if (cmd == "dynap_pxa") return cmd_dynap_acceptance(args);
+    // if (cmd == "dynap_pya") return cmd_dynap_acceptance(args);
+    // if (cmd == "dynap_xyfmap") return cmd_dynap_xyfmap(args);
+    // if (cmd == "dynap_exfmap") return cmd_dynap_exfmap(args);
+    // if (cmd == "track_linepass") return cmd_track_linepass(args);
+    // std::cout << "trackcpp: invalid command!" << std::endl;
     return EXIT_FAILURE;
+    }
 }

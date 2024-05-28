@@ -38,7 +38,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
   std::ifstream fp(filename_);
   if (fp.fail()) {
-    std::cout << "Could not find kicktable file " << filename_ << "!" << std::endl;
+    std::cout << "Could ! find kicktable file " << filename_ << "!" << std::endl;
     return Status::file_not_found;
   }
   this->filename = filename_;
@@ -68,13 +68,13 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   getline(fp, str);   // label 'START'
   for(unsigned int i=0; i<this->x_nrpts; ++i) {
     double posx; fp >> posx;
-    if (std::isnan(x_min) or posx < x_min) x_min = posx;
-    if (std::isnan(x_max) or posx > x_max) x_max = posx;
+    if (std::isnan(x_min) || posx < x_min) x_min = posx;
+    if (std::isnan(x_max) || posx > x_max) x_max = posx;
   }
   for(int j=y_nrpts-1; j>=0; --j) {
     double posy; fp >> posy; yvec.push_back(posy);
-    if (std::isnan(y_min) or posy < y_min) y_min = posy;
-    if (std::isnan(y_max) or posy > y_max) y_max = posy;
+    if (std::isnan(y_min) || posy < y_min) y_min = posy;
+    if (std::isnan(y_max) || posy > y_max) y_max = posy;
     for(unsigned int i=0; i<x_nrpts; ++i)
       fp >> x_kick[this->get_idx(i,j)];
   }
@@ -91,7 +91,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   }
 
   // invert tables, if necessary
-  if (yvec.size() > 1 and yvec[1] > yvec[0]) {
+  if (yvec.size() > 1 && yvec[1] > yvec[0]) {
     for(unsigned int i=0; i<this->x_nrpts; ++i) {
       for(unsigned int j=0; j<this->y_nrpts/2; ++j) {
         std::swap(x_kick[this->get_idx(i,j)], x_kick[this->get_idx(i,this->y_nrpts-j-1)]);
@@ -104,7 +104,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 }
 
 int add_kicktable(const std::string& filename) {
-  
+
   // looks through vector of kicktables...
   for(unsigned int i=0; i<kicktable_list.size(); ++i) {
     if (kicktable_list[i].filename == filename) {

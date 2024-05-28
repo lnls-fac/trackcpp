@@ -56,7 +56,7 @@ std::vector<double> latt_findspos(const std::vector<Element>& lattice, const std
   std::vector<double> r;
   double              len = 0;
   unsigned int        pos = 0;
-  for(unsigned int i=0; (i<(unsigned int)lattice.size()) and (pos<idx.size()); ++i) {
+  for(unsigned int i=0; (i<(unsigned int)lattice.size()) && (pos<idx.size()); ++i) {
     if ((int) i == idx[pos]) {
       r.push_back(len);
       pos++;
@@ -93,7 +93,7 @@ void latt_setcavity(std::vector<Element>& lattice, const std::string& state) {
 std::vector<int> latt_findcells_fam_name(const std::vector<Element>& lattice, const std::string& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (lattice[i].fam_name != value)) or (!reverse and (lattice[i].fam_name == value))) {
+    if ((reverse && (lattice[i].fam_name != value)) || (!reverse && (lattice[i].fam_name == value))) {
       r.push_back(i);
     }
   };
@@ -103,7 +103,7 @@ std::vector<int> latt_findcells_fam_name(const std::vector<Element>& lattice, co
 std::vector<int> latt_findcells_frequency(const std::vector<Element>& lattice, const double& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (lattice[i].frequency != value)) or (!reverse and (lattice[i].frequency == value))) {
+    if ((reverse && (lattice[i].frequency != value)) || (!reverse && (lattice[i].frequency == value))) {
       r.push_back(i);
     }
   };
@@ -113,7 +113,7 @@ std::vector<int> latt_findcells_frequency(const std::vector<Element>& lattice, c
 std::vector<int> latt_findcells_angle(const std::vector<Element>& lattice, const double& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (lattice[i].angle != value)) or (!reverse and (lattice[i].angle == value))) {
+    if ((reverse && (lattice[i].angle != value)) || (!reverse && (lattice[i].angle == value))) {
       r.push_back(i);
     }
   };
@@ -123,7 +123,7 @@ std::vector<int> latt_findcells_angle(const std::vector<Element>& lattice, const
 std::vector<int> latt_findcells_polynom_b(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (lattice[i].polynom_b[n] != value)) or (!reverse and (lattice[i].polynom_b[n] == value))) {
+    if ((reverse && (lattice[i].polynom_b[n] != value)) || (!reverse && (lattice[i].polynom_b[n] == value))) {
       r.push_back(i);
     }
   };
@@ -133,7 +133,7 @@ std::vector<int> latt_findcells_polynom_b(const std::vector<Element>& lattice, u
 std::vector<int> latt_findcells_polynom_a(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (lattice[i].polynom_a[n] != value)) or (!reverse and (lattice[i].polynom_a[n] == value))) {
+    if ((reverse && (lattice[i].polynom_a[n] != value)) || (!reverse && (lattice[i].polynom_a[n] == value))) {
       r.push_back(i);
     }
   };
@@ -143,7 +143,7 @@ std::vector<int> latt_findcells_polynom_a(const std::vector<Element>& lattice, u
 std::vector<int> latt_findcells_pass_method(const std::vector<Element>& lattice, const std::string& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (pm_dict[lattice[i].pass_method] != value)) or (!reverse and (pm_dict[lattice[i].pass_method] == value))) {
+    if ((reverse && (pm_dict[lattice[i].pass_method] != value)) || (!reverse && (pm_dict[lattice[i].pass_method] == value))) {
       r.push_back(i);
     }
   };

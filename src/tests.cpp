@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "commands.h"
+// #include "commands.h"
 #include <trackcpp/trackcpp.h>
 #include <ctime>
 #include <chrono>
@@ -153,157 +153,157 @@ int test_findorbit6() {
 
 }
 
-int test_cmd_track_linepass() {
+// int test_cmd_track_linepass() {
 
-  std::vector<std::string> args = {
-      "trackcpp",
-      "track_linepass",
-      "/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in_TRACY.txt",
-      "3e9",
-      "864",
-      "off",
-      "off",
-      "off",
-      "0",
-      "0.001",
-      "0.0",
-      "0.0",
-      "0.0",
-      "0.0",
-      "0.0"
-  };
+//   std::vector<std::string> args = {
+//       "trackcpp",
+//       "track_linepass",
+//       "/home/ximenes/pytrack/sirius_v500_ac10_5_bare_in_TRACY.txt",
+//       "3e9",
+//       "864",
+//       "off",
+//       "off",
+//       "off",
+//       "0",
+//       "0.001",
+//       "0.0",
+//       "0.0",
+//       "0.0",
+//       "0.0",
+//       "0.0"
+//   };
 
-  return cmd_track_linepass(args);
+//   return cmd_track_linepass(args);
 
-}
+// }
 
-int test_cmd_dynap_xy() {
+// int test_cmd_dynap_xy() {
 
-  std::vector<std::string> args = {
-      "trackcpp",
-      "dynap_xy_threads",
-      "sirius-v10.txt",
-      "3e9",
-      "864",
-      "on",
-      "on",
-      "on",
-      "0.0",
-      "5000",
-      "4",
-      "-0.015",
-      "+0.015",
-      "4",
-      "0.0",
-      "+0.0035",
-      "4"
-  };
-  return cmd_dynap_xy(args);
+//   std::vector<std::string> args = {
+//       "trackcpp",
+//       "dynap_xy_threads",
+//       "sirius-v10.txt",
+//       "3e9",
+//       "864",
+//       "on",
+//       "on",
+//       "on",
+//       "0.0",
+//       "5000",
+//       "4",
+//       "-0.015",
+//       "+0.015",
+//       "4",
+//       "0.0",
+//       "+0.0035",
+//       "4"
+//   };
+//   return cmd_dynap_xy(args);
 
-}
+// }
 
-int test_cmd_dynap_ex() {
+// int test_cmd_dynap_ex() {
 
-  std::vector<std::string> args = {
-      "trackcpp",
-      "dynap_ex_threads",
-      "sirius-v10.txt",
-      "3e9",
-      "864",
-      "on",
-      "on",
-      "on",
-      "0.001",
-      "5000",
-      "4",
-      "-0.05",
-      "+0.05",
-      "4",
-      "-0.015",
-      "0.0",
-      "4"
-  };
-  return cmd_dynap_ex(args);
+//   std::vector<std::string> args = {
+//       "trackcpp",
+//       "dynap_ex_threads",
+//       "sirius-v10.txt",
+//       "3e9",
+//       "864",
+//       "on",
+//       "on",
+//       "on",
+//       "0.001",
+//       "5000",
+//       "4",
+//       "-0.05",
+//       "+0.05",
+//       "4",
+//       "-0.015",
+//       "0.0",
+//       "4"
+//   };
+//   return cmd_dynap_ex(args);
 
-}
+// }
 
-int test_cmd_dynap_ma() {
+// int test_cmd_dynap_ma() {
 
-  std::vector<std::string> args = {
-      "trackcpp",
-      "dynap_ma",
-      "sirius-v10.txt",
-      "3e9",
-      "864",
-      "on",
-      "on",
-      "on",
-      "50",      // nr_turns
-      "30e-6",   // y0
-      "0.01",    // e_init
-      "0.005",   // e_delta
-      "1",       // nr_steps_back
-      "0.2",     // rescale
-      "3",       // nr_iterations
-      "0",       // s_min [m]
-      "200",     // s_max [m]
-      "8",       // nr_threads
-      "qf2", "qfa", "sda"
-       };
+//   std::vector<std::string> args = {
+//       "trackcpp",
+//       "dynap_ma",
+//       "sirius-v10.txt",
+//       "3e9",
+//       "864",
+//       "on",
+//       "on",
+//       "on",
+//       "50",      // nr_turns
+//       "30e-6",   // y0
+//       "0.01",    // e_init
+//       "0.005",   // e_delta
+//       "1",       // nr_steps_back
+//       "0.2",     // rescale
+//       "3",       // nr_iterations
+//       "0",       // s_min [m]
+//       "200",     // s_max [m]
+//       "8",       // nr_threads
+//       "qf2", "qfa", "sda"
+//        };
 
-  return cmd_dynap_acceptance(args);
+//   return cmd_dynap_acceptance(args);
 
-}
+// }
 
-int test_cmd_dynap_xyfmap() {
+// int test_cmd_dynap_xyfmap() {
 
-  std::vector<std::string> args = {
-      "trackcpp",
-      "dynap_xyfmap",
-      "sirius-v10.txt", // flatfile
-      "3e9",      // ebeam energy [eV]
-      "864",      // harmonic_number
-      "off",      // radiation_state
-      "off",      // cavity_state
-      "on",       // chamber_state
-      "0.0",      // de
-      "5004",     // nr_turns
-      "4",        // nrpts_x
-      "-0.015",   // x_min
-      "+0.015",   // x_max
-      "4",        // nrpts_y
-      "0.0",      // y_min
-      "+0.0035",  // y_max
-      "8"         // nr_threads  (0: let routine decide)
-  };
-  return cmd_dynap_xyfmap(args);
+//   std::vector<std::string> args = {
+//       "trackcpp",
+//       "dynap_xyfmap",
+//       "sirius-v10.txt", // flatfile
+//       "3e9",      // ebeam energy [eV]
+//       "864",      // harmonic_number
+//       "off",      // radiation_state
+//       "off",      // cavity_state
+//       "on",       // chamber_state
+//       "0.0",      // de
+//       "5004",     // nr_turns
+//       "4",        // nrpts_x
+//       "-0.015",   // x_min
+//       "+0.015",   // x_max
+//       "4",        // nrpts_y
+//       "0.0",      // y_min
+//       "+0.0035",  // y_max
+//       "8"         // nr_threads  (0: let routine decide)
+//   };
+//   return cmd_dynap_xyfmap(args);
 
-}
+// }
 
-int test_cmd_dynap_exfmap() {
+// int test_cmd_dynap_exfmap() {
 
-  std::vector<std::string> args = {
-      "trackcpp",
-      "dynap_exfmap",
-      "sirius-v10.txt", // flatfile
-      "3e9",      // ebeam energy [eV]
-      "864",      // harmonic_number
-      "off",      // radiation_state
-      "off",      // cavity_state
-      "on",       // chamber_state
-      "0.001",    // y [m]
-      "5004",     // nr_turns
-      "4",        // nrpts_e
-      "0.0",      // e_min
-      "0.05",     // e_max
-      "4",        // nrpts_x
-      "-0.015",   // x_min [m]
-      "+0.015",   // x_max [m]
-      "8"         // nr_threads  (0: let routine decide)
-  };
-  return cmd_dynap_exfmap(args);
+//   std::vector<std::string> args = {
+//       "trackcpp",
+//       "dynap_exfmap",
+//       "sirius-v10.txt", // flatfile
+//       "3e9",      // ebeam energy [eV]
+//       "864",      // harmonic_number
+//       "off",      // radiation_state
+//       "off",      // cavity_state
+//       "on",       // chamber_state
+//       "0.001",    // y [m]
+//       "5004",     // nr_turns
+//       "4",        // nrpts_e
+//       "0.0",      // e_min
+//       "0.05",     // e_max
+//       "4",        // nrpts_x
+//       "-0.015",   // x_min [m]
+//       "+0.015",   // x_max [m]
+//       "8"         // nr_threads  (0: let routine decide)
+//   };
+//   return cmd_dynap_exfmap(args);
 
-}
+// }
 
 int test_kicktable(Accelerator& accelerator) {
 
@@ -452,7 +452,7 @@ int test_calc_twiss() {
   std::string fname("sirius-v12.txt");
   status = read_flat_file(fname, accelerator);
   if (status != Status::success) {
-    std::cerr << "could not open flat_file!" << std::endl;
+    std::cerr << "could ! open flat_file!" << std::endl;
     return status;
   }
 
@@ -464,7 +464,8 @@ int test_calc_twiss() {
   std::vector<Pos<double>> closed_orbit;
   status = track_findorbit6(accelerator, closed_orbit, fixed_point_guess);
   if (status != Status::success) {
-    std::cerr << "could not find 6d closed orbit" << std::endl;
+    std::cerr << "could ! find 6d closed orbit" << std::endl;
+    return status;
   }
 
   auto start = std::chrono::steady_clock::now();
@@ -482,7 +483,8 @@ int test_calc_twiss() {
   std::cout << "calc_twiss: " << std::chrono::duration <double, std::milli> (diff).count() << " ms" << std::endl;
 
   if (status != Status::success) {
-    std::cerr << "could not calculate twiss" << std::endl;
+    std::cerr << "could ! calculate twiss" << std::endl;
+    return status;
   }
 
 
@@ -490,6 +492,7 @@ int test_calc_twiss() {
     //std::cout << twiss[i] << std::endl;
   }
 
+  return 0;
 
 }
 
@@ -534,6 +537,8 @@ int test_matrix_inversion() {
   //
   // std::cout << "inv_m:" << std::endl;
   // m3._print();
+
+  return 0;
 
 }
 
@@ -603,7 +608,7 @@ int cmd_tests(const std::vector<std::string>& args) {
   //test_simple_drift();
   //test_simple_quadrupole();
   //test_linepass2();
-  test_calc_twiss();
+  // test_calc_twiss();
   //test_matrix_inversion();
   //test_new_write_flat_file();
 

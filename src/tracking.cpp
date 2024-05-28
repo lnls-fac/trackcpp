@@ -47,7 +47,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   const std::vector<Element>& lattice = accelerator.lattice;
 
   Pos<double> fp = fixed_point;
-  
+
   const int radsts = accelerator.radiation_on;
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;
@@ -107,9 +107,9 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
-  
+
   accelerator.radiation_on = radsts;
-  
+
   return status;
 
 }
@@ -165,7 +165,7 @@ Status::type track_findorbit6(
   matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;
-  while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
+  while ((get_max(dco) > tolerance) && (nr_iter <= max_nr_iters)) {
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
@@ -246,7 +246,7 @@ Status::type track_findorbit4(
   matrix6_set_identity_posvec(D, delta);
 
   int nr_iter = 0;
-  while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
+  while ((get_max(dco) > tolerance) && (nr_iter <= max_nr_iters)) {
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;

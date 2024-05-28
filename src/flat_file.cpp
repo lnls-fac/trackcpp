@@ -204,14 +204,14 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("hmin")        == 0) { ss >> e.hmin; found_hmin = true; continue; }
     if (cmd.compare("hmax")        == 0) {
       ss >> e.hmax;
-      if (not found_hmin){ e.hmin = -e.hmax;}
+      if (!found_hmin){ e.hmin = -e.hmax;}
       found_hmin = false;
       continue;
       }
     if (cmd.compare("vmin")        == 0) { ss >> e.vmin; found_vmin = true; continue; }
     if (cmd.compare("vmax")        == 0) {
       ss >> e.vmax;
-      if (not found_vmin){ e.vmin = -e.vmax;}
+      if (!found_vmin){ e.vmin = -e.vmax;}
       found_vmin = false;
       continue;
       }
@@ -275,7 +275,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       std::vector<unsigned int> order;
       std::vector<double> multipole;
       unsigned int size = 0;
-      while (not ss.eof()) {
+      while (!ss.eof()) {
         unsigned int o; double m; ss >> o >> m;
         if (ss.eof()) break;
         order.push_back(o); multipole.push_back(m);
@@ -292,7 +292,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       std::vector<unsigned int> order;
       std::vector<double> multipole;
       unsigned int size = 0;
-      while (not ss.eof()) {
+      while (!ss.eof()) {
         unsigned int o; double m; ss >> o >> m;
         if (ss.eof()) break;
         order.push_back(o); multipole.push_back(m);
@@ -324,7 +324,7 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
 
   int Fnum, Knum, idx, type, method;
   accelerator.lattice.clear();
-  while (not fp.eof()) {
+  while (!fp.eof()) {
 
     Element e;
 

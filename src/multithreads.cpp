@@ -17,23 +17,24 @@
 #include <trackcpp/trackcpp.h>
 
 static int current_thread_id = 0;
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static HANDLE mutex;
 
-void* start_thread(void* args) {
+DWORD WINAPI start_thread(void* args) {
 
   // gets thread_id from global variable
-  pthread_mutex_lock(&mutex);
-  int this_thread_id = current_thread_id++;
-  pthread_mutex_unlock(&mutex);
+  int this_thread_id;
+  WaitForSingleObject(mutex, INFINITE);
+  this_thread_id = current_thread_id++;
+  ReleaseMutex(mutex);
 
   // gets pointer to shared input data
   ThreadSharedData* data = (ThreadSharedData*) args;
 
   while (true) {
 
-    pthread_mutex_lock(&mutex);
+    WaitForSingleObject(mutex, INFINITE);
     long this_task_id = data->task_id++;
-    pthread_mutex_unlock(&mutex);
+    ReleaseMutex(mutex);
 
     // breaks if there is no more task to be done.
     if (this_task_id >= data->nr_tasks) break;
@@ -43,25 +44,26 @@ void* start_thread(void* args) {
 
   }
 
-  return NULL;
+  return 0;
 }
 
 void start_all_threads(ThreadSharedData& thread_data, unsigned int nr_threads) {
+  // Inicializamos o mutex
+  mutex = CreateMutex(NULL, FALSE, NULL);
 
+  // Inicializamos a ID da tarefa
   thread_data.task_id = 0;
-  thread_data.mutex = &mutex;
 
-  pthread_t threads[nr_threads];
-  int thread_id[nr_threads];
-
-  for(int i=0; i<nr_threads-1; i++) {
-    thread_id[i] = i;
-    int iret = pthread_create(&(threads[i]), NULL, start_thread, (void*) &thread_data);
+  // Criamos as threads
+  HANDLE* threads = new HANDLE[nr_threads];
+  for (unsigned int i = 0; i < nr_threads; ++i) {
+      threads[i] = CreateThread(NULL, 0, start_thread, &thread_data, 0, NULL);
   }
 
-  thread_id[nr_threads-1] = current_thread_id;
-  start_thread((void*) &thread_data);
+  // Esperamos pelo término das threads
+  WaitForMultipleObjects(nr_threads, threads, TRUE, INFINITE);
 
-  for(int i=0; i<nr_threads-1; ++i) pthread_join(threads[i], NULL);
-
+  // Liberamos os recursos
+  CloseHandle(mutex);
+  delete[] threads;
 }
