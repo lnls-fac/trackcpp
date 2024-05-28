@@ -23,9 +23,10 @@
 #include <trackcpp/elements.h>
 #include <trackcpp/auxiliary.h>
 #include <trackcpp/tracking.h>
-#include <trackcpp/diffusion_matrix.h>
+#include <trackcpp/optics.h>
+// #include <trackcpp/diffusion_matrix.h>
 #include <trackcpp/pos.h>
-#include <trackcpp/naff.h>
+// #include <trackcpp/naff.h>
 
 struct LinePassArgs {
     unsigned int element_offset;
@@ -102,18 +103,18 @@ Status::type track_findm66_wrapper(
     Pos<double>& v0, std::vector<unsigned int >& indices);
 
 
-Status::type track_diffusionmatrix_wrapper(
-    const Accelerator& accelerator,
-    const Pos<double>& fixed_point,
-    double *elem_tm, int n1_tm, int n2_tm, int n3_tm,
-    double *bdiffmats, int n1_bd, int n2_bd, int n3_bd);
+// Status::type track_diffusionmatrix_wrapper(
+//     const Accelerator& accelerator,
+//     const Pos<double>& fixed_point,
+//     double *elem_tm, int n1_tm, int n2_tm, int n3_tm,
+//     double *bdiffmats, int n1_bd, int n2_bd, int n3_bd);
 
-void naff_general_wrapper(
-    double *re_in, int n1_re_in, int n2_re_in,
-    double *im_in, int n1_im_in, int n2_im_in,
-    bool is_real, int nr_ff, int win,
-    double *ff_out, int n1_ff_out, int n2_ff_out,
-    double *re_out, int n1_re_out, int n2_re_out,
-    double *im_out, int n1_im_out, int n2_im_out);
+// void naff_general_wrapper(
+//     double *re_in, int n1_re_in, int n2_re_in,
+//     double *im_in, int n1_im_in, int n2_im_in,
+//     bool is_real, int nr_ff, int win,
+//     double *ff_out, int n1_ff_out, int n2_ff_out,
+//     double *re_out, int n1_re_out, int n2_re_out,
+//     double *im_out, int n1_im_out, int n2_im_out);
 
 #endif // INTERFACE_H

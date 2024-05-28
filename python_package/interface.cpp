@@ -241,70 +241,70 @@ Status::type track_findm66_wrapper(
 }
 
 
-Status::type track_diffusionmatrix_wrapper(
-    const Accelerator& accelerator,
-    const Pos<double>& fixed_point,
-    double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
-    double *bdiffmats, int n1_bd, int n2_bd, int n3_bd){
+// Status::type track_diffusionmatrix_wrapper(
+//     const Accelerator& accelerator,
+//     const Pos<double>& fixed_point,
+//     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
+//     double *bdiffmats, int n1_bd, int n2_bd, int n3_bd){
 
-    std::vector<Matrix> vec_tm;
-    std::vector<Matrix> vec_bd;
+//     std::vector<Matrix> vec_tm;
+//     std::vector<Matrix> vec_bd;
 
-    for (unsigned int i=0; i<n1_tm; ++i){
-        Matrix m (6);
-        for (unsigned int j=0; j<n2_tm; ++j)
-            for (unsigned int k=0; k<n3_tm; ++k)
-                m[j][k] = cumul_tm[(i*n2_tm + j)*n3_tm + k];
-        vec_tm.emplace_back(m);
-    }
+//     for (unsigned int i=0; i<n1_tm; ++i){
+//         Matrix m (6);
+//         for (unsigned int j=0; j<n2_tm; ++j)
+//             for (unsigned int k=0; k<n3_tm; ++k)
+//                 m[j][k] = cumul_tm[(i*n2_tm + j)*n3_tm + k];
+//         vec_tm.emplace_back(m);
+//     }
 
-    Status::type status = track_diffusionmatrix(
-                accelerator, fixed_point, vec_tm, vec_bd);
+//     Status::type status = track_diffusionmatrix(
+//                 accelerator, fixed_point, vec_tm, vec_bd);
 
-    for (unsigned int i=0; i<n1_bd; ++i){
-        const Matrix& m = vec_bd[i];
-        for (unsigned int j=0; j<n2_bd; ++j)
-            for (unsigned int k=0; k<n3_bd; ++k)
-                bdiffmats[(i*n2_bd + j)*n3_bd + k] = m[j][k];
-    }
-    return status;
-}
+//     for (unsigned int i=0; i<n1_bd; ++i){
+//         const Matrix& m = vec_bd[i];
+//         for (unsigned int j=0; j<n2_bd; ++j)
+//             for (unsigned int k=0; k<n3_bd; ++k)
+//                 bdiffmats[(i*n2_bd + j)*n3_bd + k] = m[j][k];
+//     }
+//     return status;
+// }
 
 
-void naff_general_wrapper(
-    double *re_in, int n1_re_in, int n2_re_in,
-    double *im_in, int n1_im_in, int n2_im_in,
-    bool is_real, int nr_ff, int win,
-    double *ff_out, int n1_ff_out, int n2_ff_out,
-    double *re_out, int n1_re_out, int n2_re_out,
-    double *im_out, int n1_im_out, int n2_im_out){
+// void naff_general_wrapper(
+//     double *re_in, int n1_re_in, int n2_re_in,
+//     double *im_in, int n1_im_in, int n2_im_in,
+//     bool is_real, int nr_ff, int win,
+//     double *ff_out, int n1_ff_out, int n2_ff_out,
+//     double *re_out, int n1_re_out, int n2_re_out,
+//     double *im_out, int n1_im_out, int n2_im_out){
 
-    std::vector<double> vec_re_in;
-    std::vector<double> vec_im_in;
-    std::vector<double> vec_ff_out;
-    std::vector<double> vec_re_out;
-    std::vector<double> vec_im_out;
+//     std::vector<double> vec_re_in;
+//     std::vector<double> vec_im_in;
+//     std::vector<double> vec_ff_out;
+//     std::vector<double> vec_re_out;
+//     std::vector<double> vec_im_out;
 
-    vec_re_in.resize(n2_re_in);
-    vec_im_in.resize(n2_re_in);
-    vec_ff_out.resize(n2_ff_out, 0.0);
-    vec_re_out.resize(n2_ff_out, 0.0);
-    vec_im_out.resize(n2_ff_out, 0.0);
-    for (unsigned int i=0; i<n1_re_in; ++i){
-        for (unsigned int j=0; j<n2_re_in; ++j){
-            vec_re_in[j] = re_in[i*n2_re_in + j];
-            vec_im_in[j] = im_in[i*n2_re_in + j];
-        }
+//     vec_re_in.resize(n2_re_in);
+//     vec_im_in.resize(n2_re_in);
+//     vec_ff_out.resize(n2_ff_out, 0.0);
+//     vec_re_out.resize(n2_ff_out, 0.0);
+//     vec_im_out.resize(n2_ff_out, 0.0);
+//     for (unsigned int i=0; i<n1_re_in; ++i){
+//         for (unsigned int j=0; j<n2_re_in; ++j){
+//             vec_re_in[j] = re_in[i*n2_re_in + j];
+//             vec_im_in[j] = im_in[i*n2_re_in + j];
+//         }
 
-        naff_general(
-            vec_re_in, vec_im_in,
-            is_real, nr_ff, win,
-            vec_ff_out, vec_re_out, vec_im_out);
+//         naff_general(
+//             vec_re_in, vec_im_in,
+//             is_real, nr_ff, win,
+//             vec_ff_out, vec_re_out, vec_im_out);
 
-        for (unsigned int j=0; j<n2_ff_out; ++j){
-            ff_out[i*n2_ff_out + j] = vec_ff_out[j];
-            re_out[i*n2_ff_out + j] = vec_re_out[j];
-            im_out[i*n2_ff_out + j] = vec_im_out[j];
-        }
-    }
-}
+//         for (unsigned int j=0; j<n2_ff_out; ++j){
+//             ff_out[i*n2_ff_out + j] = vec_ff_out[j];
+//             re_out[i*n2_ff_out + j] = vec_re_out[j];
+//             im_out[i*n2_ff_out + j] = vec_im_out[j];
+//         }
+//     }
+// }

@@ -165,7 +165,7 @@ bool Element::operator==(const Element& o) const {
 
     // the optimization bellow breaks true object comparison but
     // keeps physical comparison between elements.
-    if ((this->pass_method == PassMethod::pm_drift_pass) or
+    if ((this->pass_method == PassMethod::pm_drift_pass) ||
        (this->pass_method == PassMethod::pm_identity_pass)) return true;
 
     if (this->hkick != o.hkick) return false;
@@ -215,7 +215,7 @@ std::ostream& operator<< (std::ostream &out, const Element& el) {
   if (el.angle != 0)    out << std::endl << "bending_angle : " << el.angle;
   if (el.angle != 0)    out << std::endl << "entrance_angle: " << el.angle_in;
   if (el.angle != 0)    out << std::endl << "exit_angle    : " << el.angle_out;
-  if ((el.gap != 0) and ((el.fint_in != 0) or (el.fint_out != 0))) {
+  if ((el.gap != 0) && ((el.fint_in != 0) || (el.fint_out != 0))) {
                         out << std::endl << "gap           : " << el.gap;
                         out << std::endl << "fint_in       : " << el.fint_in;
                         out << std::endl << "fint_out      : " << el.fint_out;

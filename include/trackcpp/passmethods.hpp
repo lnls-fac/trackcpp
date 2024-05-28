@@ -103,10 +103,10 @@ Status::type kicktablethinkick(Pos<T>& pos, const int& kicktable_idx,
   pos.px += rescale_kicks * hkick / (brho * brho) / nr_steps;
   pos.py += rescale_kicks * vkick / (brho * brho) / nr_steps;
   if (status == Status::kicktable_out_of_range) {
-    if (not isfinite(pos.px)) {
+    if (!isfinite(pos.px)) {
       pos.rx = nan("");
     }
-    if (not isfinite(pos.py)) {
+    if (!isfinite(pos.py)) {
       pos.ry = nan("");
     }
   }
@@ -390,7 +390,7 @@ template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
                             const Accelerator& accelerator) {
 
-  if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
+  if (! accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
 
   global_2_local(pos, elem);
   double nv = elem.voltage / accelerator.energy;
@@ -439,7 +439,7 @@ template <typename T>
 Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
                              const Accelerator& accelerator) {
 
-  if (elem.kicktable_idx < 0 or elem.kicktable_idx >= kicktable_list.size()) return Status::kicktable_not_defined;
+  if (elem.kicktable_idx < 0 || elem.kicktable_idx >= kicktable_list.size()) return Status::kicktable_not_defined;
 
   Status::type status = Status::success;
 

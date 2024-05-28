@@ -18,6 +18,6 @@ setup(
         'Topic :: Scientific/Engineering'
     ],
     packages=['trackcpp'],
-    package_data={'trackcpp': ['_trackcpp.so', 'VERSION']},
+    package_data={'trackcpp': ['_trackcpp.pyd', 'VERSION']},
     zip_safe=False
 )

@@ -137,7 +137,7 @@ template <typename T>
 Status::type track_linepass (
         const Accelerator& accelerator,
         Pos<T>& orig_pos,              // initial electron coordinates
-        std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
+        std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element && at the end of last one.
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
         std::vector<unsigned int >& indices) {// indices to return;
@@ -171,11 +171,11 @@ Status::type track_linepass (
         const T& ry = orig_pos.ry;
 
         // checks if particle is lost
-        if (not isfinite(rx)) {
+        if (!isfinite(rx)) {
             lost_plane = Plane::x;
             status = Status::particle_lost;
         }
-        if (not isfinite(ry)) {
+        if (!isfinite(ry)) {
             if (status != Status::particle_lost) {
                 lost_plane = Plane::y;
                 status = Status::particle_lost;
@@ -183,7 +183,7 @@ Status::type track_linepass (
                 lost_plane = Plane::xy;
             }
         }
-        if ((status != Status::particle_lost) and accelerator.vchamber_on) {
+        if ((status != Status::particle_lost) && accelerator.vchamber_on) {
             if (element.vchamber < 0) {
                 // invalid p-norm shape (negative p)
                 // safely signals lost particle
@@ -191,11 +191,11 @@ Status::type track_linepass (
                 status = Status::particle_lost;
             } else if (element.vchamber == VChamberShape::rectangle) {
                 // rectangular vacuum chamber
-                if (((rx <= element.hmin) or (rx >= element.hmax))) {
+                if (((rx <= element.hmin) || (rx >= element.hmax))) {
                     lost_plane = Plane::x;
                     status = Status::particle_lost;
                 }
-                if (((ry <= element.vmin) or (ry >= element.vmax))) {
+                if (((ry <= element.vmin) || (ry >= element.vmax))) {
                     if (status != Status::particle_lost) {
                         lost_plane = Plane::y;
                         status = Status::particle_lost;

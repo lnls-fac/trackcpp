@@ -66,7 +66,7 @@ Status::type kicktable_getkicks_bilinear(const int& kicktable_idx, const T& rx, 
   // checks x limits
   const double& xmin = kicktable->x_min;
   const double& xmax = kicktable->x_max;
-  if ((rx < xmin) or (rx > xmax)) {
+  if ((rx < xmin) || (rx > xmax)) {
     //std::cout << "rx: " << double(rx) << std::endl;
     hkick = nan("");
     return Status::kicktable_out_of_range;
@@ -75,7 +75,7 @@ Status::type kicktable_getkicks_bilinear(const int& kicktable_idx, const T& rx, 
   // checks y limits
   const double& ymin = kicktable->y_min;
   const double& ymax = kicktable->y_max;
-  if ((ry < ymin) or (ry > ymax)) {
+  if ((ry < ymin) || (ry > ymax)) {
     //std::cout << "ry: " << double(ry) << std::endl;
     vkick = nan("");
     return Status::kicktable_out_of_range;

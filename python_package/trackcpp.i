@@ -26,8 +26,8 @@
 #include <trackcpp/tracking.h>
 #include <trackcpp/flat_file.h>
 #include <trackcpp/optics.h>
-#include <trackcpp/diffusion_matrix.h>
-#include <trackcpp/naff.h>
+// #include <trackcpp/diffusion_matrix.h>
+// #include <trackcpp/naff.h>
 #include <trackcpp/linalg.h>
 #include "interface.h"
 %}
@@ -113,8 +113,8 @@ double get_double_max() {
 %include "../include/trackcpp/pos.h"
 %include "../include/trackcpp/tracking.h"
 %include "../include/trackcpp/optics.h"
-%include "../include/trackcpp/diffusion_matrix.h"
-%include "../include/trackcpp/naff.h"
+// %include "../include/trackcpp/diffusion_matrix.h"
+// %include "../include/trackcpp/naff.h"
 %include "../include/trackcpp/linalg.h"
 %include "interface.h"
 

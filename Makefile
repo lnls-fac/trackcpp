@@ -29,7 +29,7 @@
 #### READS LIB VERSION ####
 
 FILE=VERSION
-VERSION=$(shell cat ${FILE})
+VERSION=$(shell type ${FILE})
 
 #### COMPILATION OPTIONS ####
 CC          = gcc
@@ -63,49 +63,46 @@ BINSOURCES_CPP =	exec.cpp \
 
 AUXFILES  = VERSION
 
-LIBS = $(shell gsl-config --libs)
-LIBS += -lpthread
-INC = -I./include
-INC += $(shell gsl-config --cflags)
+LIBS = -L"C:\Users\vitin\miniforge3\envs\sirius\Library\lib"
+LIBS += -lpthread -lgsl -lgslcblas -lm
+INC = -I.\include
+INC += -I"C:\Users\vitin\miniforge3\envs\sirius\Library\include"
 
-ifeq ($(CONDA_PREFIX),)
-    PREFIX = /usr/local
-else
-    PREFIX = $(CONDA_PREFIX)
-endif
-BINDEST_DIR = $(PREFIX)/bin
-LIBDEST_DIR = $(PREFIX)/lib
-INCDEST_DIR = $(PREFIX)/include
+PREFIX = "C:\Users\vitin\miniforge3\envs\sirius"
 
-OBJDIR = build
-SRCDIR = src
-INCDIR = include
+BINDEST_DIR = $(PREFIX)\Library\bin
+LIBDEST_DIR = $(PREFIX)\Library\lib
+INCDEST_DIR = $(PREFIX)\Library\include
+OBJDIR = .\build
+SRCDIR = .\src
+INCDIR = .\include
 
 PYTHON_PACKAGE_DIR = python_package
 
-$(shell touch $(SRCDIR)/output.cpp) # this is so that last compilation time always goes into executable
+#### I STILL DONT GOT THIS
+# $(shell type nul > $(SRCDIR)\output.cpp) # this is so that last compilation time always goes into executable
 
-WARNINGS_CFLAGS += -Wall
-WARNINGS_CFLAGS += -Wextra # reasonable and standard
-WARNINGS_CFLAGS += -Wshadow # warn the user if a variable declaration shadows one from a parent context
-WARNINGS_CFLAGS += -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor.
-									 # This helps catch hard to track down memory errors
-# WARNINGS_CFLAGS += -Wdouble-promotion # warn if float is implicit promoted to double
-# WARNINGS_CFLAGS += -Wformat=2 # warn on security issues around functions that format output (ie printf)
-# WARNINGS_CFLAGS += -Wold-style-cast # warn for c-style casts
-# WARNINGS_CFLAGS += -Wsign-conversion # warn on sign conversions
-WARNINGS_CFLAGS += -Wcast-align # warn for potential performance problem casts
-WARNINGS_CFLAGS += -Wconversion # warn on type conversions that may lose data
-# WARNINGS_CFLAGS += -Wduplicated-branches # warn if if / else branches have duplicated code // not available in g++ 6.3.0
-WARNINGS_CFLAGS += -Wduplicated-cond # warn if if / else chain has duplicated conditions
-# WARNINGS_CFLAGS += -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation  // not available in g++ 6.3.0
-WARNINGS_CFLAGS += -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
-WARNINGS_CFLAGS += -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
-WARNINGS_CFLAGS += -Wnull-dereference # warn if a null dereference is detected
-WARNINGS_CFLAGS += -Woverloaded-virtual # warn if you overload (not override) a virtual function
-WARNINGS_CFLAGS += -Wpedantic # warn if non-standard C++ is used
-WARNINGS_CFLAGS += -Wunused # warn on anything being unused
-WARNINGS_CFLAGS += -Wuseless-cast # warn if you perform a cast to the same type
+# WARNINGS_CFLAGS += -Wall
+# WARNINGS_CFLAGS += -Wextra # reasonable and standard
+# WARNINGS_CFLAGS += -Wshadow # warn the user if a variable declaration shadows one from a parent context
+# WARNINGS_CFLAGS += -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor.
+# #                                     # This helps catch hard to track down memory errors
+# # WARNINGS_CFLAGS += -Wdouble-promotion # warn if float is implicit promoted to double
+# # WARNINGS_CFLAGS += -Wformat=2 # warn on security issues around functions that format output (ie printf)
+# # WARNINGS_CFLAGS += -Wold-style-cast # warn for c-style casts
+# # WARNINGS_CFLAGS += -Wsign-conversion # warn on sign conversions
+# WARNINGS_CFLAGS += -Wcast-align # warn for potential performance problem casts
+# WARNINGS_CFLAGS += -Wconversion # warn on type conversions that may lose data
+# # WARNINGS_CFLAGS += -Wduplicated-branches # warn if if \ else branches have duplicated code \\ not available in g++ 6.3.0
+# WARNINGS_CFLAGS += -Wduplicated-cond # warn if if \ else chain has duplicated conditions
+# # WARNINGS_CFLAGS += -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation  \\ not available in g++ 6.3.0
+# WARNINGS_CFLAGS += -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
+# WARNINGS_CFLAGS += -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
+# WARNINGS_CFLAGS += -Wnull-dereference # warn if a null dereference is detected
+# WARNINGS_CFLAGS += -Woverloaded-virtual # warn if you overload (not override) a virtual function
+# WARNINGS_CFLAGS += -Wpedantic # warn if non-standard C++ is used
+# WARNINGS_CFLAGS += -Wunused # warn on anything being unused
+# WARNINGS_CFLAGS += -Wuseless-cast # warn if you perform a cast to the same type
 
 ifeq ($(MAKECMDGOALS),trackcpp-debug)
   CFLAGS    = $(MACHINE) $(DBG_FLAG) $(DFLAGS) -pthread
@@ -113,19 +110,11 @@ else
   CFLAGS    = $(MACHINE) $(OPT_FLAG) $(DFLAGS) -pthread
 endif
 CFLAGS += $(WARNINGS_CFLAGS)
+CFLAGS += -D_USE_MATH_DEFINES
 
-LIBOBJECTS  = $(addprefix $(OBJDIR)/, $(LIBSOURCES_CPP:.cpp=.o))
-BINOBJECTS  = $(addprefix $(OBJDIR)/, $(BINSOURCES_CPP:.cpp=.o))
+LIBOBJECTS = $(addprefix $(OBJDIR)\, $(LIBSOURCES_CPP:.cpp=.o))
+BINOBJECTS = $(addprefix $(OBJDIR)\, $(BINSOURCES_CPP:.cpp=.o))
 LDFLAGS    = $(MACHINE)
-
-#### DERIVED CONDITIONALS AND VARIABLES ####
-ifeq ($(shell hostname), uv100)
-    CC          = /progs/users/gcc-4.7.3/bin/gcc
-    CXX         = /progs/users/gcc-4.7.3/bin/g++
-    LIBS        = -Wl,-rpath,/progs/users/gcc-4.7.3/lib64 ~/bin/GSL/lib/libgsl.a ~/bin/GSL/lib/libgslcblas.a -lpthread
-    INC         = -I../bin/GSL/include/
-endif
-
 
 .PHONY: all alllibs trackcpp clean cleanall
 
@@ -133,24 +122,29 @@ endif
 
 all:  libtrackcpp trackcpp python_package
 
-#### GENERATES DEPENDENCY FILE ####
-$(shell $(CXX) -MM $(CFLAGS) $(addprefix $(SRCDIR)/, $(LIBSOURCES_CPP)) $(addprefix $(SRCDIR)/, $(BINSOURCES_CPP)) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
--include .depend
+# Rule to generate dependencies
+depend: .depend
 
-libtrackcpp: $(OBJDIR)/libtrackcpp.a
+.depend:
+	$(shell echo $(CXX) -MM $(CFLAGS) $(addprefix $(SRCDIR)\, $(LIBSOURCES_CPP)) $(addprefix $(SRCDIR)\, $(BINSOURCES_CPP)) > .depend.temp)
+	$(shell type nul > .depend)
+	@powershell -Command "(Get-Content .depend.temp) | %{ $_ -replace '\.o', '$(OBJDIR)\$$&' } | Set-Content .depend"
+# @del .depend.temp
 
-trackcpp: $(OBJDIR)/trackcpp
+libtrackcpp: $(OBJDIR)\libtrackcpp.a
 
-python_package: $(PYTHON_PACKAGE_DIR)/trackcpp/_trackcpp.so
+trackcpp: $(OBJDIR)\trackcpp
 
-$(PYTHON_PACKAGE_DIR)/trackcpp/_trackcpp.so: libtrackcpp
+python_package: $(PYTHON_PACKAGE_DIR)\trackcpp\_trackcpp.so
+
+$(PYTHON_PACKAGE_DIR)\trackcpp\_trackcpp.so: libtrackcpp
 	$(MAKE) -C $(PYTHON_PACKAGE_DIR)
 
-$(OBJDIR)/libtrackcpp.a: $(LIBOBJECTS)
+$(OBJDIR)\libtrackcpp.a: $(LIBOBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(OBJDIR)/trackcpp: libtrackcpp $(BINOBJECTS)
-	$(CXX) $(LDFLAGS) $(BINOBJECTS) $(OBJDIR)/libtrackcpp.a $(LIBS) -o $@
+$(OBJDIR)\trackcpp: libtrackcpp $(BINOBJECTS)
+	$(CXX) $(LDFLAGS) $(BINOBJECTS) $(OBJDIR)\libtrackcpp.a $(LIBS) -o $@
 
 $(LIBOBJECTS): | $(OBJDIR)
 
@@ -159,17 +153,17 @@ $(BINOBJECTS): | $(OBJDIR)
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
-install-cpp: uninstall-cpp all
-	cp $(OBJDIR)/trackcpp $(BINDEST_DIR)
-	cp $(OBJDIR)/libtrackcpp.a $(LIBDEST_DIR)
-	cp -r $(INCDIR)/trackcpp $(INCDEST_DIR)
+install-cpp: uninstall-cpp libtrackcpp trackcpp
+	if exist $(OBJDIR)\trackcpp.exe copy $(OBJDIR)\trackcpp.exe $(BINDEST_DIR)
+	if exist $(OBJDIR)\libtrackcpp.a copy $(OBJDIR)\libtrackcpp.a $(LIBDEST_DIR)
+#	if exist $(INCDIR)\trackcpp xcopy /E /I $(INCDIR)\trackcpp $(INCDEST_DIR)
 
 uninstall-cpp:
-	-rm -rf $(BINDEST_DIR)/trackcpp
-	-rm -rf $(LIBDEST_DIR)/libtrackcpp.a
-	-rm -rf $(INCDEST_DIR)/trackcpp
+	if exist $(BINDEST_DIR)\trackcpp.exe del /Q $(BINDEST_DIR)\trackcpp.exe
+	if exist $(LIBDEST_DIR)\libtrackcpp.a del /Q $(LIBDEST_DIR)\libtrackcpp.a
+# if exist $(INCDEST_DIR)\trackcpp del /Q  $(INCDEST_DIR)\trackcpp
 
-install-py: uninstall-py
+install-py: uninstall-py python_package
 	$(MAKE) install -C $(PYTHON_PACKAGE_DIR)
 
 uninstall-py:
@@ -179,27 +173,25 @@ install: clean install-cpp install-py
 
 uninstall: uninstall-cpp uninstall-py
 
-$(BINDEST_DIR):
-	mkdir $(BINDEST_DIR)
-
-$(LIBDEST_DIR):
-	mkdir $(LIBDEST_DIR)
-
-$(INCDEST_DIR):
-	mkdir $(INCDEST_DIR)
-
 clean:
-	-rm -rf $(OBJDIR) trackcpp trackcpp-debug .depend *.out *.dat *~ *.o *.a
-	$(MAKE) clean -C $(PYTHON_PACKAGE_DIR)
+	if exist $(OBJDIR) rmdir /S /Q $(OBJDIR)
+	if exist trackcpp del /Q trackcpp
+	if exist trackcpp-debug del /Q trackcpp-debug
+# if exist .depend del /Q .depend
+	if exist *.exe del /Q *.exe
+	if exist *.dat del /Q *.dat
+	if exist *~ del /Q *~
+	if exist *.o del /Q *.o
+	if exist *.a del /Q *.a
 
 #### RULES ####
 
 *.cpp: VERSION
-	touch $(SRCDIR)/*.cpp
+	type nul > $(SRCDIR)\*.cpp
 *.cc: VERSION
-	touch $(SRCDIR)/*.cc
+	type nul > $(SRCDIR)\*.cc
 *.c: VERSION
-	touch $(SRCDIR)/*.c
+	type nul > $(SRCDIR)\*.c
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) -c $(CFLAGS) $(INC) -I./$(SRCDIR) $< -o $@;
+$(OBJDIR)\\%.o: $(SRCDIR)\%.cpp
+	$(CXX) -c $(CFLAGS) $(INC) -I$(SRCDIR) -lm $< -o $@
