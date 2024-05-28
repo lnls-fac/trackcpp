@@ -1,7 +1,10 @@
 #!bin/bash
 
 # Cleaning first
-rm *.obj *.lib *.exe
-cd pythonbuild
-rm *.obj *.py *.cxx *.lib *.exp *.dll *.pyd
+cd objects
+rm -rf *.obj *.lib *.exe
+cd ../pythonbuild
+rm -rf *.obj *.cxx *.lib *.exp __pycache__
+cd ../trackcpp
+rm "trackcpp.py" "_trackcpp.pyd"
 cd ..

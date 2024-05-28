@@ -1,2 +1,3 @@
-pythonbuild/__pycache__
-pythonbuild/trackcpp.py
+trackcpp/__pycache__
+trackcpp/trackcpp.py
+trackcpp.egg-info
