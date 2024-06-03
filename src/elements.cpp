@@ -39,6 +39,8 @@ Element::Element(const std::string& fam_name_, const double& length_) :
   matrix66.eye();
 }
 
+//! NOTE: The signed zeros (+0, -0) has different bytes, so the byte-by-byte comparison done by "memcmp" fails in the "zeros-case" for the pourpose of the "reflag" functions.
+// TODO: search for different ways to compare the translation and rotation arrays (keeping the performance).
 void Element::reflag_t_in(void){
   this->has_t_in = std::memcmp(this->t_in, id6, 6*sizeof(double)) ;
 }
