@@ -78,7 +78,7 @@ void latt_setcavity(std::vector<Element>& lattice, const std::string& state) {
   for(unsigned int i=0; i<lattice.size(); ++i) {
     if (lattice[i].frequency != 0) {
       if (state == "on") {
-        lattice[i].pass_method = PassMethod::pm_cavity_pass;
+        lattice[i].pass_method = PassMethod::pm_cavity_0_pass;
       } else if (state == "off") {
         if (lattice[i].length == 0) {
           lattice[i].pass_method = PassMethod::pm_identity_pass;

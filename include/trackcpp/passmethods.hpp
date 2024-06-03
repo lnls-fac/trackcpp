@@ -387,7 +387,7 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
 }
 
 template <typename T>
-Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
+Status::type pm_cavity_0_pass(Pos<T> &pos, const Element &elem,
                             const Accelerator& accelerator) {
 
   if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
@@ -409,6 +409,125 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
     de += -nv * sin(TWOPI*elem.frequency*dl/light_speed - elem.phase_lag);
+    // drift half length
+    pnorm   = 1.0 / (1.0 + de);
+    norml   = (0.5 * elem.length) * pnorm;
+    rx += norml * px;
+    ry += norml * py;
+    dl += 0.5 * norml * pnorm * (px*px + py*py);
+  }
+  local_2_global(pos, elem);
+  return Status::success;
+}
+
+template <typename T>
+Status::type pm_cavity_1comp_pass(Pos<T> &pos, const Element &elem,
+                            const Accelerator& accelerator) {
+
+  if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
+
+  global_2_local(pos, elem);
+  double nv = elem.voltage / accelerator.energy;
+  double frf = elem.frequency;
+  double harmonic_number = accelerator.harmonic_number;
+  double L0 = accelerator.get_length();
+  double ddl = (light_speed*harmonic_number/frf - L0);
+  if (elem.length == 0) {
+    T &de = pos.de, &dl = pos.dl;
+    de +=  -nv * sin(TWOPI*frf *dl/ light_speed - elem.phase_lag);
+    dl -= ddl;
+    } else {
+    T &rx = pos.rx, &px = pos.px;
+    T &ry = pos.ry, &py = pos.py;
+    T &de = pos.de, &dl = pos.dl;
+    // drift half length
+    T pnorm   = 1 / (1 + de);
+    T norml   = (0.5 * elem.length) * pnorm;
+    rx += norml * px;
+    ry += norml * py;
+    dl += 0.5 * norml * pnorm * (px*px + py*py);
+    // longitudinal momentum kick
+    de += -nv * sin(TWOPI*frf *dl/ light_speed - elem.phase_lag);
+    dl -= ddl;
+    // drift half length
+    pnorm   = 1.0 / (1.0 + de);
+    norml   = (0.5 * elem.length) * pnorm;
+    rx += norml * px;
+    ry += norml * py;
+    dl += 0.5 * norml * pnorm * (px*px + py*py);
+  }
+  local_2_global(pos, elem);
+  return Status::success;
+}
+
+template <typename T>
+Status::type pm_cavity_1frac_pass(Pos<T> &pos, const Element &elem,
+                            const Accelerator& accelerator) {
+
+  if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
+
+  global_2_local(pos, elem);
+  double nv = elem.voltage / accelerator.energy;
+  double frf = elem.frequency;
+  double harmonic_number = accelerator.harmonic_number;
+  double L0 = accelerator.get_length();
+  double time_aware_frac = accelerator.get_time_aware_frac();
+  double ddl = (light_speed*harmonic_number/frf - L0)*time_aware_frac;
+  if (elem.length == 0) {
+    T &de = pos.de, &dl = pos.dl;
+    de +=  -nv * sin(TWOPI*frf *dl/ light_speed - elem.phase_lag);
+    dl -= ddl;
+    } else {
+    T &rx = pos.rx, &px = pos.px;
+    T &ry = pos.ry, &py = pos.py;
+    T &de = pos.de, &dl = pos.dl;
+    // drift half length
+    T pnorm   = 1 / (1 + de);
+    T norml   = (0.5 * elem.length) * pnorm;
+    rx += norml * px;
+    ry += norml * py;
+    dl += 0.5 * norml * pnorm * (px*px + py*py);
+    // longitudinal momentum kick
+    de += -nv * sin(TWOPI*frf *dl/ light_speed - elem.phase_lag);
+    dl -= ddl;
+    // drift half length
+    pnorm   = 1.0 / (1.0 + de);
+    norml   = (0.5 * elem.length) * pnorm;
+    rx += norml * px;
+    ry += norml * py;
+    dl += 0.5 * norml * pnorm * (px*px + py*py);
+  }
+  local_2_global(pos, elem);
+  return Status::success;
+}
+
+template <typename T>
+Status::type pm_cavity_2_pass(Pos<T> &pos, const Element &elem,
+                            const Accelerator& accelerator, const double nturn) {
+
+  if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
+
+  global_2_local(pos, elem);
+  double nv = elem.voltage / accelerator.energy;
+  double frf = elem.frequency;
+  double harmonic_number = accelerator.harmonic_number;
+  double L0 = accelerator.get_length();
+  double ddl = nturn * (light_speed*harmonic_number/frf - L0);
+  if (elem.length == 0) {
+    T &de = pos.de, &dl = pos.dl;
+    de +=  -nv * sin(TWOPI*frf *(dl-ddl)/ light_speed - elem.phase_lag);
+    } else {
+    T &rx = pos.rx, &px = pos.px;
+    T &ry = pos.ry, &py = pos.py;
+    T &de = pos.de, &dl = pos.dl;
+    // drift half length
+    T pnorm   = 1 / (1 + de);
+    T norml   = (0.5 * elem.length) * pnorm;
+    rx += norml * px;
+    ry += norml * py;
+    dl += 0.5 * norml * pnorm * (px*px + py*py);
+    // longitudinal momentum kick
+    de += -nv * sin(TWOPI*frf *(dl-ddl)/ light_speed - elem.phase_lag);
     // drift half length
     pnorm   = 1.0 / (1.0 + de);
     norml   = (0.5 * elem.length) * pnorm;

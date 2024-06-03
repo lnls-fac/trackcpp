@@ -278,7 +278,7 @@ void initialize_sextupole(Element &element, const double &S, const int &nr_steps
 }
 
 void initialize_rfcavity(Element &element, const double &frequency, const double &voltage, const double &phase_lag) {
-    element.pass_method = PassMethod::pm_cavity_pass;
+    element.pass_method = PassMethod::pm_cavity_0_pass;
     element.frequency = frequency;
     element.voltage = voltage;
     element.phase_lag = phase_lag;
