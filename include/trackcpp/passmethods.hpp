@@ -518,7 +518,8 @@ Status::type pm_cavity_2_pass(Pos<T> &pos, const Element &elem,
   double frf = elem.frequency;
   double harmonic_number = accelerator.harmonic_number;
   double L0 = accelerator.get_length();
-  double ddl = nturn * (light_speed*harmonic_number/frf - L0);
+  double time_aware_frac = accelerator.get_time_aware_frac();
+  double ddl =  (light_speed*harmonic_number/frf - L0) * time_aware_frac * nturn;
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
     de +=  -nv * sin(TWOPI*frf *(dl-ddl)/ light_speed - elem.phase_lag);
