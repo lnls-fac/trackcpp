@@ -388,7 +388,7 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
 
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
-                            const Accelerator& accelerator, bool wallclock) {
+                            const Accelerator& accelerator, bool wallclock, double time_aware_fraction) {
 
   if (not accelerator.cavity_on) return pm_drift_pass(pos, elem, accelerator);
 
@@ -407,9 +407,6 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
       dl -= ddl;
     }
     de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
-    if (wallclock) {
-      dl += ddl;
-    }
     } else {
     T &rx = pos.rx, &px = pos.px;
     T &ry = pos.ry, &py = pos.py;
@@ -425,9 +422,6 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
       dl -= ddl;
     }
     de +=  -nv * sin(TWOPI * frf * dl/velocity - philag);
-    if (wallclock) {
-      dl += ddl;
-    }
     // drift half length
     pnorm   = 1.0 / (1.0 + de);
     norml   = (0.5 * elem.length) * pnorm;

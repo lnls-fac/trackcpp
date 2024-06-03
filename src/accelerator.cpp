@@ -17,9 +17,10 @@
 #include <trackcpp/accelerator.h>
 #include <trackcpp/auxiliary.h>
 #include <cmath>
- 
+#include <algorithm>
 
-Accelerator::Accelerator(const double energy) :
+
+Accelerator::Accelerator(double energy) :
     energy(this->_energy),
     gamma_factor(this->_gamma_factor),
     beta_factor(this->_beta_factor),
@@ -80,13 +81,13 @@ void Accelerator::setEnergy(const double _energy_) {
     double beta_ = sqrt(1.0 - (1.0 / (gamma_ * gamma_)));
     double velocity_ = beta_ * light_speed;
     double beam_rigidity_ = beta_ * _energy_ / light_speed;
-    
+
     this->_velocity = velocity_;
     this->_gamma_factor = gamma_;
     this->_beta_factor = beta_;
     this->_brho = beam_rigidity_;
   }
-  
+
 }
 
 void Accelerator::setGammaFactor(const double _gamma_) {
@@ -102,18 +103,18 @@ void Accelerator::setGammaFactor(const double _gamma_) {
   } else {
 
     this->_gamma_factor = _gamma_;
-    
+
     double energy_ = _gamma_ * electron_rest_energy_eV;
     double beta_ = sqrt(1.0 - (1.0 / (_gamma_ * _gamma_)));
     double velocity_ = beta_ * light_speed;
     double beam_rigidity_ = beta_ * energy_ / light_speed;
-    
+
     this->_energy = energy_;
     this->_velocity = velocity_;
     this->_beta_factor = beta_;
     this->_brho = beam_rigidity_;
   }
-  
+
 }
 
 void Accelerator::setBetaFactor(const double _beta_) {
@@ -134,13 +135,13 @@ void Accelerator::setBetaFactor(const double _beta_) {
     double energy_ = gamma_ * electron_rest_energy_eV;
     double velocity_ = _beta_ * light_speed;
     double beam_rigidity_ = _beta_ * energy_ / light_speed;
-    
+
     this->_energy = energy_;
     this->_velocity = velocity_;
     this->_gamma_factor = gamma_;
     this->_brho = beam_rigidity_;
   }
-  
+
 }
 
 void Accelerator::setVelocity(const double _velocity_) {
@@ -167,7 +168,7 @@ void Accelerator::setVelocity(const double _velocity_) {
     this->_beta_factor = beta_;
     this->_brho = beam_rigidity_;
   }
-  
+
 }
 
 void Accelerator::setMagneticRigidity(const double _brho_) {
@@ -194,7 +195,17 @@ void Accelerator::setMagneticRigidity(const double _brho_) {
     this->_velocity = velocity_;
     this->_gamma_factor = gamma_;
     this->_beta_factor = beta_;
-    
+
   }
-  
+
+}
+
+double Accelerator::get_time_aware_fraction() const {
+  int time_aware_count = 0;
+  for (const Element &el : this->lattice) {
+    if (el.pass_method == PassMethod::pm_cavity_pass){
+      time_aware_count++;
+    }
+  }
+  return 1.0/time_aware_count;
 }

@@ -56,7 +56,8 @@ Status::type track_elementpass (
              const Element& el,                 // element through which to track particle
              Pos<T> &orig_pos,                  // initial electron coordinates
              const Accelerator& accelerator,    // the accelerator
-             bool wallclock = false             // boolean to use wallclock in cavity pass
+             bool wallclock = false,            // boolean to use wallclock in cavity pass
+             double time_aware_fraction = 0.0
              ) {
 
     Status::type status = Status::success;
@@ -78,7 +79,7 @@ Status::type track_elementpass (
         if ((status = pm_corrector_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
     case PassMethod::pm_cavity_pass:
-        if ((status = pm_cavity_pass<T>(orig_pos, el, accelerator, wallclock)) != Status::success) return status;
+        if ((status = pm_cavity_pass<T>(orig_pos, el, accelerator, wallclock, time_aware_fraction)) != Status::success) return status;
         break;
     case PassMethod::pm_thinquad_pass:
         if ((status = pm_thinquad_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
@@ -108,12 +109,13 @@ Status::type track_elementpass (
              const Element& el,               // element through which to track particle
              std::vector<Pos<T> >& orig_pos,  // initial electron coordinates
              const Accelerator& accelerator,  // the accelerator
-             bool wallclock = false) {        // boolean to use wallclock in cavity pass
+             bool wallclock = false,
+             double time_aware_fraction = 0.0) {        // boolean to use wallclock in cavity pass
 
     Status::type status  = Status::success;
 
     for(auto&& pos: orig_pos) {
-        Status::type status2 = track_elementpass(el, pos, accelerator, wallclock);
+        Status::type status2 = track_elementpass(el, pos, accelerator, wallclock, time_aware_fraction);
         if (status2 != Status::success) status = status2;
     }
     return status;
@@ -153,6 +155,8 @@ Status::type track_linepass (
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
 
+    double time_aware_frac = accelerator.get_time_aware_fraction();
+
     //pos.clear(); other functions assume pos is not clearedin linepass!
     pos.reserve(pos.size() + indices.size());
 
@@ -170,7 +174,7 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
-        status = track_elementpass (element, orig_pos, accelerator, wallclock); // include wallclock -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
+        status = track_elementpass (element, orig_pos, accelerator, wallclock, time_aware_frac); // include wallclock -> necessary for realistic RF Cavities -> "cavity_pass" pass method;
 
         const T& rx = orig_pos.rx;
         const T& ry = orig_pos.ry;
