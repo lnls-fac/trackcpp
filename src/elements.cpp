@@ -18,7 +18,7 @@
 #include <trackcpp/elements.h>
 #include <trackcpp/kicktable.h>
 #include <cfloat>
-
+#include <cstring> // necessary for memcmp
 
 const std::vector<double> Element::default_polynom = std::vector<double>(3,0);
 
@@ -37,6 +37,24 @@ Element::Element(const std::string& fam_name_, const double& length_) :
     }
   }
   matrix66.eye();
+}
+
+//! NOTE: The signed zeros (+0, -0) has different bytes, so the byte-by-byte comparison done by "memcmp" fails in the "zeros-case" for the pourpose of the "reflag" functions.
+// TODO: search for different ways to compare the translation and rotation arrays (keeping the performance).
+void Element::reflag_t_in(void){
+  this->has_t_in = std::memcmp(this->t_in, id6, 6*sizeof(double)) ;
+}
+
+void Element::reflag_t_out(void){
+  this->has_t_out = std::memcmp(this->t_out, id6, 6*sizeof(double)) ;
+}
+
+void Element::reflag_r_in(void){
+  this->has_r_in = std::memcmp(this->r_in, id66, 36*sizeof(double)) ;
+}
+
+void Element::reflag_r_out(void){
+  this->has_r_out = std::memcmp(this->r_out, id66, 36*sizeof(double)) ;
 }
 
 const std::string& Element::get_pass_method() {

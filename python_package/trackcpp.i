@@ -64,6 +64,12 @@ double get_double_max() {
 
 %}
 
+%extend std::vector<double> {
+    double* data_() {
+        return $self->data();
+    }
+}
+
 %include "numpy.i"
 
 %init %{
