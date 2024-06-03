@@ -29,6 +29,16 @@
 class Element {
 public:
 
+//  fam_name(fam_name_), pass_method(PassMethod::pm_drift_pass),
+//    nr_steps(1), length(length_),
+//    hkick(0), vkick(0),
+//    angle(0), angle_in(0), angle_out(0),
+//    gap(0), fint_in(0), fint_out(0),
+//    thin_KL(0), thin_SL(0),
+//    frequency(0), voltage(0), phase_lag(0),
+//    polynom_a(default_polynom), polynom_b(default_polynom),
+//    hmax(DBL_MAX), vmax(DBL_MAX)
+
   std::string   fam_name;
   int           pass_method = PassMethod::pm_drift_pass;
   double        length      = 0;  // [m]
@@ -64,7 +74,7 @@ public:
   double r_out[36];
 
   bool has_t_in = false;
-  bool has_t_out = false; 
+  bool has_t_out = false;
   bool has_r_in = false;
   bool has_r_out = false;
 
