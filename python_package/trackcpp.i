@@ -18,7 +18,6 @@
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include <vector>
 #include <trackcpp/elements.h>
 #include <trackcpp/kicktable.h>
 #include <trackcpp/auxiliary.h>
@@ -35,6 +34,7 @@
 
 %include "carrays.i"
 %include "std_string.i"
+%include "std_vector.i"
 %include "stl.i"
 %include "typemaps.i"
 
