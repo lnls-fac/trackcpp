@@ -157,6 +157,8 @@ Status::type track_linepass (
 
     Status::type status = Status::success;
     lost_plane = Plane::no_plane;
+    double timectc = 0;
+    double tawfrac = accelerator.get_time_aware_frac();
 
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
@@ -174,11 +176,19 @@ Status::type track_linepass (
 
         // syntactic-sugar for read-only access to element object parameters
         const Element& element = line[element_offset];
+        if (element.frequency != 0.0) {
+            timectc += tawfrac;
+        }
 
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
         status = track_elementpass (element, orig_pos, accelerator, nturn);
+
+        if ((timectc >= 0.98) && (element.pass_method == PassMethod::pm_cavity_0_pass)) {
+            orig_pos.dl -= (light_speed*accelerator.harmonic_number/element.frequency - accelerator.get_length());
+            timectc = 0.0;
+        }
 
         const T& rx = orig_pos.rx;
         const T& ry = orig_pos.ry;
