@@ -34,13 +34,19 @@ inline bool check_time_aware_pm(const int i){
   case PassMethod::pm_cavity_0_pass:
     flag = true;
     break;
-  case PassMethod::pm_cavity_1comp_pass:
-    flag = true;
-    break;
-  case PassMethod::pm_cavity_1frac_pass:
+  case PassMethod::pm_cavity_1_pass:
     flag = true;
     break;
   case PassMethod::pm_cavity_2_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_3_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_4_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_5_pass:
     flag = true;
     break;
   default:

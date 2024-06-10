@@ -97,14 +97,20 @@ Status::type track_elementpass (
     case PassMethod::pm_drift_g2l_pass:
         if ((status = pm_drift_g2l_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
-    case PassMethod::pm_cavity_1comp_pass:
-        if ((status = pm_cavity_1comp_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
-        break;
-    case PassMethod::pm_cavity_1frac_pass:
-        if ((status = pm_cavity_1frac_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+    case PassMethod::pm_cavity_1_pass:
+        if ((status = pm_cavity_1_pass<T>(orig_pos, el, accelerator, nturn)) != Status::success) return status;
         break;
     case PassMethod::pm_cavity_2_pass:
-        if ((status = pm_cavity_2_pass<T>(orig_pos, el, accelerator, nturn)) != Status::success) return status;
+        if ((status = pm_cavity_2_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+        break;
+    case PassMethod::pm_cavity_3_pass:
+        if ((status = pm_cavity_3_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+        break;
+    case PassMethod::pm_cavity_4_pass:
+        if ((status = pm_cavity_4_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+        break;
+    case PassMethod::pm_cavity_5_pass:
+        if ((status = pm_cavity_5_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
     default:
         return Status::passmethod_not_defined;
@@ -176,6 +182,7 @@ Status::type track_linepass (
 
         // syntactic-sugar for read-only access to element object parameters
         const Element& element = line[element_offset];
+
         if (element.frequency != 0.0) {
             timectc += tawfrac;
         }
@@ -185,7 +192,7 @@ Status::type track_linepass (
 
         status = track_elementpass (element, orig_pos, accelerator, nturn);
 
-        if ((timectc >= 0.98) && (element.pass_method == PassMethod::pm_cavity_0_pass)) {
+        if ((timectc >= 0.98) && (element.pass_method == PassMethod::pm_cavity_5_pass)) {
             orig_pos.dl -= (light_speed*accelerator.harmonic_number/element.frequency - accelerator.get_length());
             timectc = 0.0;
         }

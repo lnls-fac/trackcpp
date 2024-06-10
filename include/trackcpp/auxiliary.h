@@ -37,10 +37,12 @@ public:
     static const int pm_kickmap_pass                   = 8;
     static const int pm_matrix_pass                    = 9;
     static const int pm_drift_g2l_pass                 = 10;
-    static const int pm_cavity_1comp_pass              = 11;
-    static const int pm_cavity_1frac_pass              = 12;
-    static const int pm_cavity_2_pass                  = 13;
-    static const int pm_nr_pms                         = 14;  // counter for number of passmethods
+    static const int pm_cavity_1_pass                  = 11;
+    static const int pm_cavity_2_pass                  = 12;
+    static const int pm_cavity_3_pass                  = 13;
+    static const int pm_cavity_4_pass                  = 14;
+    static const int pm_cavity_5_pass                  = 15;
+    static const int pm_nr_pms                         = 16;  // counter for number of passmethods
     PassMethodsClass() {
         passmethods.push_back("identity_pass");
         passmethods.push_back("drift_pass");
@@ -53,9 +55,11 @@ public:
         passmethods.push_back("kicktable_pass");
         passmethods.push_back("matrix_pass");
         passmethods.push_back("drift_g2l_pass");
-        passmethods.push_back("cavity_1comp_pass");
-        passmethods.push_back("cavity_1frac_pass");
+        passmethods.push_back("cavity_1_pass");
         passmethods.push_back("cavity_2_pass");
+        passmethods.push_back("cavity_3_pass");
+        passmethods.push_back("cavity_4_pass");
+        passmethods.push_back("cavity_5_pass");
     }
     int size() const { return passmethods.size(); }
     std::string operator[](const int i) const { return passmethods[i]; }
@@ -66,13 +70,19 @@ public:
         case pm_cavity_0_pass:
             flag = true;
             break;
-        case pm_cavity_1comp_pass:
-            flag = true;
-            break;
-        case pm_cavity_1frac_pass:
+        case pm_cavity_1_pass:
             flag = true;
             break;
         case pm_cavity_2_pass:
+            flag = true;
+            break;
+        case pm_cavity_3_pass:
+            flag = true;
+            break;
+        case pm_cavity_4_pass:
+            flag = true;
+            break;
+        case pm_cavity_5_pass:
             flag = true;
             break;
         default:
@@ -98,10 +108,12 @@ struct PassMethod {
         pm_kickmap_pass                   = 8,
         pm_matrix_pass                    = 9,
         pm_drift_g2l_pass                 = 10,
-        pm_cavity_1comp_pass              = 11,
-        pm_cavity_1frac_pass              = 12,
-        pm_cavity_2_pass                  = 13,
-        pm_nr_pms                         = 14,
+        pm_cavity_1_pass                  = 11,
+        pm_cavity_2_pass                  = 12,
+        pm_cavity_3_pass                  = 13,
+        pm_cavity_4_pass                  = 14,
+        pm_cavity_5_pass                  = 15,
+        pm_nr_pms                         = 16,
     };
 };
 
@@ -119,9 +131,11 @@ const std::vector<std::string> pm_dict = {
     "kicktable_pass",
     "matrix_pass",
     "drift_g2l_pass",
-    "cavity_1comp_pass",
-    "cavity_1frac_pass",
+    "cavity_1_pass",
     "cavity_2_pass",
+    "cavity_3_pass",
+    "cavity_4_pass",
+    "cavity_5_pass",
 };
 
 struct RadiationState {
