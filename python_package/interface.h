@@ -32,6 +32,9 @@ struct LinePassArgs {
     std::vector< unsigned int > indices;
     std::vector< unsigned int > lost_plane;
     std::vector< unsigned int > lost_element;
+    double line_length;
+    std::vector<unsigned int> time_aware_element_indices;
+    std::vector<double> time_aware_element_positions;
 };
 
 struct RingPassArgs : public LinePassArgs {

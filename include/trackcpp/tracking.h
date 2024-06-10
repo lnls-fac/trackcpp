@@ -110,7 +110,7 @@ Status::type track_elementpass (
     Status::type status  = Status::success;
 
     for(auto&& pos: orig_pos) {
-        Status::type status2 = track_elementpass(el, pos, accelerator, nturn);
+        Status::type status2 = track_elementpass(el, pos, accelerator);
         if (status2 != Status::success) status = status2;
     }
     return status;
@@ -236,13 +236,13 @@ Status::type track_linepass (
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
         std::vector<unsigned int >& indices, // indices to return;
-        double line_length,
-        double ddl,
-        std::vector<unsigned int> time_aware_element_indices,
-        std::vector<double> time_aware_element_positions) {
+        double line_length = 0.0,
+        std::vector<unsigned int> time_aware_element_indices = {0, },
+        std::vector<double> time_aware_element_positions = {0.0, }) {
 
     Status::type status = Status::success;
     lost_plane = Plane::no_plane;
+    double ddl = 0.0;
 
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
@@ -266,11 +266,12 @@ Status::type track_linepass (
         if (indcs[i]) pos.push_back(orig_pos);
 
         if (element_offset == time_aware_element_indices[TAW_pivot]) {
+            ddl = light_speed*accelerator.harmonic_number/element.frequency - line_length;
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
             TAW_pivot++;
         }
 
-        status = track_elementpass (element, orig_pos, accelerator, nturn);
+        status = track_elementpass (element, orig_pos, accelerator);
 
         if (element_offset == time_aware_element_indices.back()) {
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
@@ -366,10 +367,9 @@ Status::type track_linepass (
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
         bool trajectory,               // whether function should return coordinates at all elements
-        double line_length,
-        double ddl,
-        std::vector<unsigned int> time_aware_element_indices,
-        std::vector<double> time_aware_element_positions) {
+        double line_length = 0.0,
+        std::vector<unsigned int> time_aware_element_indices = {0,},
+        std::vector<double> time_aware_element_positions = {0,}) {
 
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -383,7 +383,7 @@ Status::type track_linepass (
 
     return track_linepass (
         accelerator, orig_pos, pos, element_offset, lost_plane, indices,
-        line_length, ddl, time_aware_element_indices, time_aware_element_positions);
+        line_length, time_aware_element_indices, time_aware_element_positions);
 }
 
 
@@ -396,10 +396,9 @@ Status::type track_linepass (
         std::vector<unsigned int >& lost_plane,
         std::vector<unsigned int >& lost_element,
         std::vector<unsigned int >& indices,
-        double line_length,
-        double ddl,
-        std::vector<unsigned int> time_aware_element_indices,
-        std::vector<double> time_aware_element_positions) {
+        double line_length = 0.0,
+        std::vector<unsigned int> time_aware_element_indices = {0, },
+        std::vector<double> time_aware_element_positions = {0.0, }) {
 
     int nr_elements = accelerator.lattice.size();
     Status::type status  = Status::success;
@@ -416,7 +415,7 @@ Status::type track_linepass (
 
         status2 = track_linepass (
             accelerator, orig_pos[i], final_pos, le, lp, indices,
-        line_length, ddl, time_aware_element_indices, time_aware_element_positions);
+        line_length, time_aware_element_indices, time_aware_element_positions);
 
         if (status2 != Status::success) status = status2;
 
@@ -467,7 +466,7 @@ Status::type track_ringpass (
     size_t nr_elements = accelerator.lattice.size();
     PassMethodsClass PMClass = PassMethodsClass();
     double s_pos = 0.0;
-    for (size_t i = 0; i < nr_elements; i+=) {
+    for (size_t i = 0; i < nr_elements; i++) {
         auto elem = accelerator.lattice[eoff];
         if (PMClass.is_time_aware_pm(elem.pass_method)) {
             s_pos += (elem.length*0.5);
@@ -482,7 +481,6 @@ Status::type track_ringpass (
     }
     TAW_positions.push_back(s_pos);
     double accelerator_length = s_pos;
-    double ddl = light_speed*accelerator.harmonic_number/element.frequency - accelerator_length;
 
     if (trajectory) pos.reserve(nr_turns+1);
 
@@ -491,7 +489,7 @@ Status::type track_ringpass (
         // stores trajectory at beggining of each turn
         if (trajectory) pos.push_back(orig_pos);
 
-        if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false, accelerator_length, ddl, TAW_positions)) != Status::success) {
+        if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false, accelerator_length, TAW_indices, TAW_positions)) != Status::success) {
 
             // fill last of vector with nans
             pos.emplace_back(
@@ -503,7 +501,6 @@ Status::type track_ringpass (
             return status;
         }
         final_pos.clear();
-        nturn += 1.0;
     }
     pos.push_back(orig_pos);
 

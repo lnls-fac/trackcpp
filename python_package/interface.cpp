@@ -66,7 +66,9 @@ Status::type track_linepass_wrapper(
                           args.lost_plane,
                           args.lost_element,
                           args.indices,
-                          args.nturn);
+                          args.line_length,
+                          args.time_aware_element_indices,
+                          args.time_aware_element_positions);
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
         pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;
