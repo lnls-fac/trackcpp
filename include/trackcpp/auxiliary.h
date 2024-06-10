@@ -31,64 +31,36 @@ public:
     static const int pm_str_mpole_symplectic4_pass     = 2;
     static const int pm_bnd_mpole_symplectic4_pass     = 3;
     static const int pm_corrector_pass                 = 4;
-    static const int pm_cavity_0_pass                  = 5;
+    static const int pm_cavity_pass                  = 5;
     static const int pm_thinquad_pass                  = 6;
     static const int pm_thinsext_pass                  = 7;
     static const int pm_kickmap_pass                   = 8;
     static const int pm_matrix_pass                    = 9;
     static const int pm_drift_g2l_pass                 = 10;
-    static const int pm_cavity_1_pass                  = 11;
-    static const int pm_cavity_2_pass                  = 12;
-    static const int pm_cavity_3_pass                  = 13;
-    static const int pm_cavity_4_pass                  = 14;
-    static const int pm_cavity_5_pass                  = 15;
-    static const int pm_nr_pms                         = 16;  // counter for number of passmethods
+    static const int pm_nr_pms                         = 11;  // counter for number of passmethods
     PassMethodsClass() {
         passmethods.push_back("identity_pass");
         passmethods.push_back("drift_pass");
         passmethods.push_back("str_mpole_symplectic4_pass");
         passmethods.push_back("bnd_mpole_symplectic4_pass");
         passmethods.push_back("corrector_pass");
-        passmethods.push_back("cavity_0_pass");
+        passmethods.push_back("cavity_pass");
         passmethods.push_back("thinquad_pass");
         passmethods.push_back("thinsext_pass");
         passmethods.push_back("kicktable_pass");
         passmethods.push_back("matrix_pass");
         passmethods.push_back("drift_g2l_pass");
-        passmethods.push_back("cavity_1_pass");
-        passmethods.push_back("cavity_2_pass");
-        passmethods.push_back("cavity_3_pass");
-        passmethods.push_back("cavity_4_pass");
-        passmethods.push_back("cavity_5_pass");
     }
     int size() const { return passmethods.size(); }
     std::string operator[](const int i) const { return passmethods[i]; }
     bool is_time_aware_pm(const int i) const {
-        bool flag = false;
         switch (i)
         {
-        case pm_cavity_0_pass:
-            flag = true;
-            break;
-        case pm_cavity_1_pass:
-            flag = true;
-            break;
-        case pm_cavity_2_pass:
-            flag = true;
-            break;
-        case pm_cavity_3_pass:
-            flag = true;
-            break;
-        case pm_cavity_4_pass:
-            flag = true;
-            break;
-        case pm_cavity_5_pass:
-            flag = true;
-            break;
+        case pm_cavity_pass:
+            return true;
         default:
-            break;
+            return false;
         }
-        return flag;
     };
 private:
     std::vector<std::string> passmethods;
@@ -102,18 +74,13 @@ struct PassMethod {
         pm_str_mpole_symplectic4_pass     = 2,
         pm_bnd_mpole_symplectic4_pass     = 3,
         pm_corrector_pass                 = 4,
-        pm_cavity_0_pass                  = 5,
+        pm_cavity_pass                  = 5,
         pm_thinquad_pass                  = 6,
         pm_thinsext_pass                  = 7,
         pm_kickmap_pass                   = 8,
         pm_matrix_pass                    = 9,
         pm_drift_g2l_pass                 = 10,
-        pm_cavity_1_pass                  = 11,
-        pm_cavity_2_pass                  = 12,
-        pm_cavity_3_pass                  = 13,
-        pm_cavity_4_pass                  = 14,
-        pm_cavity_5_pass                  = 15,
-        pm_nr_pms                         = 16,
+        pm_nr_pms                         = 11,
     };
 };
 
@@ -125,17 +92,12 @@ const std::vector<std::string> pm_dict = {
     "str_mpole_symplectic4_pass",
     "bnd_mpole_symplectic4_pass",
     "corrector_pass",
-    "cavity_0_pass",
+    "cavity_pass",
     "thinquad_pass",
     "thinsext_pass",
     "kicktable_pass",
     "matrix_pass",
     "drift_g2l_pass",
-    "cavity_1_pass",
-    "cavity_2_pass",
-    "cavity_3_pass",
-    "cavity_4_pass",
-    "cavity_5_pass",
 };
 
 struct RadiationState {

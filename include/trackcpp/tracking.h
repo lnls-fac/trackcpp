@@ -44,10 +44,6 @@ Status::type track_findorbit6(
     Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit,
     const Pos<double>& fixed_point_guess = Pos<double>(0));
 
-Status::type track_findorbit6_dct(
-    Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit,
-    const Pos<double>& fixed_point_guess = Pos<double>(0), const double dct = 0.0);
-
 Pos<double>  linalg_solve4_posvec(
     const std::vector<Pos<double> >& M, const Pos<double>& b);
 
@@ -59,7 +55,7 @@ template <typename T>
 Status::type track_elementpass (
              const Element& el,                 // element through which to track particle
              Pos<T> &orig_pos,                  // initial electron coordinates
-             const Accelerator& accelerator, const double nturn = 0.0) {
+             const Accelerator& accelerator) {
 
     Status::type status = Status::success;
 
@@ -79,8 +75,8 @@ Status::type track_elementpass (
     case PassMethod::pm_corrector_pass:
         if ((status = pm_corrector_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
-    case PassMethod::pm_cavity_0_pass:
-        if ((status = pm_cavity_0_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+    case PassMethod::pm_cavity_pass:
+        if ((status = pm_cavity_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
     case PassMethod::pm_thinquad_pass:
         if ((status = pm_thinquad_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
@@ -97,21 +93,6 @@ Status::type track_elementpass (
     case PassMethod::pm_drift_g2l_pass:
         if ((status = pm_drift_g2l_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
-    case PassMethod::pm_cavity_1_pass:
-        if ((status = pm_cavity_1_pass<T>(orig_pos, el, accelerator, nturn)) != Status::success) return status;
-        break;
-    case PassMethod::pm_cavity_2_pass:
-        if ((status = pm_cavity_2_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
-        break;
-    case PassMethod::pm_cavity_3_pass:
-        if ((status = pm_cavity_3_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
-        break;
-    case PassMethod::pm_cavity_4_pass:
-        if ((status = pm_cavity_4_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
-        break;
-    case PassMethod::pm_cavity_5_pass:
-        if ((status = pm_cavity_5_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
-        break;
     default:
         return Status::passmethod_not_defined;
     }
@@ -124,7 +105,7 @@ template <typename T>
 Status::type track_elementpass (
              const Element& el,  // element through which to track particle
              std::vector<Pos<T> >& orig_pos,  // initial electron coordinates
-             const Accelerator& accelerator, const double nturn) {
+             const Accelerator& accelerator) {
 
     Status::type status  = Status::success;
 
@@ -151,7 +132,102 @@ Status::type track_elementpass (
 //        pos:            Pos vector of particles' final coordinates (or trajetory)
 //        element_offset:    in case of problems with passmethods, '*element_offset' is the index of the corresponding element
 //        RETURN:            status do tracking (see 'auxiliary.h')
+// template <typename T>
+// Status::type track_linepass (
+//         const Accelerator& accelerator,
+//         Pos<T>& orig_pos,              // initial electron coordinates
+//         std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
+//         unsigned int& element_offset,  // index of starting element for tracking
+//         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
+//         std::vector<unsigned int >& indices, double nturn = 0.0) {// indices to return;
 
+//     Status::type status = Status::success;
+//     lost_plane = Plane::no_plane;
+
+//     const std::vector<Element>& line = accelerator.lattice;
+//     int nr_elements  = line.size();
+
+//     //pos.clear(); other functions assume pos is not clearedin linepass!
+//     pos.reserve(pos.size() + indices.size());
+
+//     // create vector of booleans help determine when to store position
+//     std::vector<bool> indcs;
+//     indcs.reserve(nr_elements+1);
+//     for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
+//     for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
+
+//     for(int i=0; i<nr_elements; ++i) {
+
+//         // syntactic-sugar for read-only access to element object parameters
+//         const Element& element = line[element_offset];
+
+//         // stores trajectory at entrance of each element
+//         if (indcs[i]) pos.push_back(orig_pos);
+
+//         status = track_elementpass (element, orig_pos, accelerator, nturn);
+
+//         const T& rx = orig_pos.rx;
+//         const T& ry = orig_pos.ry;
+
+//         // checks if particle is lost
+//         if (not isfinite(rx)) {
+//             lost_plane = Plane::x;
+//             status = Status::particle_lost;
+//         }
+//         if (not isfinite(ry)) {
+//             if (status != Status::particle_lost) {
+//                 lost_plane = Plane::y;
+//                 status = Status::particle_lost;
+//             } else {
+//                 lost_plane = Plane::xy;
+//             }
+//         }
+//         if ((status != Status::particle_lost) and accelerator.vchamber_on) {
+//             if (element.vchamber < 0) {
+//                 // invalid p-norm shape (negative p)
+//                 // safely signals lost particle
+//                 lost_plane = Plane::xy;
+//                 status = Status::particle_lost;
+//             } else if (element.vchamber == VChamberShape::rectangle) {
+//                 // rectangular vacuum chamber
+//                 if (((rx <= element.hmin) or (rx >= element.hmax))) {
+//                     lost_plane = Plane::x;
+//                     status = Status::particle_lost;
+//                 }
+//                 if (((ry <= element.vmin) or (ry >= element.vmax))) {
+//                     if (status != Status::particle_lost) {
+//                         lost_plane = Plane::y;
+//                         status = Status::particle_lost;
+//                     } else {
+//                         lost_plane = Plane::xy;
+//                     }
+//                 }
+//             } else if (get_norm_amp_in_vchamber(element, rx, ry) > 1) {
+//                 // lost in rhombus, elliptic and all finite p-norm shapes
+//                 lost_plane = Plane::xy;
+//                 status = Status::particle_lost;
+//             }
+//         }
+
+//         if (status != Status::success) {
+//             // fill rest of vector with nans
+//             for(int ii=i+1; ii<=nr_elements; ++ii) {
+//                 if (indcs[ii]) pos.emplace_back(
+//                     nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
+//             }
+//             return status;
+//         }
+//         // moves to next element index
+//         element_offset = (element_offset + 1) % nr_elements;
+//     }
+
+//     // stores final particle position at the end of the line
+//     if (indcs[nr_elements]) pos.push_back(orig_pos);
+
+//     return (status == Status::success) ? status: Status::particle_lost;
+// }
+
+// accelerator_length, ddl, TAW_positions
 template <typename T>
 Status::type track_linepass (
         const Accelerator& accelerator,
@@ -159,12 +235,14 @@ Status::type track_linepass (
         std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
-        std::vector<unsigned int >& indices, double nturn = 0.0) {// indices to return;
+        std::vector<unsigned int >& indices, // indices to return;
+        double line_length,
+        double ddl,
+        std::vector<unsigned int> time_aware_element_indices,
+        std::vector<double> time_aware_element_positions) {
 
     Status::type status = Status::success;
     lost_plane = Plane::no_plane;
-    double timectc = 0;
-    double tawfrac = accelerator.get_time_aware_frac();
 
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
@@ -178,23 +256,24 @@ Status::type track_linepass (
     for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
     for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
 
+    unsigned int TAW_pivot = 0;
     for(int i=0; i<nr_elements; ++i) {
 
         // syntactic-sugar for read-only access to element object parameters
         const Element& element = line[element_offset];
 
-        if (element.frequency != 0.0) {
-            timectc += tawfrac;
-        }
-
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
+        if (element_offset == time_aware_element_indices[TAW_pivot]) {
+            orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
+            TAW_pivot++;
+        }
+
         status = track_elementpass (element, orig_pos, accelerator, nturn);
 
-        if ((timectc >= 0.98) && (element.pass_method == PassMethod::pm_cavity_5_pass)) {
-            orig_pos.dl -= (light_speed*accelerator.harmonic_number/element.frequency - accelerator.get_length());
-            timectc = 0.0;
+        if (element_offset == time_aware_element_indices.back()) {
+            orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
         }
 
         const T& rx = orig_pos.rx;
@@ -286,7 +365,11 @@ Status::type track_linepass (
         std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
-        bool trajectory, double nturn = 0.0) {             // whether function should return coordinates at all elements
+        bool trajectory,               // whether function should return coordinates at all elements
+        double line_length,
+        double ddl,
+        std::vector<unsigned int> time_aware_element_indices,
+        std::vector<double> time_aware_element_positions) {
 
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -299,7 +382,8 @@ Status::type track_linepass (
     }
 
     return track_linepass (
-        accelerator, orig_pos, pos, element_offset, lost_plane, indices, nturn);
+        accelerator, orig_pos, pos, element_offset, lost_plane, indices,
+        line_length, ddl, time_aware_element_indices, time_aware_element_positions);
 }
 
 
@@ -311,7 +395,11 @@ Status::type track_linepass (
         unsigned int element_offset,
         std::vector<unsigned int >& lost_plane,
         std::vector<unsigned int >& lost_element,
-        std::vector<unsigned int >& indices, double nturn = 0.0) {
+        std::vector<unsigned int >& indices,
+        double line_length,
+        double ddl,
+        std::vector<unsigned int> time_aware_element_indices,
+        std::vector<double> time_aware_element_positions) {
 
     int nr_elements = accelerator.lattice.size();
     Status::type status  = Status::success;
@@ -327,7 +415,8 @@ Status::type track_linepass (
         unsigned int le = element_offset;
 
         status2 = track_linepass (
-            accelerator, orig_pos[i], final_pos, le, lp, indices, nturn);
+            accelerator, orig_pos[i], final_pos, le, lp, indices,
+        line_length, ddl, time_aware_element_indices, time_aware_element_positions);
 
         if (status2 != Status::success) status = status2;
 
@@ -370,7 +459,30 @@ Status::type track_ringpass (
 
     Status::type status  = Status::success;
     std::vector<Pos<T> > final_pos;
-    double nturn = 0.0;
+
+    // for longitudinal kick before RF cavities
+    std::vector<double> TAW_positions = {0.0, };
+    std::vector<unsigned int> TAW_indices = {};
+    unsigned int eoff = 0; eoff += element_offset;
+    size_t nr_elements = accelerator.lattice.size();
+    PassMethodsClass PMClass = PassMethodsClass();
+    double s_pos = 0.0;
+    for (size_t i = 0; i < nr_elements; i+=) {
+        auto elem = accelerator.lattice[eoff];
+        if (PMClass.is_time_aware_pm(elem.pass_method)) {
+            s_pos += (elem.length*0.5);
+            TAW_positions.push_back(s_pos);
+            TAW_indices.push_back(eoff);
+            s_pos += (elem.length*0.5);
+        }
+        else {
+            s_pos += elem.length;
+        }
+        eoff = (eoff + 1) % nr_elements;
+    }
+    TAW_positions.push_back(s_pos);
+    double accelerator_length = s_pos;
+    double ddl = light_speed*accelerator.harmonic_number/element.frequency - accelerator_length;
 
     if (trajectory) pos.reserve(nr_turns+1);
 
@@ -379,7 +491,7 @@ Status::type track_ringpass (
         // stores trajectory at beggining of each turn
         if (trajectory) pos.push_back(orig_pos);
 
-        if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false, nturn)) != Status::success) {
+        if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false, accelerator_length, ddl, TAW_positions)) != Status::success) {
 
             // fill last of vector with nans
             pos.emplace_back(

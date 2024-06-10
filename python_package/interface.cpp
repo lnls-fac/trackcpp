@@ -21,7 +21,7 @@
 Status::type track_elementpass_wrapper (
          const Element& el,
          double *pos, int n1, int n2,
-         const Accelerator& accelerator, const double nturn) {
+         const Accelerator& accelerator) {
 
     std::vector<Pos<double> > post;
 
@@ -33,7 +33,7 @@ Status::type track_elementpass_wrapper (
             pos[4*n2 + i], pos[5*n2 + i]);
     }
     Status::type status = track_elementpass(
-        el, post, accelerator, nturn);
+        el, post, accelerator);
 
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;

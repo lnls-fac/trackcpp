@@ -365,7 +365,7 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
       }; break;
       case FlatFileType::cavity:
       {
-        e.pass_method = PassMethod::pm_cavity_0_pass;
+        e.pass_method = PassMethod::pm_cavity_pass;
         int hnumber; double energy;
         fp >> e.voltage >> e.frequency >> hnumber >> energy;
         e.voltage *= energy; e.frequency *= light_speed / (2*M_PI);

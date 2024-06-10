@@ -32,7 +32,6 @@ struct LinePassArgs {
     std::vector< unsigned int > indices;
     std::vector< unsigned int > lost_plane;
     std::vector< unsigned int > lost_element;
-    double nturn = 0.0;
 };
 
 struct RingPassArgs : public LinePassArgs {
@@ -53,7 +52,7 @@ public:
 Status::type track_elementpass_wrapper (
         const Element& el,
         double *pos, int n1, int n2,
-        const Accelerator& accelerator, const double nturn = 0.0);
+        const Accelerator& accelerator);
 
 Status::type track_linepass_wrapper (
         const Accelerator& accelerator,
