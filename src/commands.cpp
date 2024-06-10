@@ -88,7 +88,7 @@ int cmd_dynap_xy(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
   // builds accelerator
-  accelerator.energy = ring_energy;
+  accelerator.setEnergy(ring_energy);
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
   accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
@@ -174,7 +174,7 @@ int cmd_dynap_ex(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
   // builds accelerator
-  accelerator.energy = ring_energy;
+  accelerator.setEnergy(ring_energy);
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
   accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
@@ -263,7 +263,7 @@ int cmd_dynap_ex(const std::vector<std::string>& args) {
 //   }
 //
 //   // builds accelerator
-//   accelerator.energy = ring_energy;
+//   accelerator.setEnergy(ring_energy);
 //   accelerator.harmonic_number = harmonic_number;
 //   accelerator.cavity_on = (cavity_state == "on");
 //   accelerator.radiation_on = (radiation_state == "on");
@@ -366,7 +366,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
   
   // builds accelerator
-  accelerator.energy = ring_energy;
+  accelerator.setEnergy(ring_energy);
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
   accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
@@ -462,7 +462,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
 //   }
 //
 //   // builds accelerator
-//   accelerator.energy = ring_energy;
+//   accelerator.setEnergy(ring_energy);
 //   accelerator.harmonic_number = harmonic_number;
 //   accelerator.cavity_on = (cavity_state == "on");
 //   accelerator.radiation_on = (radiation_state == "on");
@@ -555,7 +555,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
 //   }
 //
 //   // builds accelerator
-//   accelerator.energy = ring_energy;
+//   accelerator.setEnergy(ring_energy);
 //   accelerator.harmonic_number = harmonic_number;
 //   accelerator.cavity_on = (cavity_state == "on");
 //   accelerator.radiation_on = (radiation_state == "on");
@@ -643,7 +643,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
 //   }
 //
 //   // builds accelerator
-//   accelerator.energy = ring_energy;
+//   accelerator.setEnergy(ring_energy);
 //   accelerator.harmonic_number = harmonic_number;
 //   accelerator.cavity_on = (cavity_state == "on");
 //   accelerator.radiation_on = (radiation_state == "on");
@@ -731,7 +731,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
 //   }
 //
 //   // builds accelerator
-//   accelerator.energy = ring_energy;
+//   accelerator.setEnergy(ring_energy);
 //   accelerator.harmonic_number = harmonic_number;
 //   accelerator.cavity_on = (cavity_state == "on");
 //   accelerator.radiation_on = (radiation_state == "on");
@@ -824,7 +824,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
 //   }
 //
 //   // builds accelerator
-//   accelerator.energy = ring_energy;
+//   accelerator.setEnergy(ring_energy);
 //   accelerator.harmonic_number = harmonic_number;
 //   accelerator.cavity_on = (cavity_state == "on");
 //   accelerator.radiation_on = (radiation_state == "on");
@@ -907,7 +907,7 @@ int cmd_dynap_xyfmap(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
   // builds accelerator
-  accelerator.energy = ring_energy;
+  accelerator.setEnergy(ring_energy);
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
   accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
@@ -990,7 +990,7 @@ int cmd_dynap_exfmap(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
   // builds accelerator
-  accelerator.energy = ring_energy;
+  accelerator.setEnergy(ring_energy);
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
   accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;
@@ -1073,7 +1073,7 @@ int cmd_track_linepass(const std::vector<std::string>& args) {
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
   // builds accelerator
-  accelerator.energy = ring_energy;
+  accelerator.setEnergy( ring_energy);
   accelerator.harmonic_number = harmonic_number;
   accelerator.cavity_on = (cavity_state == "on");
   accelerator.radiation_on = (radiation_state == "on") ? RadiationState::damping : RadiationState::off;

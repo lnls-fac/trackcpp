@@ -182,7 +182,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd[0] == '#') continue;
     if (cmd[0] == '%') {
       ss >> cmd;
-      if (cmd.compare("energy") == 0) { ss >> accelerator.energy; continue; }
+      if (cmd.compare("energy") == 0) { double energy; ss >> energy; accelerator.setEnergy(energy); continue; }
       if (cmd.compare("harmonic_number") == 0) { ss >> accelerator.harmonic_number; continue; }
       if (cmd.compare("cavity_on") == 0) { accelerator.cavity_on = read_boolean_string(ss); continue; }
       // radiation_on needs its own processing function due backward compatibility
@@ -370,7 +370,7 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         fp >> e.voltage >> e.frequency >> hnumber >> energy;
         e.voltage *= energy; e.frequency *= light_speed / (2*M_PI);
         accelerator.harmonic_number = hnumber;
-        accelerator.energy = energy;
+        accelerator.setEnergy(energy) ;
       }; break;
       case FlatFileType::mpole:
       {

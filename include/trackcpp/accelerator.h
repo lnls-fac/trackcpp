@@ -22,12 +22,15 @@
 #include <vector>
 #include <string>
 
-//struct Accelerator {
 class Accelerator {
+
 public:
-  // energy < electron_rest_energy_eV -> energy = electron_rest_energy_eV:
-  Accelerator(const double& energy=-1);
-  double                  energy;              // [eV]
+  Accelerator(double energy=-1);
+  const double&           energy; // [eV]
+  const double&           gamma_factor;
+  const double&           beta_factor;
+  const double&           velocity;
+  const double&           brho;
   bool                    cavity_on = false;
   int                     radiation_on = RadiationState::off;
   bool                    vchamber_on = false;
@@ -35,11 +38,28 @@ public:
   std::vector<Element>    lattice;
   std::string             lattice_version = "";
 
+
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
+  void setEnergy(const double);
+  void setGammaFactor(const double);
+  void setBetaFactor(const double);
+  void setVelocity(const double);
+  void setMagneticRigidity(const double);
+
+  double get_time_aware_fraction() const;
+
+private:
+  // Private members to store calculated values
+  double                  _energy;
+  double                  _gamma_factor;
+  double                  _beta_factor;
+  double                  _velocity;
+  double                  _brho;
+
 };
 
 #endif

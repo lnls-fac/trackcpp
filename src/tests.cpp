@@ -328,7 +328,7 @@ int test_simple_drift() {
 
   Accelerator accelerator;
 
-  accelerator.energy = 3e9; // [ev]
+  accelerator.setEnergy(3e9); // [ev]
   accelerator.harmonic_number = 864;
   accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
@@ -356,7 +356,7 @@ int test_simple_quadrupole() {
 
   Accelerator accelerator;
 
-  accelerator.energy = 3e9; // [ev]
+  accelerator.setEnergy(3e9); // [ev]
   accelerator.harmonic_number = 864;
   accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
@@ -383,7 +383,7 @@ int test_simple_quadrupole() {
 int test_linepass2() {
   Accelerator accelerator;
   //sirius_v500(accelerator.lattice);
-  accelerator.energy = 3e9; // [ev]
+  accelerator.setEnergy(3e9); // [ev]
   accelerator.harmonic_number = 864;
   accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
@@ -422,7 +422,7 @@ int test_linepass2() {
 int test_flatfile() {
 
   Accelerator accelerator;
-  accelerator.energy = 0.0;
+  accelerator.setEnergy(0.0);
   accelerator.harmonic_number = 0;
   accelerator.cavity_on = false;
   accelerator.radiation_on = RadiationState::off;
