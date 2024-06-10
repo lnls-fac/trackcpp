@@ -35,6 +35,43 @@ double Accelerator::get_length() const {
   return length;
 }
 
+inline bool check_time_aware_pm(const int i){
+  bool flag = false;
+  switch (i)
+  {
+  case PassMethod::pm_cavity_0_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_1_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_2_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_3_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_4_pass:
+    flag = true;
+    break;
+  case PassMethod::pm_cavity_5_pass:
+    flag = true;
+    break;
+  default:
+    break;
+  }
+  return flag;
+}
+
+double Accelerator::get_time_aware_frac() const {
+  double count = 0.0;
+  for(auto i=0; i<lattice.size(); ++i){
+    if (check_time_aware_pm(lattice[i].pass_method)) count += 1.0;
+  }
+  if (count != 0) return 1.0/count;
+  return 1.0;
+}
+
 bool Accelerator::operator==(const Accelerator& o) const {
 
   if (this->energy != o.energy) return false;
