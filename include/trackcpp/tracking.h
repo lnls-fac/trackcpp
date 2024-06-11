@@ -136,6 +136,7 @@ Status::type track_elementpass (
 //        pos:            Pos vector of particles' final coordinates (or trajetory)
 //        element_offset:    in case of problems with passmethods, '*element_offset' is the index of the corresponding element
 //        RETURN:            status do tracking (see 'auxiliary.h')
+
 template <typename T>
 Status::type track_linepass (
         const Accelerator& accelerator,

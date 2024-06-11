@@ -87,10 +87,8 @@ Status::type calc_twiss(Accelerator& accelerator,
   std::vector<unsigned int> TAW_indices;
   double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions);
 
-
   Status::type status = track_linepass(accelerator, fp, closed_orbit, element_offset, lost_plane, true, accelerator_length, TAW_indices, TAW_positions);
   if (status != Status::success) return status;
-
 
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;

@@ -392,7 +392,6 @@ Status::type pm_corrector_pass(Pos<T> &pos, const Element &elem,
   return Status::success;
 }
 
-
 template <typename T>
 Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
                             const Accelerator& accelerator) {
@@ -402,31 +401,9 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
   global_2_local(pos, elem);
   double nv = elem.voltage / accelerator.energy;
   double frf = elem.frequency;
-  // double harmonic_number = accelerator.harmonic_number;
-  // double L0 = accelerator.get_length();
-  // double s = 0.0;
-  // double accum_s = 0.0;
-  // unsigned int last_cav_idx = 0;
-  // for (unsigned int i = 0; i < accelerator.lattice.size(); i++){
-  //   auto elem2 = accelerator.lattice[i];
-  //   if (elem2 == elem){
-  //     accum_s += s;
-  //   }
-  //   if (elem2.frequency != 0.0){
-  //     s = 0.0;
-  //     last_cav_idx = i;
-  //   }
-  //   s += elem2.length;
-  // }
-  // double ddl = (light_speed*harmonic_number/frf - L0);
-  // std::cout << "accum_s = " << accum_s << ", s = " << s << ", last_cav_index: " << last_cav_idx << std::endl;
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    // dl -= ddl*(accum_s/L0);
     de +=  -nv * sin(TWOPI*frf *dl/ light_speed - elem.phase_lag);
-    // if (elem == accelerator.lattice[last_cav_idx]){
-    //   dl -= ddl*(s/L0);
-    // }
     } else {
     T &rx = pos.rx, &px = pos.px;
     T &ry = pos.ry, &py = pos.py;
@@ -438,11 +415,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     ry += norml * py;
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
-    // dl -= ddl*(accum_s/L0);
     de += -nv * sin(TWOPI*frf *dl/ light_speed - elem.phase_lag);
-    // if (elem == accelerator.lattice[last_cav_idx]){
-    //   dl -= ddl*(s/L0);
-    // }
     // drift half length
     pnorm   = 1.0 / (1.0 + de);
     norml   = (0.5 * elem.length) * pnorm;
@@ -467,7 +440,6 @@ Status::type pm_thinsext_pass(Pos<T> &pos, const Element &elem,
 
   return Status::passmethod_not_implemented;
 }
-
 
 template <typename T>
 Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,

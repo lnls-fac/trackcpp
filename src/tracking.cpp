@@ -43,12 +43,11 @@ Status::type track_findm66 (Accelerator& accelerator,
                             Pos<double>& v0,
                             std::vector<unsigned int >& indices,
                             double line_length = 1.0,
-        std::vector<unsigned int> time_aware_element_indices = {0,},
-        std::vector<double> time_aware_element_positions = {0.0,}) {
+                            std::vector<unsigned int> time_aware_element_indices = {0,},
+                            std::vector<double> time_aware_element_positions = {0.0,}) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
-
   Pos<double> fp = fixed_point;
 
   const int radsts = accelerator.radiation_on;
@@ -64,14 +63,12 @@ Status::type track_findm66 (Accelerator& accelerator,
 	for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
 	for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
 
-
   Pos<Tpsa<6,1> > map;
   map.rx = Tpsa<6,1>(fp.rx, 0); map.px = Tpsa<6,1>(fp.px, 1);
   map.ry = Tpsa<6,1>(fp.ry, 2); map.py = Tpsa<6,1>(fp.py, 3);
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
   tm.clear(); tm.reserve(indices.size());
-
   unsigned int TAW_pivot = 0;
   double ddl = 0;
   for(unsigned int i=0; i<lattice.size(); ++i) {
@@ -123,9 +120,7 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
-
   accelerator.radiation_on = radsts;
-
   return status;
 
 }

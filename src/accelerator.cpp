@@ -27,15 +27,6 @@ double Accelerator::get_length() const {
   return length;
 }
 
-// double Accelerator::get_time_aware_frac() const {
-//   double count = 0.0;
-//   for(auto i=0; i<lattice.size(); ++i){
-//     if (check_time_aware_pm(lattice[i].pass_method)) count += 1.0;
-//   }
-//   if (count != 0) return 1.0/count;
-//   return 1.0;
-// }
-
 bool Accelerator::operator==(const Accelerator& o) const {
 
   if (this->energy != o.energy) return false;

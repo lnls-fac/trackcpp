@@ -31,7 +31,7 @@ public:
     static const int pm_str_mpole_symplectic4_pass     = 2;
     static const int pm_bnd_mpole_symplectic4_pass     = 3;
     static const int pm_corrector_pass                 = 4;
-    static const int pm_cavity_pass                  = 5;
+    static const int pm_cavity_pass                    = 5;
     static const int pm_thinquad_pass                  = 6;
     static const int pm_thinsext_pass                  = 7;
     static const int pm_kickmap_pass                   = 8;
@@ -74,7 +74,7 @@ struct PassMethod {
         pm_str_mpole_symplectic4_pass     = 2,
         pm_bnd_mpole_symplectic4_pass     = 3,
         pm_corrector_pass                 = 4,
-        pm_cavity_pass                  = 5,
+        pm_cavity_pass                    = 5,
         pm_thinquad_pass                  = 6,
         pm_thinsext_pass                  = 7,
         pm_kickmap_pass                   = 8,
