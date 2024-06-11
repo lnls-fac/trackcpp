@@ -36,7 +36,7 @@ int test_linepass(const Accelerator& accelerator) {
   std::vector<Pos<> > new_pos;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  Status::type status = track_linepass(accelerator, pos, new_pos, element_offset, lost_plane, true);
+  Status::type status = track_linepass(accelerator, pos, new_pos, element_offset, lost_plane, true, 0, {0,}, {0.0, 0.0, });
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
 
@@ -65,7 +65,7 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   std::vector<Pos<Tpsa<6,order> > > new_tpsa;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, tpsa, new_tpsa, element_offset, lost_plane, false);
+  track_linepass(accelerator, tpsa, new_tpsa, element_offset, lost_plane, false, 0, {0,}, {0.0, 0.0, });
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
     //const Pos<Tpsa<6,1> >& c = new_particles[i];
     //std::cout << c.rx << std::endl;
@@ -403,7 +403,7 @@ int test_linepass2() {
       pos,     // vector with electron coordinates from tracking at every element.
       element_offset,  // index of starting element for tracking
       lost_plane,       // return plane in which particle was lost, if the case.
-      trajectory);
+      trajectory, 0, {0,}, {0.0, 0.0, });
 
       for(unsigned int i=0; i<10; ++i) {
         std::cout << std::endl;
