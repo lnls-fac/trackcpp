@@ -39,8 +39,8 @@ public:
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
-  // double get_time_aware_frac() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
+  double get_time_aware_elements_info(std::vector<unsigned int>& TAW_indices, std::vector<double>& TAW_positions, unsigned int element_offset = 0) const;
 };
 
 #endif

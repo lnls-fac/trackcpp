@@ -61,3 +61,29 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "lattice_version: " << a.lattice_version;
   return out;
 }
+
+double Accelerator::get_time_aware_elements_info(std::vector<unsigned int>& TAW_indices, std::vector<double>& TAW_positions, unsigned int element_offset) const {
+  // for longitudinal kick before RF cavities
+  TAW_positions.clear();
+  TAW_indices.clear();
+  unsigned int eoff = 0; eoff += element_offset;
+  size_t nr_elements = this->lattice.size();
+  PassMethodsClass PMClass = PassMethodsClass();
+  double s_pos = 0.0;
+  TAW_positions.push_back(s_pos);
+  for (size_t i = 0; i < nr_elements; i++) {
+      auto elem = this->lattice[eoff];
+      if (PMClass.is_time_aware_pm(elem.pass_method)) {
+          s_pos += (elem.length*0.5);
+          TAW_positions.push_back(s_pos);
+          TAW_indices.push_back(i);
+          s_pos += (elem.length*0.5);
+      }
+      else {
+          s_pos += elem.length;
+      }
+      eoff = (eoff + 1) % nr_elements;
+  }
+  TAW_positions.push_back(s_pos);
+  return s_pos;
+}

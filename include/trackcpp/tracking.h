@@ -29,12 +29,16 @@
 
 Status::type track_findm66(
     Accelerator& accelerator, const Pos<double>& fixed_point,
-    std::vector<Matrix>& tm, Matrix& m66, Pos<double>& v0);
+    std::vector<Matrix>& tm, Matrix& m66, Pos<double>& v0, double line_length,
+        std::vector<unsigned int> time_aware_element_indices,
+        std::vector<double> time_aware_element_positions);
 
 Status::type track_findm66(
     Accelerator& accelerator, const Pos<double>& fixed_point,
     std::vector<Matrix>& tm, Matrix& m66, Pos<double>& v0,
-    std::vector<unsigned int >& indices);
+    std::vector<unsigned int >& indices, double line_length,
+        std::vector<unsigned int> time_aware_element_indices,
+        std::vector<double> time_aware_element_positions);
 
 Status::type track_findorbit4(
     Accelerator& accelerator, std::vector<Pos<double> >& closed_orbit,
@@ -132,102 +136,6 @@ Status::type track_elementpass (
 //        pos:            Pos vector of particles' final coordinates (or trajetory)
 //        element_offset:    in case of problems with passmethods, '*element_offset' is the index of the corresponding element
 //        RETURN:            status do tracking (see 'auxiliary.h')
-// template <typename T>
-// Status::type track_linepass (
-//         const Accelerator& accelerator,
-//         Pos<T>& orig_pos,              // initial electron coordinates
-//         std::vector<Pos<T> >& pos,     // vector with tracked electron coordinates at start of every element and at the end of last one.
-//         unsigned int& element_offset,  // index of starting element for tracking
-//         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
-//         std::vector<unsigned int >& indices, double nturn = 0.0) {// indices to return;
-
-//     Status::type status = Status::success;
-//     lost_plane = Plane::no_plane;
-
-//     const std::vector<Element>& line = accelerator.lattice;
-//     int nr_elements  = line.size();
-
-//     //pos.clear(); other functions assume pos is not clearedin linepass!
-//     pos.reserve(pos.size() + indices.size());
-
-//     // create vector of booleans help determine when to store position
-//     std::vector<bool> indcs;
-//     indcs.reserve(nr_elements+1);
-//     for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
-//     for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
-
-//     for(int i=0; i<nr_elements; ++i) {
-
-//         // syntactic-sugar for read-only access to element object parameters
-//         const Element& element = line[element_offset];
-
-//         // stores trajectory at entrance of each element
-//         if (indcs[i]) pos.push_back(orig_pos);
-
-//         status = track_elementpass (element, orig_pos, accelerator, nturn);
-
-//         const T& rx = orig_pos.rx;
-//         const T& ry = orig_pos.ry;
-
-//         // checks if particle is lost
-//         if (not isfinite(rx)) {
-//             lost_plane = Plane::x;
-//             status = Status::particle_lost;
-//         }
-//         if (not isfinite(ry)) {
-//             if (status != Status::particle_lost) {
-//                 lost_plane = Plane::y;
-//                 status = Status::particle_lost;
-//             } else {
-//                 lost_plane = Plane::xy;
-//             }
-//         }
-//         if ((status != Status::particle_lost) and accelerator.vchamber_on) {
-//             if (element.vchamber < 0) {
-//                 // invalid p-norm shape (negative p)
-//                 // safely signals lost particle
-//                 lost_plane = Plane::xy;
-//                 status = Status::particle_lost;
-//             } else if (element.vchamber == VChamberShape::rectangle) {
-//                 // rectangular vacuum chamber
-//                 if (((rx <= element.hmin) or (rx >= element.hmax))) {
-//                     lost_plane = Plane::x;
-//                     status = Status::particle_lost;
-//                 }
-//                 if (((ry <= element.vmin) or (ry >= element.vmax))) {
-//                     if (status != Status::particle_lost) {
-//                         lost_plane = Plane::y;
-//                         status = Status::particle_lost;
-//                     } else {
-//                         lost_plane = Plane::xy;
-//                     }
-//                 }
-//             } else if (get_norm_amp_in_vchamber(element, rx, ry) > 1) {
-//                 // lost in rhombus, elliptic and all finite p-norm shapes
-//                 lost_plane = Plane::xy;
-//                 status = Status::particle_lost;
-//             }
-//         }
-
-//         if (status != Status::success) {
-//             // fill rest of vector with nans
-//             for(int ii=i+1; ii<=nr_elements; ++ii) {
-//                 if (indcs[ii]) pos.emplace_back(
-//                     nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
-//             }
-//             return status;
-//         }
-//         // moves to next element index
-//         element_offset = (element_offset + 1) % nr_elements;
-//     }
-
-//     // stores final particle position at the end of the line
-//     if (indcs[nr_elements]) pos.push_back(orig_pos);
-
-//     return (status == Status::success) ? status: Status::particle_lost;
-// }
-
-// accelerator_length, ddl, TAW_positions
 template <typename T>
 Status::type track_linepass (
         const Accelerator& accelerator,
@@ -236,7 +144,7 @@ Status::type track_linepass (
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
         std::vector<unsigned int >& indices, // indices to return;
-        double line_length = 0.0,
+        double line_length = 1.0,
         std::vector<unsigned int> time_aware_element_indices = {0, },
         std::vector<double> time_aware_element_positions = {0.0, }) {
 
@@ -367,9 +275,9 @@ Status::type track_linepass (
         unsigned int& element_offset,  // index of starting element for tracking
         Plane::type& lost_plane,       // return plane in which particle was lost, if the case.
         bool trajectory,               // whether function should return coordinates at all elements
-        double line_length = 0.0,
+        double line_length = 1.0,
         std::vector<unsigned int> time_aware_element_indices = {0,},
-        std::vector<double> time_aware_element_positions = {0,}) {
+        std::vector<double> time_aware_element_positions = {0.0,}) {
 
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -396,7 +304,7 @@ Status::type track_linepass (
         std::vector<unsigned int >& lost_plane,
         std::vector<unsigned int >& lost_element,
         std::vector<unsigned int >& indices,
-        double line_length = 0.0,
+        double line_length = 1.0,
         std::vector<unsigned int> time_aware_element_indices = {0, },
         std::vector<double> time_aware_element_positions = {0.0, }) {
 
@@ -443,8 +351,6 @@ Status::type track_linepass (
 //        turn_idx:        in case of problems with passmethods, '*turn_idx' is the index of the corresponding turn
 //        element_offset:    in case of problems with passmethods, '*element_offset' is the index of the corresponding element
 //        RETURN:            status do tracking (see 'auxiliary.h')
-
-
 template <typename T>
 Status::type track_ringpass (
         const Accelerator& accelerator,
@@ -460,27 +366,9 @@ Status::type track_ringpass (
     std::vector<Pos<T> > final_pos;
 
     // for longitudinal kick before RF cavities
-    std::vector<double> TAW_positions = {0.0, };
-    std::vector<unsigned int> TAW_indices = {};
-    unsigned int eoff = 0; eoff += element_offset;
-    size_t nr_elements = accelerator.lattice.size();
-    PassMethodsClass PMClass = PassMethodsClass();
-    double s_pos = 0.0;
-    for (size_t i = 0; i < nr_elements; i++) {
-        auto elem = accelerator.lattice[eoff];
-        if (PMClass.is_time_aware_pm(elem.pass_method)) {
-            s_pos += (elem.length*0.5);
-            TAW_positions.push_back(s_pos);
-            TAW_indices.push_back(eoff);
-            s_pos += (elem.length*0.5);
-        }
-        else {
-            s_pos += elem.length;
-        }
-        eoff = (eoff + 1) % nr_elements;
-    }
-    TAW_positions.push_back(s_pos);
-    double accelerator_length = s_pos;
+    std::vector<double> TAW_positions;
+    std::vector<unsigned int> TAW_indices;
+    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
 
     if (trajectory) pos.reserve(nr_turns+1);
 
