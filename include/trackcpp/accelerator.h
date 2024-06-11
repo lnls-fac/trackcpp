@@ -40,7 +40,7 @@ public:
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
-  double get_time_aware_elements_info(std::vector<unsigned int>& TAW_indices, std::vector<double>& TAW_positions, unsigned int element_offset = 0) const;
+  double get_time_aware_elements_info(std::vector<unsigned int>& TAW_indices, std::vector<double>& TAW_positions) const;
 };
 
 #endif

@@ -42,9 +42,9 @@ Status::type track_findm66 (Accelerator& accelerator,
                             Matrix& m66,
                             Pos<double>& v0,
                             std::vector<unsigned int >& indices,
-                            double line_length = 1.0,
-                            std::vector<unsigned int> time_aware_element_indices = {0,},
-                            std::vector<double> time_aware_element_positions = {0.0,}) {
+                            const double line_length,
+                            const std::vector<unsigned int>& time_aware_element_indices,
+                            const std::vector<double>& time_aware_element_positions) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
@@ -131,9 +131,9 @@ Status::type track_findm66 (Accelerator& accelerator,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
                             Pos<double>& v0,
-                            double line_length = 1.0,
-        std::vector<unsigned int> time_aware_element_indices = {0,},
-        std::vector<double> time_aware_element_positions = {0.0,}) {
+                            const double line_length,
+        const std::vector<unsigned int>& time_aware_element_indices,
+        const std::vector<double>& time_aware_element_positions) {
 
   std::vector<unsigned int> indices;
   unsigned int nr_elements = accelerator.lattice.size();
