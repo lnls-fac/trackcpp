@@ -212,7 +212,8 @@ Status::type track_linepass (
 
         if (status != Status::success) {
             // fill rest of vector with nans
-            for(int ii=i+1; ii<=nr_elements; ++ii) {
+            if (indcs[i+1]) pos.push_back(orig_pos);
+            for(int ii=i+2; ii<=nr_elements; ++ii) {
                 if (indcs[ii]) pos.emplace_back(
                     nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
             }
