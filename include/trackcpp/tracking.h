@@ -352,8 +352,7 @@ Status::type track_ringpass (
         if ((status = track_linepass (accelerator, orig_pos, final_pos, element_offset, lost_plane, false)) != Status::success) {
 
             // fill last of vector with nans
-            pos.emplace_back(
-                nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
+            pos.push_back(orig_pos);
             if (trajectory) for(int i=lost_turn+1; i<nr_turns; ++i) {
                     pos.emplace_back(
                         nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
