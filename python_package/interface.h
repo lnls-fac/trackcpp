@@ -29,18 +29,20 @@
 
 struct LinePassArgs {
     unsigned int element_offset;
-    std::vector< unsigned int > indices;
-    std::vector< unsigned int > lost_plane;
-    std::vector< unsigned int > lost_element;
+    std::vector<unsigned int> indices;
+    std::vector<unsigned int> lost_plane;
+    std::vector<int> lost_element;
+    std::vector<bool> lost_flag;
 };
 
 struct RingPassArgs : public LinePassArgs {
     unsigned int nr_turns;
-    std::vector< unsigned int > lost_turn;
+    unsigned int turn_by_turn;
     unsigned int element_offset;
-    std::vector< unsigned int > lost_plane;
-    std::vector< unsigned int > lost_element;
-    unsigned int trajectory;
+    std::vector<unsigned int> lost_plane;
+    std::vector<int> lost_turn;
+    std::vector<int> lost_element;
+    std::vector<bool> lost_flag;
 };
 
 struct String {
@@ -50,28 +52,32 @@ public:
 };
 
 Status::type track_elementpass_wrapper (
-        const Element& el,
-        double *pos, int n1, int n2,
-        const Accelerator& accelerator);
+    const Accelerator& accelerator,
+    const Element& el,
+    double *pos, int n1, int n2
+);
 
 Status::type track_linepass_wrapper (
-        const Accelerator& accelerator,
-        double *orig_pos, int ni1, int ni2,
-        double *pos, int n1, int n2,
-        LinePassArgs& args);
+    const Accelerator& accelerator,
+    double *orig_pos, int ni1, int ni2,
+    double *pos, int n1, int n2,
+    LinePassArgs& args
+);
 
 Status::type track_ringpass_wrapper (
-        const Accelerator& accelerator,
-        double *orig_pos, int ni1, int ni2,
-        double *pos, int n1, int n2,
-        RingPassArgs& args);
+    const Accelerator& accelerator,
+    double *orig_pos, int ni1, int ni2,
+    double *pos, int n1, int n2,
+    RingPassArgs& args
+);
 
 Status::type calc_twiss_wrapper (
-        Accelerator& accelerator,
-        const Pos<double>& fixed_point,
-        Matrix& m66,
-        double *twiss, int n1, int n2,
-        Twiss twiss0);
+    Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    Matrix& m66,
+    double *twiss, int n1, int n2,
+    Twiss twiss0
+);
 
 Element marker_wrapper(const std::string& fam_name_);
 Element bpm_wrapper(const std::string& fam_name_);

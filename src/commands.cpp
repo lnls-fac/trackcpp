@@ -364,7 +364,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
     return EXIT_FAILURE;
   }
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
-  
+
   // builds accelerator
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;
@@ -1084,7 +1084,7 @@ int cmd_track_linepass(const std::vector<std::string>& args) {
   std::vector<Pos<double>> pos_list;
   Plane::type lost_plane;
   unsigned int offset_element = start_element;
-  track_linepass(accelerator, pos, pos_list, offset_element, lost_plane, true);
+  track_linepass(accelerator, pos, true, offset_element, pos_list, lost_plane);
 
   std::cout << get_timestamp() << " saving track_linepass data to file" << std::endl;
   status = print_tracking_linepass(accelerator, pos_list, start_element, "track_linepass_out.txt");

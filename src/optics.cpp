@@ -81,7 +81,9 @@ Status::type calc_twiss(Accelerator& accelerator,
   std::vector<Pos<double>> closed_orbit;
   Plane::type lost_plane;
   unsigned int element_offset = 0;
-  Status::type status = track_linepass(accelerator, fp, closed_orbit, element_offset, lost_plane, true);
+  Status::type status = track_linepass(
+    accelerator, fp, true, element_offset, closed_orbit, lost_plane
+  );
   if (status != Status::success) return status;
 
 
@@ -148,7 +150,9 @@ Status::type calc_twiss(Accelerator& accelerator,
     fpp.px += twiss0.etax[1] * dpp;
     fpp.ry += twiss0.etay[0] * dpp;
     fpp.py += twiss0.etay[1] * dpp;
-    Status::type status = track_linepass(accelerator, fpp, codp, element_offset, lost_plane, true);
+    Status::type status = track_linepass(
+      accelerator, fpp, true, element_offset, codp, lost_plane
+    );
     if (status != Status::success) return status;
   }
 

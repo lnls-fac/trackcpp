@@ -47,7 +47,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   const std::vector<Element>& lattice = accelerator.lattice;
 
   Pos<double> fp = fixed_point;
-  
+
   const int radsts = accelerator.radiation_on;
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;
@@ -85,7 +85,7 @@ Status::type track_findm66 (Accelerator& accelerator,
     tm.push_back(std::move(m));
     }
     // track through element
-    if ((status = track_elementpass (lattice[i], map, accelerator)) != Status::success) return status;
+    if ((status = track_elementpass(accelerator, lattice[i], map)) != Status::success) return status;
   }
 
   m66 = Matrix(6);
@@ -107,9 +107,9 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
-  
+
   accelerator.radiation_on = radsts;
-  
+
   return status;
 
 }
@@ -173,13 +173,27 @@ Status::type track_findorbit6(
     Plane::type lost_plane;
     Status::type status = Status::success;
 
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[4], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[5], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[0], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[1], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[2], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[3], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[4], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[5], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[6], false, element_offset, co2, lost_plane
+    ));
 
     if (status != Status::success) {
       return Status::findorbit_one_turn_matrix_problem;
@@ -214,7 +228,9 @@ Status::type track_findorbit6(
   closed_orbit.clear();
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
+  track_linepass(
+    accelerator, co[6], true, element_offset, closed_orbit, lost_plane
+  );
   accelerator.radiation_on = radsts;
   return Status::success;
 
@@ -253,11 +269,21 @@ Status::type track_findorbit4(
     unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[0], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[1], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[2], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[3], co2, element_offset, lost_plane, false));
-    status = (Status::type) ((int) status | (int) track_linepass(accelerator, co[6], co2, element_offset, lost_plane, false));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[0], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[1], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[2], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[3], false, element_offset, co2, lost_plane
+    ));
+    status = (Status::type) ((int) status | (int) track_linepass(
+      accelerator, co[6], false, element_offset, co2, lost_plane
+    ));
     if (status != Status::success) {
       return Status::findorbit_one_turn_matrix_problem;
     }
@@ -286,7 +312,9 @@ Status::type track_findorbit4(
   closed_orbit.clear();
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, co[6], closed_orbit, element_offset, lost_plane, true);
+  track_linepass(
+    accelerator, co[6], true, element_offset, closed_orbit, lost_plane
+  );
   accelerator.radiation_on = radsts;
   return Status::success;
 
