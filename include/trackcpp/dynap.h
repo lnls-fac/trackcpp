@@ -27,8 +27,8 @@
 struct DynApGridPoint {
   Pos<double>  p;              // Dislocation around closed-orbit
   unsigned int start_element;
-  int lost_turn;
-  int lost_element;
+  unsigned int lost_turn;
+  unsigned int lost_element;
   Plane::type  lost_plane;     // Plane::no_plane,Plane::x,Plane::y,Plane::z
   double       nux1, nuy1;     // tunes at first half number of turns
   double       nux2, nuy2;     // tunes at second half number of turns

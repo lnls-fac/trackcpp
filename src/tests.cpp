@@ -89,7 +89,7 @@ int test_ringpass(const Accelerator& accelerator) {
 
   std::vector<Pos<double> > new_pos;
   unsigned int element_offset = 0;
-  int lost_turn = 0;
+  unsigned int lost_turn = 0;
   Plane::type lost_plane;
 
   clock_t begin, end;
