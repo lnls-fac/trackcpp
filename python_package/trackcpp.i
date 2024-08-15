@@ -42,6 +42,8 @@ namespace std {
     %template(CppStringVector) vector<string>;
     %template(CppDoubleVector) vector<double>;
     %template(CppUnsigIntVector) vector<unsigned int>;
+    %template(CppIntVector) vector<int>;
+    %template(CppBoolVector) vector<bool>;
     %template(CppElementVector) vector<Element>;
     %template(CppDoublePosVector) vector< Pos<double> >;
     %template(CppDoubleMatrix) vector< vector<double> >;

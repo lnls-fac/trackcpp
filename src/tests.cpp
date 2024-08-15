@@ -36,7 +36,9 @@ int test_linepass(const Accelerator& accelerator) {
   std::vector<Pos<> > new_pos;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  Status::type status = track_linepass(accelerator, pos, new_pos, element_offset, lost_plane, true);
+  Status::type status = track_linepass(
+    accelerator, pos, true, element_offset, new_pos, lost_plane
+  );
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
 
@@ -65,7 +67,9 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   std::vector<Pos<Tpsa<6,order> > > new_tpsa;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, tpsa, new_tpsa, element_offset, lost_plane, false);
+  track_linepass(
+    accelerator, tpsa, false, element_offset, new_tpsa, lost_plane
+  );
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
     //const Pos<Tpsa<6,1> >& c = new_particles[i];
     //std::cout << c.rx << std::endl;
@@ -84,13 +88,23 @@ int test_ringpass(const Accelerator& accelerator) {
   pos.ry = 0.00010;
 
   std::vector<Pos<double> > new_pos;
-  unsigned int element_offset = 0, lost_turn = 0;
+  unsigned int element_offset = 0;
+  unsigned int lost_turn = 0;
   Plane::type lost_plane;
 
   clock_t begin, end;
   double time_spent;
   begin = clock();
-  Status::type status = track_ringpass(accelerator, pos, new_pos, 5000, lost_turn, element_offset, lost_plane, true);
+  Status::type status = track_ringpass(
+    accelerator,
+    pos,
+    5000,
+    true,
+    element_offset,
+    new_pos,
+    lost_plane,
+    lost_turn
+  );
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
@@ -339,7 +353,7 @@ int test_simple_drift() {
   accelerator.lattice.push_back(ds);
 
   Pos<double> pos(0.001,0.002,0.003,0.004,0.005,0.006);
-  track_elementpass (ds, pos, accelerator);
+  track_elementpass(accelerator, ds, pos);
 
   fprintf(stdout, "test_simple_drift\n");
   fprintf(stdout, "rx: %+.16f\n", pos.rx);
@@ -367,7 +381,7 @@ int test_simple_quadrupole() {
   accelerator.lattice.push_back(ds);
 
   Pos<double> pos(0.001,0.002,0.003,0.004,0.005,0.006);
-  track_elementpass (ds, pos, accelerator);
+  track_elementpass(accelerator, ds, pos);
 
   fprintf(stdout, "test_simple_quadrupole\n");
   fprintf(stdout, "rx: %+.16f\n", pos.rx);
@@ -398,12 +412,14 @@ int test_linepass2() {
   orig_pos.rx = 0.0001;
   orig_pos.px = 0.0001;
 
-  Status::type status = track_linepass (accelerator,
-      orig_pos,              // initial electron coordinates
-      pos,     // vector with electron coordinates from tracking at every element.
-      element_offset,  // index of starting element for tracking
-      lost_plane,       // return plane in which particle was lost, if the case.
-      trajectory);
+  Status::type status = track_linepass (
+      accelerator,
+      orig_pos,
+      trajectory,
+      element_offset,
+      pos,
+      lost_plane
+  );
 
       for(unsigned int i=0; i<10; ++i) {
         std::cout << std::endl;

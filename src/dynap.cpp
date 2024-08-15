@@ -820,7 +820,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false,
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status == Status::success) {
 //       e_stable    = e_unstable;
 //       e_unstable *= 2.0;
@@ -838,7 +847,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false,
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status == Status::success) {
 //       e_stable = e;
 //     } else {
@@ -882,7 +900,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status == Status::success) {
 //       px_stable    = px_unstable;
 //       px_unstable *= 2.0;
@@ -900,7 +927,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status == Status::success) {
 //       px_stable = px;
 //     } else {
@@ -944,7 +980,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status == Status::success) {
 //       py_stable    = py_unstable;
 //       py_unstable *= 2.0;
@@ -962,7 +1007,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status == Status::success) {
 //       py_stable = py;
 //     } else {
@@ -1003,7 +1057,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status != Status::success) {
 //       //e_stable    = e_unstable;
 //       last_unstable = point.p.de;
@@ -1031,7 +1094,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status != Status::success) {
 //       //e_stable    = e_unstable;
 //       last_unstable = point.p.px;
@@ -1059,7 +1131,16 @@ static Status::type calc_closed_orbit(const Accelerator& accelerator, std::vecto
 //     std::vector<Pos<double> > new_pos;
 //     Pos<double> p = point.p + cod[element_idx];  // p initial condition for tracking
 //     if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//     Status::type status = track_ringpass (accelerator, p, new_pos, nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//     Status::type status = track_ringpass (
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//     );
 //     if (status != Status::success) {
 //       //e_stable    = e_unstable;
 //       last_unstable = point.p.py;
@@ -1078,14 +1159,16 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
 
   std::vector<Pos<double>> new_pos;
   Status::type lstatus = Status::success;
-  lstatus = track_ringpass (*thread_accelerator,
-                            p,
-                            new_pos,
-                            thread_nr_turns/2,
-                            grid[task_id].lost_turn,
-                            grid[task_id].lost_element,
-                            grid[task_id].lost_plane,
-                            true);
+  lstatus = track_ringpass (
+    *thread_accelerator,
+    p,
+    thread_nr_turns/2,
+    true,
+    grid[task_id].lost_element,
+    new_pos,
+    grid[task_id].lost_plane,
+    grid[task_id].lost_turn
+  );
   //pthread_mutex_lock(thread_data->mutex);
   if (lstatus == Status::success) naff_traj(new_pos, grid[task_id].nux1, grid[task_id].nuy1);
   //pthread_mutex_unlock(thread_data->mutex);
@@ -1097,15 +1180,16 @@ static void thread_dynap_naff(ThreadSharedData* thread_data, int thread_id, long
     //pthread_mutex_unlock(thread_data->mutex);
 
     std::vector<Pos<double>> new_pos;
-    lstatus = track_ringpass (*thread_accelerator,
-                              p,
-                              new_pos,
-                              thread_nr_turns/2,
-                              grid[task_id].lost_turn,
-                              grid[task_id].lost_element,
-                              grid[task_id].lost_plane,
-                              true);
-
+    lstatus = track_ringpass (
+      *thread_accelerator,
+      p,
+      thread_nr_turns/2,
+      true,
+      grid[task_id].lost_element,
+      new_pos,
+      grid[task_id].lost_plane,
+      grid[task_id].lost_turn
+    );
     //p = new_pos.back();
     //pthread_mutex_lock(thread_data->mutex);
     //printf("nan2 thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e\n", thread_id, (1+task_id), thread_data->nr_tasks, p.rx, p.ry);
@@ -1145,14 +1229,16 @@ static void thread_dynap(ThreadSharedData* thread_data, int thread_id, long task
 
   std::vector<Pos<double>> new_pos;
   Status::type lstatus = Status::success;
-  lstatus = track_ringpass (*thread_accelerator,
-                            p,
-                            new_pos,
-                            thread_nr_turns,
-                            grid[task_id].lost_turn,
-                            grid[task_id].lost_element,
-                            grid[task_id].lost_plane,
-                            true);
+  lstatus = track_ringpass(
+    *thread_accelerator,
+    p,
+    thread_nr_turns,
+    true,
+    grid[task_id].lost_element,
+    new_pos,
+    grid[task_id].lost_plane,
+    grid[task_id].lost_turn
+  );
   if (thread_type.compare("xy") == 0) {
     pthread_mutex_lock(thread_data->mutex);
     printf("thread:%02i|task:%06lu/%06lu  rx:%+.4e|ry:%+.4e  turn:%05i|element:%05i  status:%s\n", thread_id, (1+task_id), thread_data->nr_tasks, grid[task_id].p.rx, grid[task_id].p.ry, grid[task_id].lost_turn, grid[task_id].lost_element, string_error_messages[lstatus].c_str());
@@ -1226,7 +1312,16 @@ static void thread_dynap(ThreadSharedData* thread_data, int thread_id, long task
 //       std::vector<Pos<double> > new_pos;
 //       Pos<double> p = point.p + (*thread_cod)[start_element];  // p initial condition for tracking
 //       if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//       Status::type status = track_ringpass (*thread_accelerator, p, new_pos, thread_nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//       Status::type status = track_ringpass(
+//         accelerator,
+//         p,
+//         nr_turns,
+//         false
+//         point.lost_element,
+//         new_pos,
+//         point.lost_plane,
+//         point.lost_turn
+//       );
 //       if (status != Status::success) { e -= e_delta; point.p.de = e; break; }
 //       e += e_delta;
 //     }
@@ -1294,7 +1389,16 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
       std::vector<Pos<double> > new_pos;
       Pos<double> p = point.p + (*thread_cod)[start_element];  // p initial condition for tracking
       if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-      Status::type status = track_ringpass (*thread_accelerator, p, new_pos, thread_nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+      Status::type status = track_ringpass(
+        *thread_accelerator,
+        p,
+        thread_nr_turns,
+        false,
+        point.lost_element,
+        new_pos,
+        point.lost_plane,
+        point.lost_turn
+      );
       if (status != Status::success) {
         pa -= p_delta;
         if (calc_type == ma)  { point.p.de = pa; break; };
@@ -1356,7 +1460,16 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
 //       std::vector<Pos<double> > new_pos;
 //       Pos<double> p = point.p + (*thread_cod)[start_element];  // p initial condition for tracking
 //       if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//       Status::type status = track_ringpass (*thread_accelerator, p, new_pos, thread_nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//       Status::type status = track_ringpass(
+//           *thread_accelerator,
+//           p,
+//           thread_nr_turns,
+//           false,
+//           point.lost_element,
+//           new_pos,
+//           point.lost_plane,
+//           point.lost_turn
+//       );
 //       if (status != Status::success) { px -= px_delta; point.p.px = px; break; }
 //       px += px_delta;
 //     }
@@ -1466,7 +1579,16 @@ static void thread_dynap_acceptance(ThreadSharedData* thread_data, int thread_id
 //       std::vector<Pos<double> > new_pos;
 //       Pos<double> p = point.p + (*thread_cod)[start_element];  // p initial condition for tracking
 //       if (fabs(p.ry) < tiny_y_amp) p.ry = sgn(p.ry) * tiny_y_amp;
-//       Status::type status = track_ringpass (*thread_accelerator, p, new_pos, thread_nr_turns, point.lost_turn, point.lost_element, point.lost_plane, false);
+//       Status::type status = track_ringpass(
+//           *thread_accelerator,
+//           p,
+//           thread_nr_turns,
+//           false,
+//           point.lost_element,
+//           new_pos,
+//           point.lost_plane,
+//           point.lost_turn
+//       );
 //       if (status != Status::success) { py -= py_delta; point.p.py = py; break; }
 //       py += py_delta;
 //     }

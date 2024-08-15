@@ -256,7 +256,7 @@ Status::type track_diffusionmatrix (const Accelerator& accelerator,
       bdiff.sandwichme_with_matrix(tm[i]);
     bmat.push_back(bdiff);
     // track through element
-    track_elementpass (ele, fp, accelerator);
+    track_elementpass(accelerator, ele, fp);
   }
   return status;
 }
