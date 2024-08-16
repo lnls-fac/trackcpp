@@ -237,6 +237,10 @@ Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kickta
     return Element::kickmap(fam_name_, kicktable_fname_, nr_steps_, rescale_length_, rescale_kicks_);
 }
 
+Element kickpoly_wrapper(const std::string& fam_name_, const double& length_, const int nr_steps_, const double& rescale_kicks_) {
+    return Element::kickpoly(fam_name_, length_, nr_steps_, rescale_kicks_);
+}
+
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag) {
   return read_flat_file(fname.data, accelerator, file_flag);
 }
