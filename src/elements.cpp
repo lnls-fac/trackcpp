@@ -152,10 +152,15 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
 
   const Kicktable& kicktable = kicktable_list[idx];
   Element e = Element(fam_name_, rescale_length_ * kicktable.length);
-    initialize_kickmap(e, idx, nr_steps_, rescale_kicks_);
+  initialize_kickmap(e, idx, nr_steps_, rescale_kicks_);
   return e;
 }
 
+Element Element::kickpoly (const std::string& fam_name_, const double& length_, const int nr_steps_, const double &rescale_kicks_) {
+  Element e = Element(fam_name_, length_);
+  initialize_kickpoly(e, nr_steps_, rescale_kicks_);
+  return e;
+}
 
 void print_polynom(std::ostream& out, const std::string& label, const std::vector<double>& polynom) {
   int order = 0;
@@ -201,6 +206,8 @@ bool Element::operator==(const Element& o) const {
     if (this->phase_lag != o.phase_lag) return false;
     if (this->polynom_a != o.polynom_a) return false;
     if (this->polynom_b != o.polynom_b) return false;
+    if (this->polynom_kickx != o.polynom_kickx) return false;
+    if (this->polynom_kicky != o.polynom_kicky) return false;
     const Matrix& m = this->matrix66;
     const Matrix& mo = o.matrix66;
     for(unsigned int i=0; i<m.size(); ++i){
@@ -240,6 +247,8 @@ std::ostream& operator<< (std::ostream &out, const Element& el) {
   }
   print_polynom(        out,                "polynom_a     : ", el.polynom_a);
   print_polynom(        out,                "polynom_b     : ", el.polynom_b);
+  print_polynom(        out,                "polynom_kickx : ", el.polynom_kickx);
+  print_polynom(        out,                "polynom_kicky : ", el.polynom_kicky);
   if (el.frequency != 0)out << std::endl << "frequency     : " << el.frequency;
   if (el.voltage != 0)  out << std::endl << "voltage       : " << el.voltage;
   if (el.phase_lag != 0)out << std::endl << "phase_lag     : " << el.phase_lag;
@@ -306,5 +315,14 @@ void initialize_kickmap(Element& element, const int& kicktable_idx, const int& n
     element.pass_method = PassMethod::pm_kickmap_pass;
     element.nr_steps = nr_steps;
     element.kicktable_idx = kicktable_idx;
+    element.rescale_kicks = rescale_kicks;
+}
+
+void initialize_kickpoly(
+  Element& element, const int& nr_steps, const double &rescale_kicks
+)
+{
+    element.pass_method = PassMethod::pm_kickpoly_pass;
+    element.nr_steps = nr_steps;
     element.rescale_kicks = rescale_kicks;
 }
