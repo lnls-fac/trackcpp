@@ -140,6 +140,26 @@ std::vector<int> latt_findcells_polynom_a(const std::vector<Element>& lattice, u
   return r;
 }
 
+std::vector<int> latt_findcells_polynom_kickx(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse) {
+  std::vector<int> r;
+  for(unsigned int i=0; i<lattice.size(); ++i) {
+    if ((reverse and (lattice[i].polynom_kickx[n] != value)) or (!reverse and (lattice[i].polynom_kickx[n] == value))) {
+      r.push_back(i);
+    }
+  };
+  return r;
+}
+
+std::vector<int> latt_findcells_polynom_kicky(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse) {
+  std::vector<int> r;
+  for(unsigned int i=0; i<lattice.size(); ++i) {
+    if ((reverse and (lattice[i].polynom_kicky[n] != value)) or (!reverse and (lattice[i].polynom_kicky[n] == value))) {
+      r.push_back(i);
+    }
+  };
+  return r;
+}
+
 std::vector<int> latt_findcells_pass_method(const std::vector<Element>& lattice, const std::string& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
