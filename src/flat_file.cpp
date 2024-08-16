@@ -36,6 +36,7 @@ static void write_6d_vector(std::ostream& fp, const std::string& label, const do
 static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
 static void synchronize_polynomials(Element& e);
+static void synchronize_polynomials_kick(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
 static void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator);
 static Status::type read_flat_file_trackcpp(std::istream&, Accelerator& accelerator);
@@ -112,6 +113,8 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     }
     if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a", e.polynom_a);
     if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b", e.polynom_b);
+    if (has_polynom(e.polynom_kickx)) write_polynom(fp, "polynom_kickx", e.polynom_kickx);
+    if (has_polynom(e.polynom_kicky)) write_polynom(fp, "polynom_kicky", e.polynom_kicky);
     if (e.vchamber != VChamberShape::rectangle) { fp << std::setw(pw) << "vchamber" << e.vchamber << '\n'; }
     if (e.hmin != -DBL_MAX) { fp << std::setw(pw) << "hmin" << e.hmin << '\n'; }
     if (e.hmax != DBL_MAX) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
@@ -305,6 +308,40 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       synchronize_polynomials(e);
       continue;
     }
+    if (cmd.compare("polynom_kickx") == 0) {
+      std::vector<unsigned int> order;
+      std::vector<double> multipole;
+      unsigned int size = 0;
+      while (not ss.eof()) {
+        unsigned int o; double m; ss >> o >> m;
+        if (ss.eof()) break;
+        order.push_back(o); multipole.push_back(m);
+        if (o+1 > size) size = o+1;
+      }
+      if (size > 0) {
+        e.polynom_kickx.resize(size, 0);
+        for(unsigned int i=0; i<order.size(); ++i) e.polynom_kickx[order[i]] = multipole[i];
+      }
+      synchronize_polynomials_kick(e);
+      continue;
+    }
+    if (cmd.compare("polynom_kicky") == 0) {
+      std::vector<unsigned int> order;
+      std::vector<double> multipole;
+      unsigned int size = 0;
+      while (not ss.eof()) {
+        unsigned int o; double m; ss >> o >> m;
+        if (ss.eof()) break;
+        order.push_back(o); multipole.push_back(m);
+        if (o+1 > size) size = o+1;
+      }
+      if (size > 0) {
+        e.polynom_kicky.resize(size, 0);
+        for(unsigned int i=0; i<order.size(); ++i) e.polynom_kicky[order[i]] = multipole[i];
+      }
+      synchronize_polynomials_kick(e);
+      continue;
+    }
     if (line.size()<2) continue;
     return Status::flat_file_error;
   }
@@ -433,6 +470,15 @@ static void synchronize_polynomials(Element& e) {
 
 }
 
+static void synchronize_polynomials_kick(Element& e) {
+
+  unsigned int size = (e.polynom_kickx.size() > e.polynom_kicky.size()) ? e.polynom_kickx.size() : e.polynom_kicky.size();
+  e.polynom_kickx.resize(size, 0);
+  e.polynom_kicky.resize(size, 0);
+
+}
+
+//This method is only used to read tracy3 files.
 static void read_polynomials(std::ifstream& fp, Element& e) {
   unsigned int nr_monomials, n_design, order;
   e.polynom_a = std::vector<double>(Element::default_polynom);
