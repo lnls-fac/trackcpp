@@ -103,12 +103,49 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
 }
 
-int add_kicktable(const std::string& filename) {
-  
+
+int add_kicktable(
+  const double x_min,
+  const double x_max,
+  const unsigned int x_nrpts,
+  const std::vector<double>& x_kick,
+  const double y_min,
+  const double y_max,
+  const unsigned int y_nrpts,
+  const std::vector<double>& y_kick,
+  const double length
+)
+{
+  if (x_kick.size() != x_nrpts * y_nrpts)
+    return -1;
+  if (y_kick.size() != x_nrpts * y_nrpts)
+    return -1;
+  if ((x_min >= x_max) | (y_min >= y_max))
+    return -1;
+
+  Kicktable new_kicktable("");
+  new_kicktable.length = length;
+
+  new_kicktable.x_min = x_min;
+  new_kicktable.x_max = x_max;
+  new_kicktable.x_nrpts = x_nrpts;
+  new_kicktable.x_kick = x_kick;
+
+  new_kicktable.y_min = y_min;
+  new_kicktable.y_max = y_max;
+  new_kicktable.y_nrpts = y_nrpts;
+  new_kicktable.y_kick = y_kick;
+
   // looks through vector of kicktables...
-  for(unsigned int i=0; i<kicktable_list.size(); ++i) {
-    if (kicktable_list[i].filename == filename) {
+  for(unsigned int i=0; i<kicktable_list.size(); ++i)
+    if (kicktable_list[i] == new_kicktable)
       return i;
+
+  kicktable_list.push_back(new_kicktable);
+  return kicktable_list.size() - 1;
+}
+
+
 int add_kicktable(const std::string& filename) {
 
   // loads a new kicktable from file and inserts it into vector of kicktables

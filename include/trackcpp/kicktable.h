@@ -55,6 +55,17 @@ public:
 extern std::vector<Kicktable> kicktable_list;
 
 
+int add_kicktable(
+  const double x_min,
+  const double x_max,
+  const unsigned int x_nrpts,
+  const std::vector<double>& x_kick,
+  const double y_min,
+  const double y_max,
+  const unsigned int y_nrpts,
+  const std::vector<double>& y_kick,
+  const double length=1
+);
 int add_kicktable(const std::string& filename);
 void clear_kicktables(std::vector<Kicktable>& kicktable_list);
 
