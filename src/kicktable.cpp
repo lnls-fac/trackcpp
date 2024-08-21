@@ -135,6 +135,8 @@ bool Kicktable::operator==(const Kicktable& o) const {
   if (this->x_max != o.x_max) return false;
   if (this->y_min != o.y_min) return false;
   if (this->y_max != o.y_max) return false;
+  if (this->x_nrpts != o.x_nrpts) return false;
+  if (this->y_nrpts != o.y_nrpts) return false;
   if (this->x_kick != o.x_kick) return false;
   if (this->y_kick != o.y_kick) return false;
   return true;
