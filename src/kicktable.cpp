@@ -109,18 +109,21 @@ int add_kicktable(const std::string& filename) {
   for(unsigned int i=0; i<kicktable_list.size(); ++i) {
     if (kicktable_list[i].filename == filename) {
       return i;
-    }
-  }
+int add_kicktable(const std::string& filename) {
 
   // loads a new kicktable from file and inserts it into vector of kicktables
   Kicktable new_kicktable("");
   Status::type status = new_kicktable.load_from_file(filename);
-  int kicktable_idx = -1;
-  if (status == Status::success) {
-    kicktable_list.push_back(new_kicktable);
-    kicktable_idx = kicktable_list.size() - 1;
-  }
-  return kicktable_idx;
+  if (status != Status::success)
+    return -1;
+
+  // looks through vector of kicktables...
+  for(int i=0; i<kicktable_list.size(); ++i)
+    if (kicktable_list[i] == new_kicktable)
+      return i;
+
+  kicktable_list.push_back(new_kicktable);
+  return kicktable_list.size() - 1;
 }
 
 
