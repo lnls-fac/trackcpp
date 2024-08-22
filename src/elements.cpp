@@ -148,9 +148,9 @@ Element Element::rfcavity (const std::string& fam_name_, const double& length_, 
 
 Element Element::kickmap (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_, const double &rescale_length_, const double &rescale_kicks_) {
   // add new kicktable to global list, if necessary.
-  int idx = add_kicktable(kicktable_fname_);
+  int idx = Kicktable::add_kicktable(kicktable_fname_);
 
-  const Kicktable& kicktable = kicktable_list[idx];
+  const Kicktable& kicktable = Kicktable::get_kicktable(idx);
   Element e = Element(fam_name_, rescale_length_ * kicktable.length);
   initialize_kickmap(e, idx, nr_steps_, rescale_kicks_);
   return e;

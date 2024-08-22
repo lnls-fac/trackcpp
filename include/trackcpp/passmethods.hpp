@@ -97,14 +97,14 @@ T b2_perp(const T& bx, const T& by, const T& px, const T& py, const T& curv=1) {
 template <typename T>
 Status::type kicktablethinkick(
   Pos<T>& pos,
-  const int& kicktable_idx,
+  const Kicktable& kicktable,
   const double& brho2,
   const int nr_steps,
   const double& rescale_kicks
 )
 {
   T hkick, vkick;
-  Status::type status = kicktable_getkicks(kicktable_idx, pos.rx, pos.ry, hkick, vkick);
+  Status::type status = kicktable.getkicks(pos.rx, pos.ry, hkick, vkick);
   // According to Ellaune's theory of kick maps:
   // https://accelconf.web.cern.ch/e92/PDF/EPAC1992_0661.PDF
   //
@@ -507,14 +507,19 @@ Status::type pm_thinsext_pass(Pos<T> &pos, const Element &elem,
 
 
 template <typename T>
-Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
-                             const Accelerator& accelerator) {
-
-  if (elem.kicktable_idx < 0 or elem.kicktable_idx >= kicktable_list.size()) return Status::kicktable_not_defined;
+Status::type pm_kickmap_pass(
+  Pos<T> &pos,
+  const Element &elem,
+  const Accelerator& accelerator
+)
+{
+  if (not Kicktable::is_valid_kicktable_index(elem.kicktable_idx))
+    return Status::kicktable_not_defined;
 
   Status::type status = Status::success;
+  const Kicktable& kicktable = Kicktable::get_kicktable(elem.kicktable_idx);
 
-  double sl   = elem.length / float(elem.nr_steps);
+  double sl = elem.length / float(elem.nr_steps);
   double brho2 = get_magnetic_rigidity(accelerator.energy);
   brho2 *= brho2;
 
@@ -526,7 +531,7 @@ Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
       drift<T>(pos, sl / 2);
       Status::type status = kicktablethinkick(
         pos,
-        elem.kicktable_idx,
+        kicktable,
         brho2,
         elem.nr_steps,
         elem.rescale_kicks

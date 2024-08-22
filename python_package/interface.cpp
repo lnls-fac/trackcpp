@@ -249,8 +249,18 @@ Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerat
   return write_flat_file(fname.data, accelerator, file_flag);
 }
 
-Status::type kicktable_getkicks_wrapper(const int& kicktable_idx, const double& rx, const double& ry, double& hkick__, double& vkick__) {
-  return kicktable_getkicks(kicktable_idx, rx, ry, hkick__, vkick__);
+Status::type kicktable_getkicks_wrapper(
+    const int& kicktable_idx,
+    const double& rx,
+    const double& ry,
+    double& hkick__,
+    double& vkick__
+)
+{
+  if (not Kicktable::is_valid_kicktable_index(kicktable_idx))
+    return Status::kicktable_not_defined;
+  const Kicktable &kicktable = Kicktable::get_kicktable(kicktable_idx);
+  return kicktable.getkicks(rx, ry, hkick__, vkick__);
 }
 
 Status::type track_findm66_wrapper(

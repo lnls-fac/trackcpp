@@ -99,7 +99,13 @@ Element rbend_wrapper(const std::string& fam_name_, const double& length_,
                       const double& K_, const double& S_);
 Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerator, bool file_flag = true);
 Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag = true);
-Status::type kicktable_getkicks_wrapper(const int& kicktable_idx, const double& rx, const double& ry, double& hkick__, double& vkick__);
+Status::type kicktable_getkicks_wrapper(
+    const int& kicktable_idx,
+    const double& rx,
+    const double& ry,
+    double& hkick__,
+    double& vkick__
+);
 
 Status::type track_findm66_wrapper(
     Accelerator& accelerator,

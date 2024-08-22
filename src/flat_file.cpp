@@ -103,7 +103,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     fp << std::setw(pw) << "pass_method" << pm_dict[e.pass_method] << '\n';
     if (pm_dict[e.pass_method].compare("kicktable_pass") == 0) {
       unsigned int idx = e.kicktable_idx;
-      const Kicktable& ktable = kicktable_list[idx];
+      const Kicktable& ktable = Kicktable::get_kicktable(idx);
       fp << std::setw(pw) << "kicktable_fname" << ktable.filename << '\n';
     }
     if (e.nr_steps != 1) {
@@ -175,6 +175,15 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
   bool found_hmin = false;
   bool found_vmin = false;
   unsigned int line_count = 0;
+  // once the counter below reaches 9, all info is available;
+  // x_max, x_min, x_nrpts, x_kick, y_max, y_min, y_nrpts, y_kick, length
+  // the filename property is not important:
+  unsigned int kicktable_ready = 0;
+  double kicktable_x_max, kicktable_x_min;
+  double kicktable_y_max, kicktable_y_min, kicktable_length;
+  unsigned int x_nrpts, y_nrpts;
+  std::vector<double> kicktable_x_kick, kicktable_y_kick;
+  std::string kicktable_filename;
   while (std::getline(fp, line)) {
     //std::cout << line << std::endl;
     line_count++;
@@ -266,7 +275,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     }
     if (cmd.compare("kicktable_fname") == 0) {
       std::string fname; ss >> fname;
-      int idx = add_kicktable(fname);
+      int idx = Kicktable::add_kicktable(fname);
       if (idx < 0) {
         return Status::file_not_found;
       } else {
@@ -274,6 +283,31 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
         continue;
       }
     }
+    // if (cmd.compare("kicktable_x_kick") == 0) {
+    //   unsigned int size = 0;
+    //   while (not ss.eof()) {
+    //     double m;
+    //     ss >> m;
+    //     if (ss.eof()) break;
+    //     kicktable_x_kick.push_back(m);
+    //   }
+    //   ++kicktable_ready;
+    //   if (kicktable_ready >= 9) {
+    //     int idx = Kicktable::add_kicktable(
+    //       kicktable_x_min,
+    //       kicktable_x_max,
+    //       kicktable_x_nrpts,
+    //       kicktable_x_kick,
+    //       kicktable_y_min,
+    //       kicktable_y_max,
+    //       kicktable_y_nrpts,
+    //       kicktable_y_kick,
+    //       kicktable_length
+    //     );
+    //     if (idx >= 0)
+    //       e.kicktable_idx = idx;
+    //   }
+    // }
     if (cmd.compare("polynom_a") == 0) {
       std::vector<unsigned int> order;
       std::vector<double> multipole;
@@ -438,10 +472,10 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
         e.pass_method = PassMethod::pm_kickmap_pass;
         double tmpdbl; std::string filename;
         fp >> tmpdbl >> tmpdbl >> filename;
-        int idx = add_kicktable(filename);
+        int idx = Kicktable::add_kicktable(filename);
         if (idx >= 0) {
           e.kicktable_idx = idx;
-          e.length = kicktable_list[e.kicktable_idx].length;
+          e.length = Kicktable::get_kicktable(e.kicktable_idx).length;
           //std::cout << accelerator.lattice.size() << " " << e.fam_name << ": " << e.kicktable << " " << e.kicktable->x_nrpts << std::endl;
         } else return Status::file_not_found;
 

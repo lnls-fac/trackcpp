@@ -20,18 +20,52 @@
 #include <fstream>
 #include <cmath>
 
-std::vector<Kicktable> kicktable_list;
+
+std::vector<Kicktable> Kicktable::kicktable_list;
 
 Kicktable::Kicktable(const std::string& filename_) :
   filename(""),
   x_nrpts(0), y_nrpts(0),
   x_min(nan("")), x_max(nan("")),
-  y_min(nan("")), y_max(nan("")) {
-
-  if (filename_ != "") {
+  y_min(nan("")), y_max(nan(""))
+{
+  if (filename_ != "")
     this->load_from_file(filename_);
-  }
+}
 
+
+Kicktable::Kicktable(
+  const double x_min,
+  const double x_max,
+  const unsigned int x_nrpts,
+  const std::vector<double>& x_kick,
+  const double y_min,
+  const double y_max,
+  const unsigned int y_nrpts,
+  const std::vector<double>& y_kick,
+  const double length
+) :
+  filename(""),
+  x_nrpts(x_nrpts), y_nrpts(y_nrpts),
+  x_min(x_min), x_max(x_max),
+  y_min(y_min), y_max(y_max),
+  x_kick(x_kick), y_kick(y_kick),
+  length(length)
+{}
+
+bool Kicktable::is_valid_kicktable() const
+{
+  if (x_nrpts <= 1)
+    return false;
+  if (y_nrpts <= 1)
+    return false;
+  if (x_kick.size() != x_nrpts * y_nrpts)
+    return false;
+  if (y_kick.size() != x_nrpts * y_nrpts)
+    return false;
+  if ((x_min >= x_max) | (y_min >= y_max))
+    return false;
+  return true;
 }
 
 Status::type Kicktable::load_from_file(const std::string& filename_) {
@@ -104,7 +138,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 }
 
 
-int add_kicktable(
+int Kicktable::add_kicktable(
   const double x_min,
   const double x_max,
   const unsigned int x_nrpts,
@@ -116,42 +150,26 @@ int add_kicktable(
   const double length
 )
 {
-  if (x_kick.size() != x_nrpts * y_nrpts)
-    return -1;
-  if (y_kick.size() != x_nrpts * y_nrpts)
-    return -1;
-  if ((x_min >= x_max) | (y_min >= y_max))
-    return -1;
-
-  Kicktable new_kicktable("");
-  new_kicktable.length = length;
-
-  new_kicktable.x_min = x_min;
-  new_kicktable.x_max = x_max;
-  new_kicktable.x_nrpts = x_nrpts;
-  new_kicktable.x_kick = x_kick;
-
-  new_kicktable.y_min = y_min;
-  new_kicktable.y_max = y_max;
-  new_kicktable.y_nrpts = y_nrpts;
-  new_kicktable.y_kick = y_kick;
-
-  // looks through vector of kicktables...
-  for(unsigned int i=0; i<kicktable_list.size(); ++i)
-    if (kicktable_list[i] == new_kicktable)
-      return i;
-
-  kicktable_list.push_back(new_kicktable);
-  return kicktable_list.size() - 1;
+  Kicktable new_kicktable = Kicktable(
+    x_min, x_max, x_nrpts, x_kick,
+    y_min, y_max, y_nrpts, y_kick,
+    length
+  );
+  return Kicktable::add_kicktable(new_kicktable);
 }
 
 
-int add_kicktable(const std::string& filename) {
-
+int Kicktable::add_kicktable(const std::string& filename)
+{
   // loads a new kicktable from file and inserts it into vector of kicktables
-  Kicktable new_kicktable("");
-  Status::type status = new_kicktable.load_from_file(filename);
-  if (status != Status::success)
+  Kicktable new_kicktable(filename);
+  return Kicktable::add_kicktable(new_kicktable);
+}
+
+
+int Kicktable::add_kicktable(const Kicktable &new_kicktable)
+{
+  if (not new_kicktable.is_valid_kicktable())
     return -1;
 
   // looks through vector of kicktables...
@@ -163,8 +181,7 @@ int add_kicktable(const std::string& filename) {
   return kicktable_list.size() - 1;
 }
 
-
-void clear_kicktables(std::vector<Kicktable>& kicktable_list) {
+void Kicktable::clear_kicktables() {
   kicktable_list.clear();
 }
 
@@ -181,5 +198,3 @@ bool Kicktable::operator==(const Kicktable& o) const {
   if (this->y_kick != o.y_kick) return false;
   return true;
 }
-
-template Status::type kicktable_getkicks(const int& kicktable_idx, const double& rx, const double& ry, double& hkick, double& vkick);
