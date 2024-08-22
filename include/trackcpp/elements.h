@@ -61,7 +61,7 @@ public:
   double        frequency   = 0;  // [Hz]
   double        voltage     = 0;  // [V]
   double        phase_lag   = 0;  // [rad]
-  int           kicktable_idx = -1;   // index of kickmap object in kicktable_list
+  int           kicktable_idx = -1; //index of kickmap object in kicktable_list
   double        rescale_kicks = 1.0;  // for kickmaps
 
   std::vector<double> polynom_a = default_polynom;
