@@ -113,7 +113,7 @@ Status::type kicktablethinkick(
   // integrals. However, most kicks maps we use nowadays comes from
   // Runge-Kutta integration of the equations of motion. Tests with different
   // energies with this integration setup have shown a very complicated
-  // behavior of the kicks as function of energy, corroborating with no of
+  // behavior of the kicks as function of energy, corroborating with no or
   // very weak dependence. For this reason the kicks here are influenced by
   // the energy of each particle. Looking at the code of AT and Elegant, I
   // noticed that AT normalizes the kicks by 1/(1+delta) while Elegant
@@ -168,7 +168,7 @@ void kickpolythinkick(
   // integrals. However, most kicks maps we use nowadays comes from
   // Runge-Kutta integration of the equations of motion. Tests with different
   // energies with this integration setup have shown a very complicated
-  // behavior of the kicks as function of energy, corroborating with no of
+  // behavior of the kicks as function of energy, corroborating with no or
   // very weak dependence. For this reason the kicks here are influenced by
   // the energy of each particle. Looking at the code of AT and Elegant, I
   // noticed that AT normalizes the kicks by 1/(1+delta) while Elegant
