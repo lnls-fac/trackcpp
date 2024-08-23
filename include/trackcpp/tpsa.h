@@ -480,6 +480,7 @@ template <unsigned int V, unsigned int N, typename TYPE>
 TYPE Tpsa<V,N,TYPE>::eval(const std::vector<TYPE>& val) const {
     if (val.size() != V) {
         std::cerr << "Invalid vector size in Tpsa::eval!" << std::endl;
+        return 0;
     }
     TYPE r = 0;
     unsigned int power[V];
