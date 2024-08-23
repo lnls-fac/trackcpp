@@ -18,8 +18,10 @@
 #define _KICKTABLE_H
 
 #include "auxiliary.h"
+// #include "../alglib/interpolation.h"
 #include <string>
 #include <vector>
+#include <algorithm>
 
 
 class Kicktable {
@@ -30,20 +32,14 @@ public:
 
   std::string         filename;
   double              length;
-  unsigned int        x_nrpts, y_nrpts;
-  double              x_min, x_max;
-  double              y_min, y_max;
+  std::vector<double> x_pos, y_pos;
   std::vector<double> x_kick,  y_kick;
   static std::vector<Kicktable> kicktable_list;
 
   Kicktable(
-    const double x_min,
-    const double x_max,
-    const unsigned int x_nrpts,
+    const std::vector<double>& x_pos,
     const std::vector<double>& x_kick,
-    const double y_min,
-    const double y_max,
-    const unsigned int y_nrpts,
+    const std::vector<double>& y_pos,
     const std::vector<double>& y_kick,
     const double length = 1
   );
@@ -55,30 +51,20 @@ public:
   bool is_valid_kicktable() const;
   unsigned int get_idx(unsigned int ix, unsigned int iy) const
   {
-    return iy*x_nrpts+ix;
+    return iy * x_pos.size() + ix;
   }
-  double get_x(unsigned int ix) const
+  double get_x(unsigned int ix) const {return x_pos[ix];}
+  double get_y(unsigned int iy) const {return y_pos[iy];}
+  template <typename T> unsigned int get_ix(const T& x) const
   {
-    return x_min + ix * (x_max - x_min) / (x_nrpts - 1.0);
+    return std::lower_bound(x_pos.begin(), x_pos.end(), x) - x_pos.begin();
   }
-  double get_y(unsigned int iy) const
+  template <typename T> unsigned int get_iy(const T& y) const
   {
-    return y_min + iy * (y_max - y_min) / (y_nrpts - 1.0);
+    return std::lower_bound(y_pos.begin(), y_pos.end(), y) - y_pos.begin();
   }
 
-  template <typename T>
-  unsigned int get_ix(const T& x) const
-  {
-    return (int) ((x - x_min) / ((x_max - x_min) / (x_nrpts - 1)));
-  }
-  template <typename T>
-  unsigned int get_iy(const T& y) const
-  {
-    return (int) ((y - y_min) / ((y_max - y_min) / (y_nrpts - 1)));
-  }
-
-  template <typename T>
-  Status::type getkicks_bilinear(
+  template <typename T> Status::type getkicks_bilinear(
     const T& rx, const T& ry, T& hkick, T& vkick
   ) const
   {
@@ -96,55 +82,59 @@ public:
     }
 
     // gets indices
-    const unsigned int ix = get_ix(rx);
-    const unsigned int iy = get_iy(ry);
+    unsigned int ix = get_ix(rx);
+    unsigned int ixp1, iyp1;
+    if (ix >= x_pos.size()-1){ixp1 = ix; --ix;}
+    else ixp1 = ix + 1;
+
+    unsigned int iy = get_iy(ry);
+    if (iy >= y_pos.size()-1){iyp1 = iy; --iy;}
+    else iyp1 = iy + 1;
 
     /* coordinates */
     const double x1 = get_x(ix);
-    const double x2 = get_x(ix+1);
+    const double x2 = get_x(ixp1);
     const double y1 = get_y(iy);
-    const double y2 = get_y(iy+1);
+    const double y2 = get_y(iyp1);
+    double denom = (x2 - x1) * (y2 - y1);
 
     // Bilinear interpolation
     // https://en.wikipedia.org/wiki/Bilinear_interpolation
     {  /* hkick */
-      const double fq11 = x_kick[get_idx(ix+0, iy+0)];
-      const double fq12 = x_kick[get_idx(ix+0, iy+1)];
-      const double fq21 = x_kick[get_idx(ix+1, iy+0)];
-      const double fq22 = x_kick[get_idx(ix+1, iy+1)];
-      const T fR1 = ((x2 - rx) * fq11 + (rx - x1) * fq21) / (x2 - x1);
-      const T fR2 = ((x2 - rx) * fq12 + (rx - x1) * fq22) / (x2 - x1);
-      const T fP  = ((y2 - ry) * fR1  + (ry - y1) * fR2 ) / (y2 - y1);
-      hkick = fP;
+      const double fq11 = x_kick[get_idx(ix, iy)];
+      const double fq12 = x_kick[get_idx(ix, iyp1)];
+      const double fq21 = x_kick[get_idx(ixp1, iy)];
+      const double fq22 = x_kick[get_idx(ixp1, iyp1)];
+      hkick =
+        f11 * (x2 - x) * (y2 - y) + f21 * (x - x1) * (y2 - y) +
+        f12 * (x2 - x) * (y - y1) + f22 * (x - x1) * (y - y1);
+      hkick /= denom;
     }
     {  /* vkick */
-      const double fq11 = y_kick[get_idx(ix+0, iy+0)];
-      const double fq12 = y_kick[get_idx(ix+0, iy+1)];
-      const double fq21 = y_kick[get_idx(ix+1, iy+0)];
-      const double fq22 = y_kick[get_idx(ix+1, iy+1)];
-      const T fR1 = ((x2 - rx) * fq11 + (rx - x1) * fq21) / (x2 - x1);
-      const T fR2 = ((x2 - rx) * fq12 + (rx - x1) * fq22) / (x2 - x1);
-      const T fP  = ((y2 - ry) * fR1  + (ry - y1) * fR2 ) / (y2 - y1);
-      vkick = fP;
+      const double fq11 = y_kick[get_idx(ix, iy)];
+      const double fq12 = y_kick[get_idx(ix, iyp1)];
+      const double fq21 = y_kick[get_idx(ixp1, iy)];
+      const double fq22 = y_kick[get_idx(ixp1, iyp1)];
+      vkick =
+        f11 * (x2 - x) * (y2 - y) + f21 * (x - x1) * (y2 - y) +
+        f12 * (x2 - x) * (y - y1) + f22 * (x - x1) * (y - y1);
+      vkick /= denom;
     }
 
     return Status::success;
   }
 
-  template <typename T>
-  Status::type getkicks(const T& rx, const T& ry, T& hkick, T& vkick) const
+  template <typename T> Status::type getkicks(
+    const T& rx, const T& ry, T& hkick, T& vkick
+  ) const
   {
     return getkicks_bilinear(rx, ry, hkick, vkick);
   }
 
   static int add_kicktable(
-    const double x_min,
-    const double x_max,
-    const unsigned int x_nrpts,
+    const std::vector<double>& x_pos,
     const std::vector<double>& x_kick,
-    const double y_min,
-    const double y_max,
-    const unsigned int y_nrpts,
+    const std::vector<double>& y_pos,
     const std::vector<double>& y_kick,
     const double length=1
   );

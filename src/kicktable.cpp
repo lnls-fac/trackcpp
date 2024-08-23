@@ -24,10 +24,7 @@
 std::vector<Kicktable> Kicktable::kicktable_list;
 
 Kicktable::Kicktable(const std::string& filename_) :
-  filename(""),
-  x_nrpts(0), y_nrpts(0),
-  x_min(nan("")), x_max(nan("")),
-  y_min(nan("")), y_max(nan(""))
+  filename("")
 {
   if (filename_ != "")
     this->load_from_file(filename_);
@@ -35,35 +32,32 @@ Kicktable::Kicktable(const std::string& filename_) :
 
 
 Kicktable::Kicktable(
-  const double x_min,
-  const double x_max,
-  const unsigned int x_nrpts,
+  const std::vector<double>& x_pos,
   const std::vector<double>& x_kick,
-  const double y_min,
-  const double y_max,
-  const unsigned int y_nrpts,
+  const std::vector<double>& y_pos,
   const std::vector<double>& y_kick,
   const double length
 ) :
   filename(""),
-  x_nrpts(x_nrpts), y_nrpts(y_nrpts),
-  x_min(x_min), x_max(x_max),
-  y_min(y_min), y_max(y_max),
+  x_pos(x_pos), y_pos(y_pos),
   x_kick(x_kick), y_kick(y_kick),
   length(length)
 {}
 
 bool Kicktable::is_valid_kicktable() const
 {
-  if (x_nrpts <= 1)
+
+  if (x_pos.size() <= 1)
     return false;
-  if (y_nrpts <= 1)
+  if (y_pos.size() <= 1)
     return false;
-  if (x_kick.size() != x_nrpts * y_nrpts)
+  if (x_kick.size() != x_pos.size() * y_pos.size())
     return false;
-  if (y_kick.size() != x_nrpts * y_nrpts)
+  if (y_kick.size() != x_kick.size())
     return false;
-  if ((x_min >= x_max) | (y_min >= y_max))
+  if (not std::is_sorted(x_pos.cbegin(), x_pos.cend()))
+    return false;
+  if (not std::is_sorted(y_pos.cbegin(), y_pos.cend()))
     return false;
   return true;
 }
@@ -75,61 +69,57 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
     std::cout << "Could not find kicktable file " << filename_ << "!" << std::endl;
     return Status::file_not_found;
   }
-  this->filename = filename_;
+  filename = filename_;
 
   std::string str;
+  unsigned int x_nrpts, y_nrpts;
 
   // HEADER
-  getline(fp, str);    // name of kicktable line
-  getline(fp, str);    // author line
-  getline(fp, str);    // label 'ID length[m]'
-  fp >> this->length;  // length of element
-  getline(fp, str);    // advances to new line
-  getline(fp, str);    // label 'number of horizontal points'
-  fp >> this->x_nrpts; // number of horizontal points
-  getline(fp, str);    // advances to new line
-  getline(fp, str);    // label 'number of vertical points'
-  fp >> this->y_nrpts; // number of vertical points
-  getline(fp, str);    // advances to new line
+  getline(fp, str);   // name of kicktable line
+  getline(fp, str);   // author line
+  getline(fp, str);   // label 'ID length[m]'
+  fp >> length; // length of element
+  getline(fp, str);   // advances to new line
+  getline(fp, str);   // label 'number of horizontal points'
+  fp >> x_nrpts;      // number of horizontal points
+  getline(fp, str);   // advances to new line
+  getline(fp, str);   // label 'number of vertical points'
+  fp >> y_nrpts;      // number of vertical points
+  getline(fp, str);   // advances to new line
 
-  this->x_kick.resize(x_nrpts * y_nrpts, 0);
-  this->y_kick.resize(x_nrpts * y_nrpts, 0);
-
-  std::vector<double> yvec(y_nrpts); // used to invert tables ordering, if necessary
+  x_kick.resize(x_nrpts * y_nrpts, 0);
+  y_kick.resize(x_nrpts * y_nrpts, 0);
+  x_pos.resize(x_nrpts, 0);
+  // used to invert tables ordering, if necessary
+  y_pos.resize(y_nrpts, 0);
 
   // HORIZONTAL KICK TABLE
   getline(fp, str);   // label 'Horizontal KickTable in T^2.m^2'
   getline(fp, str);   // label 'START'
-  for(unsigned int i=0; i<this->x_nrpts; ++i) {
-    double posx; fp >> posx;
-    if (std::isnan(x_min) or posx < x_min) x_min = posx;
-    if (std::isnan(x_max) or posx > x_max) x_max = posx;
-  }
+  for(unsigned int i=0; i<x_nrpts; ++i) {fp >> x_pos[i];}
   for(int j=y_nrpts-1; j>=0; --j) {
-    double posy; fp >> posy; yvec.push_back(posy);
-    if (std::isnan(y_min) or posy < y_min) y_min = posy;
-    if (std::isnan(y_max) or posy > y_max) y_max = posy;
+    fp >> y_pos[j];
     for(unsigned int i=0; i<x_nrpts; ++i)
-      fp >> x_kick[this->get_idx(i,j)];
+      fp >> x_kick[get_idx(i, j)];
   }
   getline(fp, str);   // advances to new line
 
   // VERTICAL KICK TABLE
   getline(fp, str);   // label 'Vertical KickTable in T^2.m^2'
   getline(fp, str);   // label 'START'
-  for(unsigned int i=0; i<this->x_nrpts; ++i) { double posx; fp >> posx; }
+  getline(fp, str);   // horizontal position. Already set from x_kick
   for(int j=y_nrpts-1; j>=0; --j) {
     double posy; fp >> posy;
     for(unsigned int i=0; i<x_nrpts; ++i)
-      fp >> y_kick[this->get_idx(i,j)];
+      fp >> y_kick[get_idx(i, j)];
   }
 
   // invert tables, if necessary
-  if (yvec.size() > 1 and yvec[1] > yvec[0]) {
-    for(unsigned int i=0; i<this->x_nrpts; ++i) {
-      for(unsigned int j=0; j<this->y_nrpts/2; ++j) {
-        std::swap(x_kick[this->get_idx(i,j)], x_kick[this->get_idx(i,this->y_nrpts-j-1)]);
-        std::swap(y_kick[this->get_idx(i,j)], y_kick[this->get_idx(i,this->y_nrpts-j-1)]);
+  if (y_pos.size() > 1 and y_pos[1] > y_pos[0]) {
+    for(unsigned int i=0; i<x_nrpts; ++i) {
+      for(unsigned int j=0; j<y_nrpts/2; ++j) {
+        std::swap(x_kick[get_idx(i, j)], x_kick[get_idx(i, y_nrpts-j-1)]);
+        std::swap(y_kick[get_idx(i, j)], y_kick[get_idx(i, y_nrpts-j-1)]);
       }
     }
   }
@@ -139,22 +129,14 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
 
 int Kicktable::add_kicktable(
-  const double x_min,
-  const double x_max,
-  const unsigned int x_nrpts,
+  const std::vector<double>& x_pos,
   const std::vector<double>& x_kick,
-  const double y_min,
-  const double y_max,
-  const unsigned int y_nrpts,
+  const std::vector<double>& y_pos,
   const std::vector<double>& y_kick,
   const double length
 )
 {
-  Kicktable new_kicktable = Kicktable(
-    x_min, x_max, x_nrpts, x_kick,
-    y_min, y_max, y_nrpts, y_kick,
-    length
-  );
+  Kicktable new_kicktable = Kicktable(x_pos, x_kick, y_pos, y_kick, length);
   return Kicktable::add_kicktable(new_kicktable);
 }
 
@@ -188,12 +170,8 @@ void Kicktable::clear_kicktables() {
 bool Kicktable::operator==(const Kicktable& o) const {
   if (this == &o) return true;
   if (this->length != o.length) return false;
-  if (this->x_min != o.x_min) return false;
-  if (this->x_max != o.x_max) return false;
-  if (this->y_min != o.y_min) return false;
-  if (this->y_max != o.y_max) return false;
-  if (this->x_nrpts != o.x_nrpts) return false;
-  if (this->y_nrpts != o.y_nrpts) return false;
+  if (this->x_pos != o.x_pos) return false;
+  if (this->y_pos != o.y_pos) return false;
   if (this->x_kick != o.x_kick) return false;
   if (this->y_kick != o.y_kick) return false;
   return true;
