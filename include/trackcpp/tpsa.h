@@ -52,6 +52,7 @@
 #include <complex>
 #include <cstring>
 #include <ostream>
+#include <math.h>
 
 
 // Expression Templates: IMPLEMENTATION OF BINOMIALS COEFFICIENTS AND RELATED RELEVANT EXPRESSIONS
@@ -547,7 +548,6 @@ Tpsa<V,N,TYPE> abs(const Tpsa<V,N,TYPE>& a_) {
     if (a_ >= 0) return a_; else return -a_;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> sqrt(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> r;
@@ -563,7 +563,6 @@ Tpsa<V,N,TYPE> sqrt(const Tpsa<V,N,TYPE>& a_) {
     return r;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> log(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> r;
@@ -577,7 +576,6 @@ Tpsa<V,N,TYPE> log(const Tpsa<V,N,TYPE>& a_) {
     return r;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> cos(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> rc(1), rs;
@@ -592,7 +590,6 @@ Tpsa<V,N,TYPE> cos(const Tpsa<V,N,TYPE>& a_) {
     return cos(a_.c[0]) * rc - sin(a_.c[0]) * rs;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> sin(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> rc(1), rs;
@@ -607,13 +604,11 @@ Tpsa<V,N,TYPE> sin(const Tpsa<V,N,TYPE>& a_) {
     return sin(a_.c[0]) * rc + cos(a_.c[0]) * rs;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> tan(const Tpsa<V,N,TYPE>& a_) {
     return sin(a_)/cos(a_);
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> cosh(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> rc(1), rs;
@@ -628,7 +623,6 @@ Tpsa<V,N,TYPE> cosh(const Tpsa<V,N,TYPE>& a_) {
     return cosh(a_.c[0]) * rc + sinh(a_.c[0]) * rs;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> sinh(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> rc(1), rs;
@@ -643,8 +637,6 @@ Tpsa<V,N,TYPE> sinh(const Tpsa<V,N,TYPE>& a_) {
     return sinh(a_.c[0]) * rc + cosh(a_.c[0]) * rs;
 }
 
-
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> atan(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> r(atan(a_.c[0]));
@@ -674,7 +666,6 @@ Tpsa<V,N,TYPE> atan(const Tpsa<V,N,TYPE>& a_) {
     return r;
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> asin(const Tpsa<V,N,TYPE>& a_) {
 
@@ -689,13 +680,11 @@ Tpsa<V,N,TYPE> asin(const Tpsa<V,N,TYPE>& a_) {
 
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> acos(const Tpsa<V,N,TYPE>& a_) {
     return M_PI/2 - asin(a_);
 }
 
-#include <math.h>
 template <unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> atanh(const Tpsa<V,N,TYPE>& a_) {
     Tpsa<V,N,TYPE> r(atan(a_.c[0]));
