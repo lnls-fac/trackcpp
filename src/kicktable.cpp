@@ -33,8 +33,8 @@ Kicktable::Kicktable(const std::string& filename_) :
 
 Kicktable::Kicktable(
   const std::vector<double>& x_pos,
-  const std::vector<double>& x_kick,
   const std::vector<double>& y_pos,
+  const std::vector<double>& x_kick,
   const std::vector<double>& y_kick,
   const double length
 ) :
@@ -129,13 +129,13 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
 int Kicktable::add_kicktable(
   const std::vector<double>& x_pos,
-  const std::vector<double>& x_kick,
   const std::vector<double>& y_pos,
+  const std::vector<double>& x_kick,
   const std::vector<double>& y_kick,
   const double length
 )
 {
-  Kicktable new_kicktable = Kicktable(x_pos, x_kick, y_pos, y_kick, length);
+  Kicktable new_kicktable = Kicktable(x_pos, y_pos, x_kick, y_kick, length);
   return Kicktable::add_kicktable(new_kicktable);
 }
 

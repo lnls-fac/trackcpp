@@ -21,6 +21,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <map>
 
 static const int hw = 18; // header field width
 static const int pw = 16; // parameter field width
@@ -32,8 +33,8 @@ static bool has_t_vector(const double* t);
 static bool has_r_matrix(const double* r);
 static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
-static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
-static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
+static void write_vector(std::ostream& fp, const std::string& label, const double* t, const std::size_t& siz);
+static void write_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
 static void synchronize_polynomials(Element& e);
 static void synchronize_polynomials_kick(Element& e);
@@ -103,8 +104,17 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     fp << std::setw(pw) << "pass_method" << pm_dict[e.pass_method] << '\n';
     if (pm_dict[e.pass_method].compare("kicktable_pass") == 0) {
       unsigned int idx = e.kicktable_idx;
-      const Kicktable& ktable = Kicktable::get_kicktable(idx);
-      fp << std::setw(pw) << "kicktable_fname" << ktable.filename << '\n';
+      const Kicktable& ktab = Kicktable::get_kicktable(idx);
+      if (ktab.filename.empty())
+      {
+        write_vector(fp, "kicktable_x_pos", ktab.x_pos);
+        write_vector(fp, "kicktable_y_pos", ktab.y_pos);
+        write_vector(fp, "kicktable_x_kick", ktab.x_kick);
+        write_vector(fp, "kicktable_y_kick", ktab.y_kick);
+        fp << std::setw(pw) << "kicktable_length" << ktab.length << '\n';
+      }
+      else
+        fp << std::setw(pw) << "kicktable_fname" << ktab.filename << '\n';
     }
     if (e.nr_steps != 1) {
       fp.unsetf(std::ios_base::showpos);
@@ -132,31 +142,31 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
     if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
     if (e.rescale_kicks != 1.0) { fp << std::setw(pw) << "rescale_kicks" << e.rescale_kicks << '\n'; }
-    if (has_t_vector(e.t_in)) write_6d_vector(fp, "t_in", e.t_in);
-    if (has_t_vector(e.t_out)) write_6d_vector(fp, "t_out", e.t_out);
+    if (has_t_vector(e.t_in)) write_vector(fp, "t_in", e.t_in, 6);
+    if (has_t_vector(e.t_out)) write_vector(fp, "t_out", e.t_out, 6);
     if (has_r_matrix(e.r_in)) {
-      write_6d_vector(fp, "rx|r_in", &e.r_in[6*0]);
-      write_6d_vector(fp, "px|r_in", &e.r_in[6*1]);
-      write_6d_vector(fp, "ry|r_in", &e.r_in[6*2]);
-      write_6d_vector(fp, "py|r_in", &e.r_in[6*3]);
-      write_6d_vector(fp, "de|r_in", &e.r_in[6*4]);
-      write_6d_vector(fp, "dl|r_in", &e.r_in[6*5]);
+      write_vector(fp, "rx|r_in", &e.r_in[6*0], 6);
+      write_vector(fp, "px|r_in", &e.r_in[6*1], 6);
+      write_vector(fp, "ry|r_in", &e.r_in[6*2], 6);
+      write_vector(fp, "py|r_in", &e.r_in[6*3], 6);
+      write_vector(fp, "de|r_in", &e.r_in[6*4], 6);
+      write_vector(fp, "dl|r_in", &e.r_in[6*5], 6);
     }
     if (has_r_matrix(e.r_out)) {
-      write_6d_vector(fp, "rx|r_out", &e.r_out[6*0]);
-      write_6d_vector(fp, "px|r_out", &e.r_out[6*1]);
-      write_6d_vector(fp, "ry|r_out", &e.r_out[6*2]);
-      write_6d_vector(fp, "py|r_out", &e.r_out[6*3]);
-      write_6d_vector(fp, "de|r_out", &e.r_out[6*4]);
-      write_6d_vector(fp, "dl|r_out", &e.r_out[6*5]);
+      write_vector(fp, "rx|r_out", &e.r_out[6*0], 6);
+      write_vector(fp, "px|r_out", &e.r_out[6*1], 6);
+      write_vector(fp, "ry|r_out", &e.r_out[6*2], 6);
+      write_vector(fp, "py|r_out", &e.r_out[6*3], 6);
+      write_vector(fp, "de|r_out", &e.r_out[6*4], 6);
+      write_vector(fp, "dl|r_out", &e.r_out[6*5], 6);
     }
     if (has_matrix66(e.matrix66)) {
-      write_6d_vector(fp, "rx|matrix66", e.matrix66[0]);
-      write_6d_vector(fp, "px|matrix66", e.matrix66[1]);
-      write_6d_vector(fp, "ry|matrix66", e.matrix66[2]);
-      write_6d_vector(fp, "py|matrix66", e.matrix66[3]);
-      write_6d_vector(fp, "de|matrix66", e.matrix66[4]);
-      write_6d_vector(fp, "dl|matrix66", e.matrix66[5]);
+      write_vector(fp, "rx|matrix66", e.matrix66[0]);
+      write_vector(fp, "px|matrix66", e.matrix66[1]);
+      write_vector(fp, "ry|matrix66", e.matrix66[2]);
+      write_vector(fp, "py|matrix66", e.matrix66[3]);
+      write_vector(fp, "de|matrix66", e.matrix66[4]);
+      write_vector(fp, "dl|matrix66", e.matrix66[5]);
     }
 
     fp << '\n';
@@ -175,15 +185,16 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
   bool found_hmin = false;
   bool found_vmin = false;
   unsigned int line_count = 0;
-  // once the counter below reaches 9, all info is available;
-  // x_max, x_min, x_nrpts, x_kick, y_max, y_min, y_nrpts, y_kick, length
+  // once the counter below reaches 5, all info is available;
+  // x_pos, y_pos, x_kick, y_kick, length
   // the filename property is not important:
   unsigned int kicktable_ready = 0;
-  double kicktable_x_max, kicktable_x_min;
-  double kicktable_y_max, kicktable_y_min, kicktable_length;
-  unsigned int x_nrpts, y_nrpts;
-  std::vector<double> kicktable_x_kick, kicktable_y_kick;
-  std::string kicktable_filename;
+  double kicktable_length;
+  std::map<std::string, std::vector<double>> kicktable_info;
+  kicktable_info["x_pos"] = {};
+  kicktable_info["y_pos"] = {};
+  kicktable_info["x_kick"] = {};
+  kicktable_info["y_kick"] = {};
   while (std::getline(fp, line)) {
     //std::cout << line << std::endl;
     line_count++;
@@ -283,31 +294,39 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
         continue;
       }
     }
-    // if (cmd.compare("kicktable_x_kick") == 0) {
-    //   unsigned int size = 0;
-    //   while (not ss.eof()) {
-    //     double m;
-    //     ss >> m;
-    //     if (ss.eof()) break;
-    //     kicktable_x_kick.push_back(m);
-    //   }
-    //   ++kicktable_ready;
-    //   if (kicktable_ready >= 9) {
-    //     int idx = Kicktable::add_kicktable(
-    //       kicktable_x_min,
-    //       kicktable_x_max,
-    //       kicktable_x_nrpts,
-    //       kicktable_x_kick,
-    //       kicktable_y_min,
-    //       kicktable_y_max,
-    //       kicktable_y_nrpts,
-    //       kicktable_y_kick,
-    //       kicktable_length
-    //     );
-    //     if (idx >= 0)
-    //       e.kicktable_idx = idx;
-    //   }
-    // }
+    if (cmd.compare(0, 10, "kicktable_") == 0) {
+      if (
+        auto item = kicktable_info.find(cmd.substr(10));
+        item != kicktable_info.end()
+      )
+        while (not ss.eof()) {
+          double m; ss >> m;
+          if (ss.eof()) break;
+          item->second.push_back(m);
+        }
+      else
+        ss >> kicktable_length;
+
+      ++kicktable_ready;
+      if (kicktable_ready >= 5) {
+        int idx = Kicktable::add_kicktable(
+          kicktable_info["x_pos"],
+          kicktable_info["y_pos"],
+          kicktable_info["x_kick"],
+          kicktable_info["y_kick"],
+          kicktable_length
+        );
+        if (idx >= 0)
+          e.kicktable_idx = idx;
+        else
+          return Status::kicktable_not_defined;
+        kicktable_ready = 0;
+        for (auto& n : kicktable_info)
+          // n.first: key, n.second: value
+          n.second = {};
+      }
+      continue;
+    }
     if (cmd.compare("polynom_a") == 0) {
       std::vector<unsigned int> order;
       std::vector<double> multipole;
@@ -599,18 +618,26 @@ static bool has_polynom(const std::vector<double>& p) {
   return false;
 }
 
-static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t) {
+static void write_vector(
+  std::ostream& fp,
+  const std::string& label,
+  const double* t,
+  const std::size_t& siz
+)
+{
   fp << std::setw(pw) << label;
-  for (int i=0; i<6; ++i)
-    fp << t[i] << "  ";
+  for (auto i=0; i<siz; ++i)
+    fp << t[i] << " ";
   fp << '\n';
 }
 
-static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t) {
-  fp << std::setw(pw) << label;
-  for (int i=0; i<6; ++i)
-    fp << t[i] << "  ";
-  fp << '\n';
+static void write_vector(
+  std::ostream& fp,
+  const std::string& label,
+  const std::vector<double>& t
+)
+{
+  write_vector(fp, label, t.data(), t.size());
 }
 
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p) {
