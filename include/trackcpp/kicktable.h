@@ -68,19 +68,6 @@ public:
     const T& rx, const T& ry, T& hkick, T& vkick
   ) const
   {
-    // checks x limits
-    if ((rx < x_min) or (rx > x_max)) {
-      //std::cout << "rx: " << double(rx) << std::endl;
-      hkick = nan("");
-      return Status::kicktable_out_of_range;
-    }
-    // checks y limits
-    if ((ry < y_min) or (ry > y_max)) {
-      //std::cout << "ry: " << double(ry) << std::endl;
-      vkick = nan("");
-      return Status::kicktable_out_of_range;
-    }
-
     // gets indices
     unsigned int ix = get_ix(rx);
     unsigned int ixp1, iyp1;
@@ -101,23 +88,23 @@ public:
     // Bilinear interpolation
     // https://en.wikipedia.org/wiki/Bilinear_interpolation
     {  /* hkick */
-      const double fq11 = x_kick[get_idx(ix, iy)];
-      const double fq12 = x_kick[get_idx(ix, iyp1)];
-      const double fq21 = x_kick[get_idx(ixp1, iy)];
-      const double fq22 = x_kick[get_idx(ixp1, iyp1)];
+      const double f11 = x_kick[get_idx(ix, iy)];
+      const double f12 = x_kick[get_idx(ix, iyp1)];
+      const double f21 = x_kick[get_idx(ixp1, iy)];
+      const double f22 = x_kick[get_idx(ixp1, iyp1)];
       hkick =
-        f11 * (x2 - x) * (y2 - y) + f21 * (x - x1) * (y2 - y) +
-        f12 * (x2 - x) * (y - y1) + f22 * (x - x1) * (y - y1);
+        f11 * (x2 - rx) * (y2 - ry) + f21 * (rx - x1) * (y2 - ry) +
+        f12 * (x2 - rx) * (ry - y1) + f22 * (rx - x1) * (ry - y1);
       hkick /= denom;
     }
     {  /* vkick */
-      const double fq11 = y_kick[get_idx(ix, iy)];
-      const double fq12 = y_kick[get_idx(ix, iyp1)];
-      const double fq21 = y_kick[get_idx(ixp1, iy)];
-      const double fq22 = y_kick[get_idx(ixp1, iyp1)];
+      const double f11 = y_kick[get_idx(ix, iy)];
+      const double f12 = y_kick[get_idx(ix, iyp1)];
+      const double f21 = y_kick[get_idx(ixp1, iy)];
+      const double f22 = y_kick[get_idx(ixp1, iyp1)];
       vkick =
-        f11 * (x2 - x) * (y2 - y) + f21 * (x - x1) * (y2 - y) +
-        f12 * (x2 - x) * (y - y1) + f22 * (x - x1) * (y - y1);
+        f11 * (x2 - rx) * (y2 - ry) + f21 * (rx - x1) * (y2 - ry) +
+        f12 * (x2 - rx) * (ry - y1) + f22 * (rx - x1) * (ry - y1);
       vkick /= denom;
     }
 

@@ -127,7 +127,6 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 
 }
 
-
 int Kicktable::add_kicktable(
   const std::vector<double>& x_pos,
   const std::vector<double>& x_kick,

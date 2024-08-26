@@ -46,8 +46,6 @@
 //     of using FFT are interesting since the Beam Dynamics community does not seem to have
 //     realized that the method could speed up calculation of taylor maps...
 
-
-
 #ifndef TPSA_H
 #define TPSA_H
 
@@ -373,6 +371,42 @@ template <unsigned int V, unsigned int N, typename TYPE>
 bool Tpsa<V,N,TYPE>::operator >= (const TYPE& o_) const {
     for(unsigned int i=0; i<get_size(); i++) if (c[i] - o_ != (TYPE) 0) return c[i] - o_ >= 0;
     return false;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+inline bool operator == (const TYPE& lhs, const Tpsa<V,N,TYPE>& rhs)
+{
+    return rhs == lhs;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+inline bool operator != (const TYPE& lhs, const Tpsa<V,N,TYPE>& rhs)
+{
+    return rhs != lhs;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+inline bool operator < (const TYPE& lhs, const Tpsa<V,N,TYPE>& rhs)
+{
+    return  rhs > lhs;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+inline bool operator <= (const TYPE& lhs, const Tpsa<V,N,TYPE>& rhs)
+{
+    return rhs >= lhs;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+inline bool operator > (const TYPE& lhs, const Tpsa<V,N,TYPE>& rhs)
+{
+    return rhs < lhs;
+}
+
+template <unsigned int V, unsigned int N, typename TYPE>
+inline bool operator >= (const TYPE& lhs, const Tpsa<V,N,TYPE>& rhs)
+{
+    return rhs <= lhs;
 }
 
 template <unsigned int V, unsigned int N, typename TYPE>
