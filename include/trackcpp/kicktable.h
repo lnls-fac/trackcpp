@@ -44,13 +44,16 @@ public:
   Kicktable(const std::string& filename_ = "");
   Kicktable(const Kicktable &) = default;
 
-  Status::type load_from_file(const std::string& filename_);
-  Status::type load_from_file(std::string& filename_, bool file_flag=true);
-  Status::type save_to_file(
-    std::string& filename_,
-    const std::string author_name = " ",
-    bool file_flag = true
+  Status::type load_from_file(
+    const std::string& filename_, bool file_flag=true
   );
+  Status::type _dump_to_stream(
+    std::ostream& fp, const std::string author_name = " "
+  );
+  Status::type save_to_file(
+    const std::string filename_, const std::string author_name = " "
+  );
+  std::string save_to_string(const std::string author_name = " ");
 
   bool is_valid_kicktable() const;
   unsigned int get_idx(unsigned int ix, unsigned int iy) const
@@ -71,6 +74,8 @@ public:
     idx = std::lower_bound(y_pos.begin(), y_pos.end(), y) - y_pos.begin() - 1;
     return idx >= 0 ? (unsigned int) idx : 0u;
   }
+  unsigned int get_ix(const double& x) const {return get_ix<double>(x);}
+  unsigned int get_iy(const double& y) const {return get_iy<double>(y);}
 
   template <typename T> Status::type getkicks_bilinear(
     const T& rx, const T& ry, T& hkick, T& vkick
@@ -140,8 +145,7 @@ public:
     const std::vector<double>& y_kick,
     const double length=1
   );
-  static int add_kicktable(const std::string& filename);
-  static int add_kicktable(std::string& filename, bool file_flag=true);
+  static int add_kicktable(const std::string& filename, bool file_flag=true);
   static int add_kicktable(const Kicktable &new_kicktable);
   static Kicktable& get_kicktable(const int& kicktable_idx)
   {

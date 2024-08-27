@@ -115,7 +115,6 @@ double get_double_max() {
 // For Kicktable::getkicks
 %apply double *OUTPUT { double &hkick__, double &vkick__ };
 
-
 %include "../include/trackcpp/elements.h"
 %include "../include/trackcpp/kicktable.h"
 %include "../include/trackcpp/auxiliary.h"

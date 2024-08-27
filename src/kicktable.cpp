@@ -63,14 +63,8 @@ bool Kicktable::is_valid_kicktable() const
   return true;
 }
 
-Status::type Kicktable::load_from_file(const std::string& filename_)
-{
-  std::string fname = filename_;
-  return load_from_file(fname, true);
-}
-
 Status::type Kicktable::load_from_file(
-  std::string& filename_,
+  const std::string& filename_,
   const bool file_flag
 )
 {
@@ -89,7 +83,6 @@ Status::type Kicktable::load_from_file(
   }
   else
     fp = std::make_unique<std::stringstream>(filename_);
-
 
   std::string str;
   unsigned int x_nrpts, y_nrpts;
@@ -135,7 +128,7 @@ Status::type Kicktable::load_from_file(
   }
 
   // invert tables, if necessary
-  if (y_pos.size() > 1 && y_pos[1] > y_pos[0]) {
+  if (y_pos.size() > 1 && y_pos[1] < y_pos[0]) {
     for(unsigned int i=0; i<x_nrpts; ++i) {
       for(unsigned int j=0; j<y_nrpts/2; ++j) {
         std::swap(x_kick[get_idx(i, j)], x_kick[get_idx(i, y_nrpts-j-1)]);
@@ -147,82 +140,85 @@ Status::type Kicktable::load_from_file(
 }
 
 
-static const int hw = 18; // header field width
-static const int pw = 16; // parameter field width
-static const int np = 17; // number precision
-Status::type Kicktable::save_to_file(
-  std::string& filename_,
-  const std::string author_name,
-  const bool file_flag
+static const int pw = 12; // parameter field width
+static const int np = 4; // number precision
+Status::type Kicktable::_dump_to_stream(
+  std::ostream& fp,
+  const std::string author_name
 )
 {
-  // done with the help of chatgpt:
-  std::unique_ptr<std::ostream> fp;
-  if (file_flag)
-  {
-    fp = std::make_unique<std::ofstream>(filename.c_str());
-    if (!fp->good())
-      return Status::file_not_found;
-  }
-  else
-    fp = std::make_unique<std::stringstream>();
-
-  fp->setf(
+  fp.setf(
     std::ios_base::left |
     std::ios_base::scientific |
-    std::ios_base::uppercase
+    std::ios_base::uppercase |
+    std::ios_base::showpos
   );
-  fp->precision(np);
+  fp.precision(np);
 
   // HEADER
-  *fp << "# Author: " << author_name << '\n';
-  *fp << "#" << '\n';
-  *fp << "# Total Length of Longitudinal Interval [m]" << '\n';
-  *fp << length << '\n';
-  *fp << "# Number of Horizontal Points" << '\n';
-  *fp << x_pos.size() << '\n';
-  *fp << "# Number of Vertical Points" << '\n';
-  *fp << y_pos.size() << '\n';
+  fp << "# Author: " << author_name << '\n';
+  fp << "#" << '\n';
+  fp << "# Total Length of Longitudinal Interval [m]" << '\n';
+  fp << length << '\n';
+  fp << "# Number of Horizontal Points" << '\n';
+  fp << x_pos.size() << '\n';
+  fp << "# Number of Vertical Points" << '\n';
+  fp << y_pos.size() << '\n';
 
   // x_kick:
-  *fp << "# Total Horizontal 2nd Order Kick [T2m2]" << '\n';
-  *fp << "START" << '\n';
-  *fp << std::setw(pw) << ' ';
+  fp << "# Total Horizontal 2nd Order Kick [T2m2]" << '\n';
+  fp << "START" << '\n';
+  fp << std::setw(pw) << ' ' << ' ';
   for (auto xi: x_pos)
-    *fp << std::setw(pw) << xi << ' ';
-  *fp << '\n';
-  for (auto j=y_pos.size()-1; j>=0; ++j)
+    fp << std::setw(pw) << xi << ' ';
+  fp << '\n';
+  for (int j=y_pos.size()-1; j>=0; --j)
   {
-    *fp << std::setw(pw) << y_pos[j] << ' ';
+    fp << std::setw(pw) << y_pos[j] << ' ';
     for (auto i=0; i<x_pos.size(); ++i)
     {
-      *fp << std::setw(pw) << x_kick[get_idx(i, j)] << ' ';
+      auto k = get_idx(i, j);
+      fp << std::setw(pw) << x_kick[k] << ' ';
     }
-    *fp << '\n';
+    fp << '\n';
   }
 
   // y_kick:
-  *fp << "# Total Vertical 2nd Order Kick [T2m2]" << '\n';
-  *fp << "START" << '\n';
-  *fp << std::setw(pw) << ' ';
+  fp << "# Total Vertical 2nd Order Kick [T2m2]" << '\n';
+  fp << "START" << '\n';
+  fp << std::setw(pw) << ' ' << ' ';
   for (auto xi: x_pos)
-    *fp << std::setw(pw) << xi << ' ';
-  *fp << '\n';
-  for (auto j=y_pos.size()-1; j>=0; ++j)
+    fp << std::setw(pw) << xi << ' ';
+  fp << '\n';
+  for (int j=y_pos.size()-1; j>=0; --j)
   {
-    *fp << std::setw(pw) << y_pos[j] << ' ';
+    fp << std::setw(pw) << y_pos[j] << ' ';
     for (auto i=0; i<x_pos.size(); ++i)
     {
-      *fp << std::setw(pw) << y_kick[get_idx(i, j)] << ' ';
+      fp << std::setw(pw) << y_kick[get_idx(i, j)] << ' ';
     }
-    *fp << '\n';
+    fp << '\n';
   }
-
-  if (!file_flag)
-    // done with the help of chatgpt:
-    filename = std::move(static_cast<std::stringstream*>(fp.get())->str());
   return Status::success;
+}
 
+Status::type Kicktable::save_to_file(
+  const std::string filename_,
+  const std::string author_name
+)
+{
+  std::ofstream fp(filename_.c_str());
+  if (!fp.good())
+    return Status::file_not_found;
+  return _dump_to_stream(fp, author_name);
+}
+
+std::string Kicktable::save_to_string(const std::string author_name)
+{
+  std::stringstream fp;
+  _dump_to_stream(fp, author_name);
+  std::string stg = std::move(fp.str());
+  return stg;
 }
 
 int Kicktable::add_kicktable(
@@ -237,14 +233,7 @@ int Kicktable::add_kicktable(
   return Kicktable::add_kicktable(new_kicktable);
 }
 
-
-int Kicktable::add_kicktable(const std::string& filename)
-{
-  // loads a new kicktable from file and inserts it into vector of kicktables
-  Kicktable new_kicktable(filename);
-  return Kicktable::add_kicktable(new_kicktable);
-}
-int Kicktable::add_kicktable(std::string& filename, bool file_flag)
+int Kicktable::add_kicktable(const std::string& filename, bool file_flag)
 {
   Kicktable new_kicktable;
   new_kicktable.load_from_file(filename, file_flag);
