@@ -25,7 +25,7 @@ NUMPY_VERSION := $(shell $(PYTHON) -c "import numpy; print(numpy.__version__)")
 
 OBJECTS = $(WRAPPEROBJS) $(INTERFACEOBJS)
 
-CPPFLAGS = -std=c++11 -fPIC $(OPT_FLAG)
+CPPFLAGS = -std=c++20 -fPIC $(OPT_FLAG)
 LIBS = $(shell gsl-config --libs)
 LIBS += -L../build -ltrackcpp
 INC = $(shell gsl-config --cflags)

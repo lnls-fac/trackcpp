@@ -36,8 +36,8 @@ CC          = gcc
 CXX         = g++
 AR          = ar
 MACHINE     = -m64
-OPT_FLAG    = -O3 -std=c++11 -fPIC
-DBG_FLAG    = -O0 -g3 -std=c++11 -fPIC
+OPT_FLAG    = -O3 -std=c++20 -fPIC
+DBG_FLAG    = -O0 -g3 -std=c++20 -fPIC
 ARFLAGS     = rcs
 DFLAGS      = -DVERSION=$(VERSION)
 LIBSOURCES_CPP  =	lattice.cpp \
@@ -58,7 +58,7 @@ LIBSOURCES_CPP  =	lattice.cpp \
 					auxiliary.cpp
 BINSOURCES_CPP =	exec.cpp \
 					tests.cpp \
-					commands.cpp \
+					commands.cpp
 
 
 AUXFILES  = VERSION
