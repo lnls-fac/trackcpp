@@ -45,38 +45,42 @@ static Status::type read_flat_file_trackcpp(std::istream&, Accelerator& accelera
 
 // -- implementation of API --
 
-Status::type read_flat_file(std::string& filename, Accelerator& accelerator, bool file_flag) {
-  if (file_flag) {
+Status::type read_flat_file(std::string& filename, Accelerator& accelerator, bool file_flag)
+{
+  if (file_flag)
+  {
     std::ifstream fp(filename.c_str());
-    if (fp.fail()) return Status::file_not_found;
+    if (!fp.good())
+      return Status::file_not_found;
     read_flat_file_trackcpp(fp, accelerator);
-    fp.close();
-    return Status::success;
-  } else {
+  }
+  else
+  {
     std::stringstream fp;
     fp.str(filename);
     read_flat_file_trackcpp(fp, accelerator);
-    //filename = fp.str();
-    return Status::success;
   }
-
+  return Status::success;
 }
 
-Status::type write_flat_file(std::string& filename, const Accelerator& accelerator, bool file_flag) {
-
-  if (file_flag) {
+Status::type write_flat_file(
+  std::string& filename, const Accelerator& accelerator, bool file_flag
+)
+{
+  if (file_flag)
+  {
     std::ofstream fp(filename.c_str());
-    if (fp.fail()) return Status::file_not_found;
+    if (!fp.good())
+      return Status::file_not_found;
     write_flat_file_trackcpp(fp, accelerator);
-    fp.close();
-    return Status::success;
-  } else {
+  }
+  else
+  {
     std::stringstream fp;
     write_flat_file_trackcpp(fp, accelerator);
     filename = fp.str(); // very costly. no other way?!
-    return Status::success;
   }
-
+  return Status::success;
 }
 
 void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) {
