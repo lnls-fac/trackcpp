@@ -124,6 +124,84 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
     }
   }
   return Status::success;
+}
+
+
+static const int hw = 18; // header field width
+static const int pw = 16; // parameter field width
+static const int np = 17; // number precision
+Status::type Kicktable::save_to_file(
+  std::string& filename_,
+  const std::string author_name,
+  const bool file_flag
+)
+{
+  // done with the help of chatgpt:
+  std::unique_ptr<std::ostream> fp;
+  if (file_flag)
+  {
+    fp = std::make_unique<std::ofstream>(filename.c_str());
+    if (!fp->good())
+      return Status::file_not_found;
+  }
+  else
+    fp = std::make_unique<std::stringstream>();
+
+  fp->setf(
+    std::ios_base::left |
+    std::ios_base::scientific |
+    std::ios_base::uppercase
+  );
+  fp->precision(np);
+
+  // HEADER
+  *fp << "# Author: " << author_name << '\n';
+  *fp << "#" << '\n';
+  *fp << "# Total Length of Longitudinal Interval [m]" << '\n';
+  *fp << length << '\n';
+  *fp << "# Number of Horizontal Points" << '\n';
+  *fp << x_pos.size() << '\n';
+  *fp << "# Number of Vertical Points" << '\n';
+  *fp << y_pos.size() << '\n';
+
+  // x_kick:
+  *fp << "# Total Horizontal 2nd Order Kick [T2m2]" << '\n';
+  *fp << "START" << '\n';
+  *fp << std::setw(pw) << ' ';
+  for (auto xi: x_pos)
+    *fp << std::setw(pw) << xi << ' ';
+  *fp << '\n';
+  for (auto j=y_pos.size()-1; j>=0; ++j)
+  {
+    *fp << std::setw(pw) << y_pos[j] << ' ';
+    for (auto i=0; i<x_pos.size(); ++i)
+    {
+      *fp << std::setw(pw) << x_kick[get_idx(i, j)] << ' ';
+    }
+    *fp << '\n';
+  }
+
+  // y_kick:
+  *fp << "# Total Vertical 2nd Order Kick [T2m2]" << '\n';
+  *fp << "START" << '\n';
+  *fp << std::setw(pw) << ' ';
+  for (auto xi: x_pos)
+    *fp << std::setw(pw) << xi << ' ';
+  *fp << '\n';
+  for (auto j=y_pos.size()-1; j>=0; ++j)
+  {
+    *fp << std::setw(pw) << y_pos[j] << ' ';
+    for (auto i=0; i<x_pos.size(); ++i)
+    {
+      *fp << std::setw(pw) << y_kick[get_idx(i, j)] << ' ';
+    }
+    *fp << '\n';
+  }
+
+  if (!file_flag)
+    // done with the help of chatgpt:
+    filename = std::move(static_cast<std::stringstream*>(fp.get())->str());
+  return Status::success;
 
 }
 

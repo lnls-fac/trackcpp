@@ -47,6 +47,11 @@ public:
   Kicktable(const Kicktable &) = default;
 
   Status::type load_from_file(const std::string& filename_);
+  Status::type save_to_file(
+    std::string& filename_,
+    const std::string author_name = " ",
+    bool file_flag = true
+  );
 
   bool is_valid_kicktable() const;
   unsigned int get_idx(unsigned int ix, unsigned int iy) const
