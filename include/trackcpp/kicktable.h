@@ -126,6 +126,13 @@ public:
     return getkicks_bilinear(rx, ry, hkick, vkick);
   }
 
+  Status::type getkicks(
+    const double& rx, const double& ry, double& hkick__, double& vkick__
+  ) const
+  {
+    return getkicks<double>(rx, ry, hkick__, vkick__);
+  }
+
   static int add_kicktable(
     const std::vector<double>& x_pos,
     const std::vector<double>& x_kick,
