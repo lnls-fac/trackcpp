@@ -66,8 +66,10 @@ double get_double_max() {
 
 %}
 
-%extend std::vector<double> {
-    double* data_() {
+%extend std::vector<double>
+{
+    double* data_()
+    {
         return $self->data();
     }
 }
@@ -110,7 +112,7 @@ double get_double_max() {
 %apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
     (double *im_out, int n1_im_out, int n2_im_out)}
 
-// For kicktable_getkicks_wrapper
+// For Kicktable::getkicks
 %apply double *OUTPUT { double &hkick__, double &vkick__ };
 
 
