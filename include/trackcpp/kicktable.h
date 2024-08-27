@@ -57,11 +57,15 @@ public:
   double get_y(unsigned int iy) const {return y_pos[iy];}
   template <typename T> unsigned int get_ix(const T& x) const
   {
-    return std::lower_bound(x_pos.begin(), x_pos.end(), x) - x_pos.begin();
+    int idx;
+    idx = std::lower_bound(x_pos.begin(), x_pos.end(), x) - x_pos.begin() - 1;
+    return idx >= 0 ? (unsigned int) idx : 0u;
   }
   template <typename T> unsigned int get_iy(const T& y) const
   {
-    return std::lower_bound(y_pos.begin(), y_pos.end(), y) - y_pos.begin();
+    int idx;
+    idx = std::lower_bound(y_pos.begin(), y_pos.end(), y) - y_pos.begin() - 1;
+    return idx >= 0 ? (unsigned int) idx : 0u;
   }
 
   template <typename T> Status::type getkicks_bilinear(
@@ -70,12 +74,12 @@ public:
   {
     // gets indices
     unsigned int ix = get_ix(rx);
-    unsigned int ixp1, iyp1;
-    if (ix >= x_pos.size()-1){ixp1 = ix; --ix;}
-    else ixp1 = ix + 1;
-
     unsigned int iy = get_iy(ry);
-    if (iy >= y_pos.size()-1){iyp1 = iy; --iy;}
+    unsigned int ixp1, iyp1;
+
+    if (ix >= x_pos.size()-1) ixp1 = ix--;
+    else ixp1 = ix + 1;
+    if (iy >= y_pos.size()-1) iyp1 = iy--;
     else iyp1 = iy + 1;
 
     /* coordinates */
