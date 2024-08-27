@@ -22,8 +22,8 @@ Status::type track_elementpass_wrapper (
     const Accelerator& accelerator,
     const Element& el,
     double *pos, int n1, int n2
-) {
-
+)
+{
     std::vector<Pos<double> > post;
 
     post.reserve(n2);
@@ -48,8 +48,8 @@ Status::type track_linepass_wrapper(
     double *orig_pos, int ni1, int ni2,
     double *pos, int n1, int n2,
     LinePassArgs& args
-) {
-
+)
+{
     std::vector<Pos<double> > post;
     std::vector<Pos<double> > orig_post;
 
@@ -97,8 +97,8 @@ Status::type track_ringpass_wrapper (
     double *orig_pos, int ni1, int ni2,
     double *pos, int n1, int n2,
     RingPassArgs& args
-) {
-
+)
+{
     std::vector<Pos<double> > post;
     std::vector<Pos<double> > orig_post;
 
@@ -143,12 +143,13 @@ Status::type track_ringpass_wrapper (
 }
 
 Status::type calc_twiss_wrapper (
-        Accelerator& accelerator,
-        const Pos<double>& fixed_point,
-        Matrix& m66,
-        double *twiss, int n1, int n2,
-        Twiss twiss0) {
-
+    Accelerator& accelerator,
+    const Pos<double>& fixed_point,
+    Matrix& m66,
+    double *twiss, int n1, int n2,
+    Twiss twiss0
+)
+{
     std::vector<Pos<double> > post;
     std::vector<Pos<double> > orig_post;
 
@@ -181,87 +182,21 @@ Status::type calc_twiss_wrapper (
     return status;
 }
 
-Element marker_wrapper(const std::string &fam_name_) {
-    return Element::marker(fam_name_);
-}
 
-Element bpm_wrapper(const std::string &fam_name_) {
-    return Element::bpm(fam_name_);
-}
-
-Element hcorrector_wrapper(const std::string &fam_name_, const double &length_, const double &hkick_) {
-    return Element::hcorrector(fam_name_, length_, hkick_);
-}
-
-Element vcorrector_wrapper(const std::string &fam_name_, const double &length_, const double &vkick_) {
-    return Element::vcorrector(fam_name_, length_, vkick_);
-}
-
-Element corrector_wrapper(const std::string &fam_name_, const double &length_, const double &hkick_, const double &vkick_) {
-    return Element::corrector(fam_name_, length_, hkick_, vkick_);
-}
-
-Element drift_wrapper(const std::string &fam_name_, const double &length_) {
-    return Element::drift(fam_name_, length_);
-}
-
-Element drift_g2l_wrapper(const std::string &fam_name_, const double &length_) {
-    return Element::drift_g2l(fam_name_, length_);
-}
-
-Element matrix_wrapper(const std::string &fam_name_, const double &length_) {
-    return Element::matrix(fam_name_, length_);
-}
-
-Element rbend_wrapper(const std::string& fam_name_, const double& length_,
-					  const double& angle_, const double& angle_in_, const double& angle_out_,
-					  const double& gap_, const double& fint_in_, const double& fint_out_,
-					  const std::vector<double>& polynom_a_, const std::vector<double>& polynom_b_,
-					  const double& K_, const double& S_) {
-    return Element::rbend(fam_name_, length_, angle_, angle_in_, angle_out_, gap_, fint_in_, fint_out_, polynom_a_, polynom_b_, K_, S_);
-}
-
-Element quadrupole_wrapper(const std::string &fam_name_, const double &length_, const double &K_, const int nr_steps_) {
-    return Element::quadrupole(fam_name_, length_, K_, nr_steps_);
-}
-
-Element sextupole_wrapper(const std::string &fam_name_, const double &length_, const double &S_, const int nr_steps_) {
-    return Element::sextupole(fam_name_, length_, S_, nr_steps_);
-}
-
-Element rfcavity_wrapper(const std::string &fam_name_, const double &length_, const double &frequency_, const double &voltage_, const double &phase_lag_) {
-    return Element::rfcavity(fam_name_, length_, frequency_, voltage_, phase_lag_);
-}
-
-Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kicktable_fname_, const int nr_steps_, const double& rescale_length_, const double& rescale_kicks_) {
-    return Element::kickmap(fam_name_, kicktable_fname_, nr_steps_, rescale_length_, rescale_kicks_);
-}
-
-Element kickpoly_wrapper(const std::string& fam_name_, const double& length_, const int nr_steps_, const double& rescale_kicks_) {
-    return Element::kickpoly(fam_name_, length_, nr_steps_, rescale_kicks_);
-}
-
-Status::type read_flat_file_wrapper(String& fname, Accelerator& accelerator, bool file_flag) {
+Status::type read_flat_file_wrapper(
+    String& fname, Accelerator& accelerator, bool file_flag
+)
+{
   return read_flat_file(fname.data, accelerator, file_flag);
 }
 
-Status::type write_flat_file_wrapper(String& fname, const Accelerator& accelerator, bool file_flag) {
+Status::type write_flat_file_wrapper(
+    String& fname, const Accelerator& accelerator, bool file_flag
+)
+{
   return write_flat_file(fname.data, accelerator, file_flag);
 }
 
-Status::type kicktable_getkicks_wrapper(
-    const int& kicktable_idx,
-    const double& rx,
-    const double& ry,
-    double& hkick__,
-    double& vkick__
-)
-{
-  if (not Kicktable::is_valid_kicktable_index(kicktable_idx))
-    return Status::kicktable_not_defined;
-  const Kicktable &kicktable = Kicktable::get_kicktable(kicktable_idx);
-  return kicktable.getkicks(rx, ry, hkick__, vkick__);
-}
 
 Status::type track_findm66_wrapper(
     Accelerator& accelerator,
@@ -269,8 +204,9 @@ Status::type track_findm66_wrapper(
     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
     double *m66, int n1_m66, int n2_m66,
     Pos<double>& v0,
-    std::vector<unsigned int >& indices) {
-
+    std::vector<unsigned int >& indices
+)
+{
     std::vector<Matrix> vec_tm;
     Matrix vec_m66;
 
@@ -294,8 +230,9 @@ Status::type track_diffusionmatrix_wrapper(
     const Accelerator& accelerator,
     const Pos<double>& fixed_point,
     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
-    double *bdiffmats, int n1_bd, int n2_bd, int n3_bd){
-
+    double *bdiffmats, int n1_bd, int n2_bd, int n3_bd
+)
+{
     std::vector<Matrix> vec_tm;
     std::vector<Matrix> vec_bd;
 
@@ -326,8 +263,9 @@ void naff_general_wrapper(
     bool is_real, int nr_ff, int win,
     double *ff_out, int n1_ff_out, int n2_ff_out,
     double *re_out, int n1_re_out, int n2_re_out,
-    double *im_out, int n1_im_out, int n2_im_out){
-
+    double *im_out, int n1_im_out, int n2_im_out
+)
+{
     std::vector<double> vec_re_in;
     std::vector<double> vec_im_in;
     std::vector<double> vec_ff_out;
