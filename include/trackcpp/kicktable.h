@@ -26,8 +26,6 @@
 
 class Kicktable {
 
-  // Kicktable: assumes x_kick and y_kick tables sampled on the same regular (x,y)-point grid.
-
 public:
 
   std::string         filename;
@@ -47,6 +45,7 @@ public:
   Kicktable(const Kicktable &) = default;
 
   Status::type load_from_file(const std::string& filename_);
+  Status::type load_from_file(std::string& filename_, bool file_flag=true);
   Status::type save_to_file(
     std::string& filename_,
     const std::string author_name = " ",
@@ -135,6 +134,7 @@ public:
     const double length=1
   );
   static int add_kicktable(const std::string& filename);
+  static int add_kicktable(std::string& filename, bool file_flag=true);
   static int add_kicktable(const Kicktable &new_kicktable);
   static Kicktable& get_kicktable(const int& kicktable_idx)
   {

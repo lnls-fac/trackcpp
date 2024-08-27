@@ -16,9 +16,11 @@
 
 #include <trackcpp/kicktable.h>
 #include <trackcpp/auxiliary.h>
-#include <string>
+#include <iomanip>
 #include <fstream>
+#include <string>
 #include <cmath>
+#include <memory>
 
 
 std::vector<Kicktable> Kicktable::kicktable_list;
@@ -29,7 +31,6 @@ Kicktable::Kicktable(const std::string& filename_) :
   if (filename_ != "")
     this->load_from_file(filename_);
 }
-
 
 Kicktable::Kicktable(
   const std::vector<double>& x_pos,
@@ -62,30 +63,49 @@ bool Kicktable::is_valid_kicktable() const
   return true;
 }
 
-Status::type Kicktable::load_from_file(const std::string& filename_) {
+Status::type Kicktable::load_from_file(const std::string& filename_)
+{
+  std::string fname = filename_;
+  return load_from_file(fname, true);
+}
 
-  std::ifstream fp(filename_);
-  if (fp.fail()) {
-    std::cout << "Could not find kicktable file " << filename_ << "!" << std::endl;
-    return Status::file_not_found;
+Status::type Kicktable::load_from_file(
+  std::string& filename_,
+  const bool file_flag
+)
+{
+  // done with the help of chatgpt:
+  std::unique_ptr<std::istream> fp;
+  if (file_flag)
+  {
+    fp = std::make_unique<std::ifstream>(filename_);
+    if (!fp->good())
+    {
+      std::cout << "Could not find kicktable file ";
+      std::cout << filename_ << "!" << std::endl;
+      return Status::file_not_found;
+    }
+    filename = filename_;
   }
-  filename = filename_;
+  else
+    fp = std::make_unique<std::stringstream>(filename_);
+
 
   std::string str;
   unsigned int x_nrpts, y_nrpts;
 
   // HEADER
-  getline(fp, str);   // name of kicktable line
-  getline(fp, str);   // author line
-  getline(fp, str);   // label 'ID length[m]'
-  fp >> length; // length of element
-  getline(fp, str);   // advances to new line
-  getline(fp, str);   // label 'number of horizontal points'
-  fp >> x_nrpts;      // number of horizontal points
-  getline(fp, str);   // advances to new line
-  getline(fp, str);   // label 'number of vertical points'
-  fp >> y_nrpts;      // number of vertical points
-  getline(fp, str);   // advances to new line
+  getline(*fp, str);   // author line
+  getline(*fp, str);   // empty line
+  getline(*fp, str);   // label 'ID length[m]'
+  *fp >> length; // length of element
+  getline(*fp, str);   // advances to new line
+  getline(*fp, str);   // label 'number of horizontal points'
+  *fp >> x_nrpts;      // number of horizontal points
+  getline(*fp, str);   // advances to new line
+  getline(*fp, str);   // label 'number of vertical points'
+  *fp >> y_nrpts;      // number of vertical points
+  getline(*fp, str);   // advances to new line
 
   x_kick.resize(x_nrpts * y_nrpts, 0);
   y_kick.resize(x_nrpts * y_nrpts, 0);
@@ -94,28 +114,28 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
   y_pos.resize(y_nrpts, 0);
 
   // HORIZONTAL KICK TABLE
-  getline(fp, str);   // label 'Horizontal KickTable in T^2.m^2'
-  getline(fp, str);   // label 'START'
-  for(unsigned int i=0; i<x_nrpts; ++i) {fp >> x_pos[i];}
+  getline(*fp, str);   // label 'Horizontal KickTable in T^2.m^2'
+  getline(*fp, str);   // label 'START'
+  for(unsigned int i=0; i<x_nrpts; ++i) {*fp >> x_pos[i];}
   for(int j=y_nrpts-1; j>=0; --j) {
-    fp >> y_pos[j];
+    *fp >> y_pos[j];
     for(unsigned int i=0; i<x_nrpts; ++i)
-      fp >> x_kick[get_idx(i, j)];
+      *fp >> x_kick[get_idx(i, j)];
   }
-  getline(fp, str);   // advances to new line
+  getline(*fp, str);   // advances to new line
 
   // VERTICAL KICK TABLE
-  getline(fp, str);   // label 'Vertical KickTable in T^2.m^2'
-  getline(fp, str);   // label 'START'
-  getline(fp, str);   // horizontal position. Already set from x_kick
+  getline(*fp, str);   // label 'Vertical KickTable in T^2.m^2'
+  getline(*fp, str);   // label 'START'
+  getline(*fp, str);   // horizontal position. Already set from x_kick
   for(int j=y_nrpts-1; j>=0; --j) {
-    double posy; fp >> posy;
+    double posy; *fp >> posy;
     for(unsigned int i=0; i<x_nrpts; ++i)
-      fp >> y_kick[get_idx(i, j)];
+      *fp >> y_kick[get_idx(i, j)];
   }
 
   // invert tables, if necessary
-  if (y_pos.size() > 1 and y_pos[1] > y_pos[0]) {
+  if (y_pos.size() > 1 && y_pos[1] > y_pos[0]) {
     for(unsigned int i=0; i<x_nrpts; ++i) {
       for(unsigned int j=0; j<y_nrpts/2; ++j) {
         std::swap(x_kick[get_idx(i, j)], x_kick[get_idx(i, y_nrpts-j-1)]);
@@ -224,7 +244,12 @@ int Kicktable::add_kicktable(const std::string& filename)
   Kicktable new_kicktable(filename);
   return Kicktable::add_kicktable(new_kicktable);
 }
-
+int Kicktable::add_kicktable(std::string& filename, bool file_flag)
+{
+  Kicktable new_kicktable;
+  new_kicktable.load_from_file(filename, file_flag);
+  return Kicktable::add_kicktable(new_kicktable);
+}
 
 int Kicktable::add_kicktable(const Kicktable &new_kicktable)
 {
