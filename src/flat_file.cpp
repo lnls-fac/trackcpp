@@ -24,7 +24,7 @@
 #include <map>
 
 static const int hw = 18; // header field width
-static const int pw = 16; // parameter field width
+static const int pw = 17; // parameter field width
 static const int np = 17; // number precision
 static bool read_boolean_string(std::istringstream& ss);
 static int process_rad_property(std::istringstream& ss);
@@ -88,12 +88,12 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
   fp.setf(std::ios_base::left | std::ios_base::scientific | std::ios_base::uppercase);
   fp.precision(np);
 
-  fp << std::setw(hw) << "% energy" << accelerator.energy << " eV\n";
-  fp << std::setw(hw) << "% harmonic_number" << accelerator.harmonic_number << "\n";
-  fp << std::setw(hw) << "% cavity_on" << get_boolean_string(accelerator.cavity_on) << "\n";
-  fp << std::setw(hw) << "% radiation_on" << accelerator.radiation_on << "\n";
-  fp << std::setw(hw) << "% vchamber_on" << get_boolean_string(accelerator.vchamber_on) << "\n";
-  fp << std::setw(hw) << "% lattice_version" << accelerator.lattice_version << "\n";
+  fp << std::setw(hw) << "% energy " << accelerator.energy << " eV\n";
+  fp << std::setw(hw) << "% harmonic_number " << accelerator.harmonic_number << "\n";
+  fp << std::setw(hw) << "% cavity_on " << get_boolean_string(accelerator.cavity_on) << "\n";
+  fp << std::setw(hw) << "% radiation_on " << accelerator.radiation_on << "\n";
+  fp << std::setw(hw) << "% vchamber_on " << get_boolean_string(accelerator.vchamber_on) << "\n";
+  fp << std::setw(hw) << "% lattice_version " << accelerator.lattice_version << "\n";
   fp << '\n';
 
   fp.setf(std::ios_base::showpos);
@@ -101,78 +101,96 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
   for (auto i=0; i<accelerator.lattice.size(); ++i) {
     const Element& e = accelerator.lattice[i];
     fp.unsetf(std::ios_base::showpos);
-    fp << "### " << std::setw(4) << std::setfill('0') << std::right << i << std::setfill(' ') << std::left << " ###\n";
+    fp << "### " << std::setw(4) << std::setfill('0') << std::right << i;
+    fp << std::setfill(' ') << std::left << " ###\n";
     fp.setf(std::ios_base::showpos);
-    fp << std::setw(pw) << "fam_name" << e.fam_name << '\n';
-    fp << std::setw(pw) << "length" << e.length << '\n';
-    fp << std::setw(pw) << "pass_method" << pm_dict[e.pass_method] << '\n';
+    fp << std::setw(pw) << "fam_name " << e.fam_name << '\n';
+    fp << std::setw(pw) << "length " << e.length << '\n';
+    fp << std::setw(pw) << "pass_method " << pm_dict[e.pass_method] << '\n';
     if (pm_dict[e.pass_method].compare("kicktable_pass") == 0) {
       unsigned int idx = e.kicktable_idx;
       const Kicktable& ktab = Kicktable::get_kicktable(idx);
       if (ktab.filename.empty())
       {
-        write_vector(fp, "kicktable_x_pos", ktab.x_pos);
-        write_vector(fp, "kicktable_y_pos", ktab.y_pos);
-        write_vector(fp, "kicktable_x_kick", ktab.x_kick);
-        write_vector(fp, "kicktable_y_kick", ktab.y_kick);
-        fp << std::setw(pw) << "kicktable_length" << ktab.length << '\n';
+        write_vector(fp, "kicktable_x_pos ", ktab.x_pos);
+        write_vector(fp, "kicktable_y_pos ", ktab.y_pos);
+        write_vector(fp, "kicktable_x_kick ", ktab.x_kick);
+        write_vector(fp, "kicktable_y_kick ", ktab.y_kick);
+        fp << std::setw(pw) << "kicktable_length " << ktab.length << '\n';
       }
       else
-        fp << std::setw(pw) << "kicktable_fname" << ktab.filename << '\n';
+        fp << std::setw(pw) << "kicktable_fname " << ktab.filename << '\n';
     }
     if (e.nr_steps != 1) {
       fp.unsetf(std::ios_base::showpos);
-      fp << std::setw(pw) << "nr_steps" << e.nr_steps << '\n';
+      fp << std::setw(pw) << "nr_steps " << e.nr_steps << '\n';
       fp.setf(std::ios_base::showpos);
     }
-    if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a", e.polynom_a);
-    if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b", e.polynom_b);
-    if (has_polynom(e.polynom_kickx)) write_polynom(fp, "polynom_kickx", e.polynom_kickx);
-    if (has_polynom(e.polynom_kicky)) write_polynom(fp, "polynom_kicky", e.polynom_kicky);
-    if (e.vchamber != VChamberShape::rectangle) { fp << std::setw(pw) << "vchamber" << e.vchamber << '\n'; }
-    if (e.hmin != -DBL_MAX) { fp << std::setw(pw) << "hmin" << e.hmin << '\n'; }
-    if (e.hmax != DBL_MAX) { fp << std::setw(pw) << "hmax" << e.hmax << '\n'; }
-    if (e.vmin != -DBL_MAX) { fp << std::setw(pw) << "vmin" << e.vmin << '\n'; }
-    if (e.vmax != DBL_MAX) { fp << std::setw(pw) << "vmax" << e.vmax << '\n'; }
-    if (e.hkick != 0) { fp << std::setw(pw) << "hkick" << e.hkick << '\n'; }
-    if (e.vkick != 0) { fp << std::setw(pw) << "vkick" << e.vkick << '\n'; }
-    if (e.angle != 0) { fp << std::setw(pw) << "angle" << e.angle << '\n'; }
-    if (e.gap != 0) { fp << std::setw(pw) << "gap" << e.gap << '\n'; }
-    if (e.fint_in != 0) { fp << std::setw(pw) << "fint_in" << e.fint_in << '\n'; }
-    if (e.fint_out != 0) { fp << std::setw(pw) << "fint_out" << e.fint_out << '\n'; }
-    if (e.voltage != 0) { fp << std::setw(pw) << "voltage" << e.voltage << '\n'; }
-    if (e.frequency != 0) { fp << std::setw(pw) << "frequency" << e.frequency << '\n'; }
-    if (e.phase_lag != 0) { fp << std::setw(pw) << "phase_lag" << e.phase_lag << '\n'; }
-    if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
-    if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
-    if (e.rescale_kicks != 1.0) { fp << std::setw(pw) << "rescale_kicks" << e.rescale_kicks << '\n'; }
-    if (has_t_vector(e.t_in)) write_vector(fp, "t_in", e.t_in, 6);
-    if (has_t_vector(e.t_out)) write_vector(fp, "t_out", e.t_out, 6);
-    if (has_r_matrix(e.r_in)) {
-      write_vector(fp, "rx|r_in", &e.r_in[6*0], 6);
-      write_vector(fp, "px|r_in", &e.r_in[6*1], 6);
-      write_vector(fp, "ry|r_in", &e.r_in[6*2], 6);
-      write_vector(fp, "py|r_in", &e.r_in[6*3], 6);
-      write_vector(fp, "de|r_in", &e.r_in[6*4], 6);
-      write_vector(fp, "dl|r_in", &e.r_in[6*5], 6);
+    if (has_polynom(e.polynom_a)) write_polynom(fp, "polynom_a ", e.polynom_a);
+    if (has_polynom(e.polynom_b)) write_polynom(fp, "polynom_b ", e.polynom_b);
+    if (has_polynom(e.polynom_kickx))
+        write_polynom(fp, "polynom_kickx ", e.polynom_kickx);
+    if (has_polynom(e.polynom_kicky))
+        write_polynom(fp, "polynom_kicky ", e.polynom_kicky);
+    if (e.vchamber != VChamberShape::rectangle)
+        fp << std::setw(pw) << "vchamber " << e.vchamber << '\n';
+    if (e.hmin != -DBL_MAX) fp << std::setw(pw) << "hmin " << e.hmin << '\n';
+    if (e.hmax != DBL_MAX) fp << std::setw(pw) << "hmax " << e.hmax << '\n';
+    if (e.vmin != -DBL_MAX) fp << std::setw(pw) << "vmin " << e.vmin << '\n';
+    if (e.vmax != DBL_MAX) fp << std::setw(pw) << "vmax " << e.vmax << '\n';
+    if (e.hkick != 0)
+        fp << std::setw(pw) << "hkick " << e.hkick << '\n';
+    if (e.vkick != 0)
+        fp << std::setw(pw) << "vkick " << e.vkick << '\n';
+    if (e.angle != 0)
+        fp << std::setw(pw) << "angle " << e.angle << '\n';
+    if (e.gap != 0)
+        fp << std::setw(pw) << "gap " << e.gap << '\n';
+    if (e.fint_in != 0)
+        fp << std::setw(pw) << "fint_in " << e.fint_in << '\n';
+    if (e.fint_out != 0)
+        fp << std::setw(pw) << "fint_out " << e.fint_out << '\n';
+    if (e.voltage != 0)
+        fp << std::setw(pw) << "voltage " << e.voltage << '\n';
+    if (e.frequency != 0)
+        fp << std::setw(pw) << "frequency " << e.frequency << '\n';
+    if (e.phase_lag != 0)
+        fp << std::setw(pw) << "phase_lag " << e.phase_lag << '\n';
+    if (e.angle_in != 0)
+        fp << std::setw(pw) << "angle_in " << e.angle_in << '\n';
+    if (e.angle_out != 0)
+        fp << std::setw(pw) << "angle_out " << e.angle_out << '\n';
+    if (e.rescale_kicks != 1.0)
+        fp << std::setw(pw) << "rescale_kicks " << e.rescale_kicks << '\n';
+    if (has_t_vector(e.t_in)) write_vector(fp, "t_in ", e.t_in, 6);
+    if (has_t_vector(e.t_out)) write_vector(fp, "t_out ", e.t_out, 6);
+    if (has_r_matrix(e.r_in))
+    {
+      write_vector(fp, "rx|r_in ", &e.r_in[6*0], 6);
+      write_vector(fp, "px|r_in ", &e.r_in[6*1], 6);
+      write_vector(fp, "ry|r_in ", &e.r_in[6*2], 6);
+      write_vector(fp, "py|r_in ", &e.r_in[6*3], 6);
+      write_vector(fp, "de|r_in ", &e.r_in[6*4], 6);
+      write_vector(fp, "dl|r_in ", &e.r_in[6*5], 6);
     }
-    if (has_r_matrix(e.r_out)) {
-      write_vector(fp, "rx|r_out", &e.r_out[6*0], 6);
-      write_vector(fp, "px|r_out", &e.r_out[6*1], 6);
-      write_vector(fp, "ry|r_out", &e.r_out[6*2], 6);
-      write_vector(fp, "py|r_out", &e.r_out[6*3], 6);
-      write_vector(fp, "de|r_out", &e.r_out[6*4], 6);
-      write_vector(fp, "dl|r_out", &e.r_out[6*5], 6);
+    if (has_r_matrix(e.r_out))
+    {
+      write_vector(fp, "rx|r_out ", &e.r_out[6*0], 6);
+      write_vector(fp, "px|r_out ", &e.r_out[6*1], 6);
+      write_vector(fp, "ry|r_out ", &e.r_out[6*2], 6);
+      write_vector(fp, "py|r_out ", &e.r_out[6*3], 6);
+      write_vector(fp, "de|r_out ", &e.r_out[6*4], 6);
+      write_vector(fp, "dl|r_out ", &e.r_out[6*5], 6);
     }
-    if (has_matrix66(e.matrix66)) {
-      write_vector(fp, "rx|matrix66", e.matrix66[0]);
-      write_vector(fp, "px|matrix66", e.matrix66[1]);
-      write_vector(fp, "ry|matrix66", e.matrix66[2]);
-      write_vector(fp, "py|matrix66", e.matrix66[3]);
-      write_vector(fp, "de|matrix66", e.matrix66[4]);
-      write_vector(fp, "dl|matrix66", e.matrix66[5]);
+    if (has_matrix66(e.matrix66))
+    {
+      write_vector(fp, "rx|matrix66 ", e.matrix66[0]);
+      write_vector(fp, "px|matrix66 ", e.matrix66[1]);
+      write_vector(fp, "ry|matrix66 ", e.matrix66[2]);
+      write_vector(fp, "py|matrix66 ", e.matrix66[3]);
+      write_vector(fp, "de|matrix66 ", e.matrix66[4]);
+      write_vector(fp, "dl|matrix66 ", e.matrix66[5]);
     }
-
     fp << '\n';
   }
 
