@@ -36,7 +36,8 @@ int test_linepass(const Accelerator& accelerator) {
   std::vector<Pos<> > new_pos;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  Status::type status = track_linepass(accelerator, pos, new_pos, element_offset, lost_plane, true, 0, {0,}, {0.0, 0.0, });
+  // Status::type status = track_linepass(accelerator, pos, new_pos, element_offset, lost_plane, true, 0, {0,}, {0.0, 0.0, });
+  Status::type status = track_linepass(accelerator, pos, true, element_offset, new_pos, lost_plane, 0, {0,}, {0.0, 0.0, });
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
 
@@ -91,16 +92,6 @@ int test_ringpass(const Accelerator& accelerator) {
   clock_t begin, end;
   double time_spent;
   begin = clock();
-  Status::type status = track_ringpass(
-    accelerator,
-    pos,
-    5000,
-    true,
-    element_offset,
-    new_pos,
-    lost_plane,
-    lost_turn
-  );
   Status::type status = track_ringpass(
     accelerator,
     pos,

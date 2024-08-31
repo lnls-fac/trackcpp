@@ -23,10 +23,6 @@ Status::type track_elementpass_wrapper (
     const Element& el,
     double *pos, int n1, int n2
 ) {
-    const Accelerator& accelerator,
-    const Element& el,
-    double *pos, int n1, int n2
-) {
 
     std::vector<Pos<double> > post;
 
@@ -37,7 +33,7 @@ Status::type track_elementpass_wrapper (
             pos[2*n2 + i], pos[3*n2 + i],
             pos[4*n2 + i], pos[5*n2 + i]);
     }
-    Status::type status = track_elementpass(accelerator, el, post);
+
     Status::type status = track_elementpass(accelerator, el, post);
 
     for (unsigned int i=0; i<post.size(); ++i){
@@ -97,19 +93,6 @@ Status::type track_linepass_wrapper(
             for (unsigned int j=0; j<6; ++j) orig_pos[j*ni2 + i] = nan("");
         }
     }
-    // lost positions
-    for (unsigned int i=0; i<orig_post.size(); ++i){
-        if (args.lost_flag[i]) {
-            orig_pos[0*ni2 + i] = orig_post[i].rx;
-            orig_pos[1*ni2 + i] = orig_post[i].px;
-            orig_pos[2*ni2 + i] = orig_post[i].ry;
-            orig_pos[3*ni2 + i] = orig_post[i].py;
-            orig_pos[4*ni2 + i] = orig_post[i].de;
-            orig_pos[5*ni2 + i] = orig_post[i].dl;
-        } else {
-            for (unsigned int j=0; j<6; ++j) orig_pos[j*ni2 + i] = nan("");
-        }
-    }
     return status;
 }
 
@@ -142,35 +125,10 @@ Status::type track_ringpass_wrapper (
         args.lost_flag,
         args.lost_element
     );
-    Status::type status = track_ringpass(
-        accelerator,
-        orig_post,
-        args.nr_turns,
-        args.turn_by_turn,
-        args.element_offset,
-        post,
-        args.lost_plane,
-        args.lost_turn,
-        args.lost_flag,
-        args.lost_element
-    );
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
         pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;
         pos[4*n2 + i] = post[i].de; pos[5*n2 + i] = post[i].dl;
-    }
-    // lost positions
-    for (unsigned int i=0; i<orig_post.size(); ++i){
-        if (args.lost_flag[i]) {
-            orig_pos[0*ni2 + i] = orig_post[i].rx;
-            orig_pos[1*ni2 + i] = orig_post[i].px;
-            orig_pos[2*ni2 + i] = orig_post[i].ry;
-            orig_pos[3*ni2 + i] = orig_post[i].py;
-            orig_pos[4*ni2 + i] = orig_post[i].de;
-            orig_pos[5*ni2 + i] = orig_post[i].dl;
-        } else {
-            for (unsigned int j=0; j<6; ++j) orig_pos[j*ni2 + i] = nan("");
-        }
     }
     // lost positions
     for (unsigned int i=0; i<orig_post.size(); ++i){

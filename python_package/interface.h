@@ -66,11 +66,6 @@ Status::type track_linepass_wrapper (
     double *pos, int n1, int n2,
     LinePassArgs& args
 );
-    const Accelerator& accelerator,
-    double *orig_pos, int ni1, int ni2,
-    double *pos, int n1, int n2,
-    LinePassArgs& args
-);
 
 Status::type track_ringpass_wrapper (
     const Accelerator& accelerator,
@@ -78,19 +73,8 @@ Status::type track_ringpass_wrapper (
     double *pos, int n1, int n2,
     RingPassArgs& args
 );
-    const Accelerator& accelerator,
-    double *orig_pos, int ni1, int ni2,
-    double *pos, int n1, int n2,
-    RingPassArgs& args
-);
 
 Status::type calc_twiss_wrapper (
-    Accelerator& accelerator,
-    const Pos<double>& fixed_point,
-    Matrix& m66,
-    double *twiss, int n1, int n2,
-    Twiss twiss0
-);
     Accelerator& accelerator,
     const Pos<double>& fixed_point,
     Matrix& m66,
