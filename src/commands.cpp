@@ -365,6 +365,7 @@ int cmd_dynap_acceptance(const std::vector<std::string>& args) {
   }
   std::cout << get_timestamp() << " input file with flat lattice read." << std::endl;
 
+
   // builds accelerator
   accelerator.energy = ring_energy;
   accelerator.harmonic_number = harmonic_number;

@@ -53,6 +53,7 @@ int main() {
     fixed_point.rx = 0.001;
     std::cout << fixed_point << std::endl;
     track_elementpass(accelerator, accelerator.lattice[2], fixed_point);
+    track_elementpass(accelerator, accelerator.lattice[2], fixed_point);
     std::cout << fixed_point << std::endl;
     return 0;
 

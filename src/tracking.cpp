@@ -50,6 +50,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   const std::vector<Element>& lattice = accelerator.lattice;
   Pos<double> fp = fixed_point;
 
+
   const int radsts = accelerator.radiation_on;
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;

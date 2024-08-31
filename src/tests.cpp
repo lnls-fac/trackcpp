@@ -84,13 +84,23 @@ int test_ringpass(const Accelerator& accelerator) {
   pos.ry = 0.00010;
 
   std::vector<Pos<double> > new_pos;
-  unsigned int element_offset = 0
+  unsigned int element_offset = 0;
   unsigned int lost_turn = 0;
   Plane::type lost_plane;
 
   clock_t begin, end;
   double time_spent;
   begin = clock();
+  Status::type status = track_ringpass(
+    accelerator,
+    pos,
+    5000,
+    true,
+    element_offset,
+    new_pos,
+    lost_plane,
+    lost_turn
+  );
   Status::type status = track_ringpass(
     accelerator,
     pos,

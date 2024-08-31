@@ -103,9 +103,7 @@ Status::type track_elementpass (
     default:
         return Status::passmethod_not_defined;
     }
-
     return status;
-
 }
 
 template <typename T>
@@ -117,13 +115,11 @@ Status::type track_elementpass (
 
     Status::type status  = Status::success;
     for(auto&& pos: orig_pos) {
-        Status::type status2 = track_elementpass(el, pos, accelerator);
+        Status::type status2 = track_elementpass(accelerator, el, pos);
         if (status2 != Status::success) status = status2;
     }
     return status;
 }
-
-
 
 // linepass
 // --------
@@ -209,8 +205,7 @@ Status::type track_linepass (
         if (status != Status::success) {
             // fill rest of vector with nans
             for(int ii=i+1; ii<=nr_elements; ++ii) {
-                if (indcs[ii]) pos.emplace_back(
-                    nan(""),nan(""),nan(""),nan(""),nan(""),nan(""));
+                if (indcs[ii]) pos.emplace_back(nan(""));
             }
             return status;
         }
@@ -334,7 +329,7 @@ Status::type track_linepass (
         unsigned int le = element_offset;
 
         status2 = track_linepass (
-            accelerator, orig_pos[i], indices, le, final_pos, lp,line_length, time_aware_element_indices, time_aware_element_positions);
+            accelerator, orig_pos[i], indices, le, final_pos, lp, line_length, time_aware_element_indices, time_aware_element_positions);
 
         if (status2 != Status::success){
             status = status2;
