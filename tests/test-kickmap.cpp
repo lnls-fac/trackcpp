@@ -52,7 +52,7 @@ int main() {
 
     fixed_point.rx = 0.001;
     std::cout << fixed_point << std::endl;
-    track_elementpass(accelerator.lattice[2], fixed_point, accelerator);
+    track_elementpass(accelerator, accelerator.lattice[2], fixed_point);
     std::cout << fixed_point << std::endl;
     return 0;
 
@@ -65,12 +65,14 @@ int main() {
     Plane::type lost_plane;
     unsigned int element_offset = 0;
 
-    status = track_linepass(accelerator, fp, closed_orbit, element_offset, lost_plane, true);
+    status = track_linepass(
+        accelerator, fp, true, element_offset, closed_orbit, lost_plane, 0, {0,}, {0.0, 0.0, }
+    );
     if (status != Status::success) return status;
 
     std::vector<Matrix> atm;
     Pos<double> v0;
-    status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0);
+    status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0,  0, {0,}, {0.0, 0.0, });
     if (status != Status::success) return status;
     std::cout << m66[0][0] + m66[1][1] << std::endl;
     std::cout << m66[2][2] + m66[3][3] << std::endl;
@@ -116,7 +118,9 @@ int main() {
         fpp.px += twiss0.etax[1] * dpp;
         fpp.ry += twiss0.etay[0] * dpp;
         fpp.py += twiss0.etay[1] * dpp;
-        Status::type status = track_linepass(accelerator, fpp, codp, element_offset, lost_plane, true);
+        Status::type status = track_linepass(
+            accelerator, fpp, true, element_offset, codp, lost_plane, 0, {0,}, {0.0, 0.0, }
+        );
         std::cout << "h2" << std::endl;
         if (status != Status::success) return status;
     }
@@ -132,7 +136,9 @@ int main() {
     // std::vector<Pos<double>> closed_orbit, traj;
     // Plane::type lost_plane;
     // unsigned int element_offset = 0;
-    // Status::type status1 = track_linepass(sirius, fp, traj, element_offset, lost_plane, true);
+    // Status::type status1 = track_linepass(
+    //     sirius, fp, true, element_offset, traj, lost_plane, 0, {0,}, {0.0, 0.0, }
+    // );
     // for(auto i=0; i <= closed_orbit)
     // std::cout << status1 << std::endl;
 

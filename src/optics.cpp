@@ -87,7 +87,7 @@ Status::type calc_twiss(Accelerator& accelerator,
   std::vector<unsigned int> TAW_indices;
   double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions);
 
-  Status::type status = track_linepass(accelerator, fp, closed_orbit, element_offset, lost_plane, true, accelerator_length, TAW_indices, TAW_positions);
+  Status::type status = track_linepass(accelerator, fp, true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions);
   if (status != Status::success) return status;
 
 #ifdef TIMEIT
@@ -153,7 +153,8 @@ Status::type calc_twiss(Accelerator& accelerator,
     fpp.px += twiss0.etax[1] * dpp;
     fpp.ry += twiss0.etay[0] * dpp;
     fpp.py += twiss0.etay[1] * dpp;
-    Status::type status = track_linepass(accelerator, fpp, codp, element_offset, lost_plane, true, accelerator_length, TAW_indices, TAW_positions);
+    Status::type status = track_linepass(accelerator, fpp, true, element_offset, codp, lost_plane, accelerator_length, TAW_indices, TAW_positions
+    );
     if (status != Status::success) return status;
   }
 
