@@ -402,7 +402,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
   double nv = elem.voltage / accelerator.energy;
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    de +=  -nv * sin(TWOPI*elem.frequency *dl/ light_speed - elem.phase_lag);
+    de +=  -nv * sin(TWOPI*elem.frequency * dl/ light_speed - elem.phase_lag);
     } else {
     T &rx = pos.rx, &px = pos.px;
     T &ry = pos.ry, &py = pos.py;
@@ -439,6 +439,7 @@ Status::type pm_thinsext_pass(Pos<T> &pos, const Element &elem,
 
   return Status::passmethod_not_implemented;
 }
+
 
 template <typename T>
 Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,

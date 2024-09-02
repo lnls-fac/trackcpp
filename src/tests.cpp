@@ -36,7 +36,9 @@ int test_linepass(const Accelerator& accelerator) {
   std::vector<Pos<> > new_pos;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  Status::type status = track_linepass(accelerator, pos, true, element_offset, new_pos, lost_plane, 0, {0,}, {0.0, 0.0, });
+  Status::type status = track_linepass(
+    accelerator, pos, true, element_offset, new_pos, lost_plane, 0, {0,}, {0.0, 0.0, }
+  );
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
 
@@ -65,7 +67,9 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   std::vector<Pos<Tpsa<6,order> > > new_tpsa;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  track_linepass(accelerator, tpsa, false, element_offset, new_tpsa, lost_plane, 0, {0,}, {0.0, 0.0, });
+  track_linepass(
+    accelerator, tpsa, false, element_offset, new_tpsa, lost_plane, 0, {0,}, {0.0, 0.0, }
+  );
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
     //const Pos<Tpsa<6,1> >& c = new_particles[i];
     //std::cout << c.rx << std::endl;

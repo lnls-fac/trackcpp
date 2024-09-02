@@ -111,8 +111,7 @@ Status::type track_elementpass (
     const Accelerator& accelerator,
     const Element& el, // element through which to track particle
     std::vector<Pos<T> >& orig_pos // initial electron coordinates
-) {
-
+){
     Status::type status  = Status::success;
     for(auto&& pos: orig_pos) {
         Status::type status2 = track_elementpass(accelerator, el, pos);

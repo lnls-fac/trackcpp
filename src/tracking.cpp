@@ -188,7 +188,7 @@ Status::type track_findorbit6(
 
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[0], false, element_offset, co2, lost_plane, accelerator_length, TAW_indices, TAW_positions
-      ));
+    ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[1], false, element_offset, co2, lost_plane, accelerator_length, TAW_indices, TAW_positions
     ));
@@ -249,7 +249,6 @@ Status::type track_findorbit6(
 
 }
 
-
 Status::type track_findorbit4(
     Accelerator& accelerator,
     std::vector<Pos<double> >& closed_orbit,
@@ -291,7 +290,7 @@ Status::type track_findorbit4(
     Status::type status = Status::success;
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[0], false, element_offset, co2, lost_plane, accelerator_length, TAW_indices, TAW_positions
-      ));
+    ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[1], false, element_offset, co2, lost_plane, accelerator_length, TAW_indices, TAW_positions
     ));
