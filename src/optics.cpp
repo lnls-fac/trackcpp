@@ -81,11 +81,16 @@ Status::type calc_twiss(Accelerator& accelerator,
   std::vector<Pos<double>> closed_orbit;
   Plane::type lost_plane;
   unsigned int element_offset = 0;
+
+  // for longitudinal kick before RF cavities
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions);
+
   Status::type status = track_linepass(
-    accelerator, fp, true, element_offset, closed_orbit, lost_plane
+    accelerator, fp, true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions
   );
   if (status != Status::success) return status;
-
 
 #ifdef TIMEIT
   end = std::chrono::steady_clock::now(); diff = end - start;
@@ -98,7 +103,7 @@ Status::type calc_twiss(Accelerator& accelerator,
 
   std::vector<Matrix> atm;
   Pos<double> v0;
-  status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0);
+  status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0, accelerator_length, TAW_indices, TAW_positions);
   if (status != Status::success) return status;
 
 #ifdef TIMEIT
@@ -151,7 +156,7 @@ Status::type calc_twiss(Accelerator& accelerator,
     fpp.ry += twiss0.etay[0] * dpp;
     fpp.py += twiss0.etay[1] * dpp;
     Status::type status = track_linepass(
-      accelerator, fpp, true, element_offset, codp, lost_plane
+      accelerator, fpp, true, element_offset, codp, lost_plane, accelerator_length, TAW_indices, TAW_positions
     );
     if (status != Status::success) return status;
   }
