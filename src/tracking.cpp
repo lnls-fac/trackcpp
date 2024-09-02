@@ -50,7 +50,6 @@ Status::type track_findm66 (Accelerator& accelerator,
   const std::vector<Element>& lattice = accelerator.lattice;
   Pos<double> fp = fixed_point;
 
-
   const int radsts = accelerator.radiation_on;
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;
@@ -121,7 +120,9 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   // constant term of the final map
   v0.rx = map.rx.c[0]; v0.px = map.px.c[0]; v0.ry = map.ry.c[0]; v0.py = map.py.c[0]; v0.de = map.de.c[0]; v0.dl = map.dl.c[0];
+
   accelerator.radiation_on = radsts;
+
   return status;
 
 }
@@ -166,7 +167,6 @@ Status::type track_findorbit6(
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
   double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions);
-
 
   // temporary vectors and matrices
   std::vector<Pos<double> > co(7,0);

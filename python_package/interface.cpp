@@ -33,7 +33,6 @@ Status::type track_elementpass_wrapper (
             pos[2*n2 + i], pos[3*n2 + i],
             pos[4*n2 + i], pos[5*n2 + i]);
     }
-
     Status::type status = track_elementpass(accelerator, el, post);
 
     for (unsigned int i=0; i<post.size(); ++i){
@@ -268,8 +267,7 @@ Status::type track_findm66_wrapper(
     Matrix vec_m66;
 
     Status::type status = track_findm66(
-        accelerator, fixed_point, vec_tm, vec_m66, v0, indices,
-        line_length, TAW_indices, TAW_positions);
+        accelerator, fixed_point, vec_tm, vec_m66, v0, indices, line_length, TAW_indices, TAW_positions);
 
     for (unsigned int i=0; i<vec_tm.size(); ++i){
         const Matrix& m = vec_tm[i];

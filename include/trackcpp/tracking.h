@@ -59,9 +59,9 @@ Pos<double>  linalg_solve6_posvec(
 
 template <typename T>
 Status::type track_elementpass (
-            const Accelerator& accelerator,
-            const Element& el, // element through which to track particle
-            Pos<T> &orig_pos // initial electron coordinates
+    const Accelerator& accelerator,
+    const Element& el, // element through which to track particle
+    Pos<T> &orig_pos // initial electron coordinates
 ) {
 
     Status::type status = Status::success;
@@ -108,9 +108,9 @@ Status::type track_elementpass (
 
 template <typename T>
 Status::type track_elementpass (
-            const Accelerator& accelerator,
-            const Element& el, // element through which to track particle
-            std::vector<Pos<T> >& orig_pos // initial electron coordinates
+    const Accelerator& accelerator,
+    const Element& el, // element through which to track particle
+    std::vector<Pos<T> >& orig_pos // initial electron coordinates
 ) {
 
     Status::type status  = Status::success;
@@ -145,15 +145,15 @@ Status::type track_elementpass (
 //
 template <typename T>
 Status::type track_linepass (
-        const Accelerator& accelerator,
-        Pos<T>& orig_pos,
-        const std::vector<unsigned int>& indices,
-        unsigned int& element_offset,
-        std::vector<Pos<T> >& pos,
-        Plane::type& lost_plane,
-        const double line_length,
-        const std::vector<unsigned int>& time_aware_element_indices,
-        const std::vector<double>& time_aware_element_positions
+    const Accelerator& accelerator,
+    Pos<T>& orig_pos,
+    const std::vector<unsigned int>& indices,
+    unsigned int& element_offset,
+    std::vector<Pos<T> >& pos,
+    Plane::type& lost_plane,
+    const double line_length,
+    const std::vector<unsigned int>& time_aware_element_indices,
+    const std::vector<double>& time_aware_element_positions
 ) {
 
     Status::type status = Status::success;
@@ -170,12 +170,6 @@ Status::type track_linepass (
     for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
     for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
 
-    // std::cout << "len acc = " << line_length << std::endl;
-    // for (size_t i; i<time_aware_element_indices.size(); i++){std::cout << time_aware_element_indices[i] << " ";}
-    // std::cout << std::endl;
-    // for (size_t i; i<time_aware_element_positions.size(); i++){std::cout << time_aware_element_positions[i] << " ";}
-    // std::cout << std::endl;
-
     unsigned int TAW_pivot = 0;
     for(int i=0; i<nr_elements; ++i) {
 
@@ -188,7 +182,6 @@ Status::type track_linepass (
         if (i == time_aware_element_indices[TAW_pivot]) {
             ddl = light_speed*accelerator.harmonic_number/element.frequency - line_length;
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
-            // std::cout << "i = " << i << "  element_offset = " << element_offset << "  taw pivot = " << TAW_pivot << "  elem.freq = " << element.frequency << std::endl;
             TAW_pivot++;
         }
 
@@ -196,7 +189,6 @@ Status::type track_linepass (
 
         if (i == time_aware_element_indices.back()) {
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
-            // std::cout << "taw pivot = " << TAW_pivot << std::endl;
         }
 
         lost_plane = check_particle_loss(accelerator, element, orig_pos);
@@ -243,15 +235,15 @@ Status::type track_linepass (
 //
 template <typename T>
 Status::type track_linepass (
-        const Accelerator& accelerator,
-        Pos<T>& orig_pos,
-        const bool trajectory,
-        unsigned int& element_offset,
-        std::vector<Pos<T> >& pos,
-        Plane::type& lost_plane,
-        const double line_length,
-        const std::vector<unsigned int>& time_aware_element_indices,
-        const std::vector<double>& time_aware_element_positions
+    const Accelerator& accelerator,
+    Pos<T>& orig_pos,
+    const bool trajectory,
+    unsigned int& element_offset,
+    std::vector<Pos<T> >& pos,
+    Plane::type& lost_plane,
+    const double line_length,
+    const std::vector<unsigned int>& time_aware_element_indices,
+    const std::vector<double>& time_aware_element_positions
 ) {
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -301,17 +293,17 @@ Status::type track_linepass (
 //
 template <typename T>
 Status::type track_linepass (
-        const Accelerator& accelerator,
-        std::vector<Pos<T>> &orig_pos,
-        const std::vector<unsigned int >& indices,
-        const unsigned int element_offset,
-        std::vector<Pos<T>> &pos,
-        std::vector<unsigned int >& lost_plane,
-        std::vector<bool>& lost_flag,
-        std::vector<int>& lost_element,
-        const double line_length,
-        const std::vector<unsigned int>& time_aware_element_indices,
-        const std::vector<double>& time_aware_element_positions
+    const Accelerator& accelerator,
+    std::vector<Pos<T>> &orig_pos,
+    const std::vector<unsigned int >& indices,
+    const unsigned int element_offset,
+    std::vector<Pos<T>> &pos,
+    std::vector<unsigned int >& lost_plane,
+    std::vector<bool>& lost_flag,
+    std::vector<int>& lost_element,
+    const double line_length,
+    const std::vector<unsigned int>& time_aware_element_indices,
+    const std::vector<double>& time_aware_element_positions
 ) {
 
     int nr_elements = accelerator.lattice.size();
@@ -395,14 +387,14 @@ Status::type track_linepass (
 //     status do tracking (see 'auxiliary.h')
 template <typename T>
 Status::type track_ringpass (
-       const Accelerator& accelerator,
-        Pos<T>& orig_pos,
-        const unsigned int nr_turns,
-        const bool turn_by_turn,
-        unsigned int& element_offset,
-        std::vector<Pos<T> >& pos,
-        Plane::type& lost_plane,
-        unsigned int& lost_turn
+    const Accelerator& accelerator,
+    Pos<T>& orig_pos,
+    const unsigned int nr_turns,
+    const bool turn_by_turn,
+    unsigned int& element_offset,
+    std::vector<Pos<T> >& pos,
+    Plane::type& lost_plane,
+    unsigned int& lost_turn
 ) {
 
     Status::type status  = Status::success;
@@ -417,7 +409,7 @@ Status::type track_ringpass (
 
     for(lost_turn=0; lost_turn<nr_turns; ++lost_turn) {
 
-        // stores trajectory at beggining of each turn
+        // stores turn_by_turn at beggining of each turn
         if (turn_by_turn) pos.push_back(orig_pos);
 
         if ((status = track_linepass (
@@ -435,8 +427,8 @@ Status::type track_ringpass (
             // fill last of vector with nans
             pos.emplace_back(nan(""));
             if (turn_by_turn) for(int i=lost_turn+1; i<nr_turns; ++i) {
-                    pos.emplace_back(nan(""));
-                }
+                pos.emplace_back(nan(""));
+            }
             return status;
         }
         final_pos.clear();

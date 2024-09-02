@@ -36,7 +36,6 @@ int test_linepass(const Accelerator& accelerator) {
   std::vector<Pos<> > new_pos;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
-  // Status::type status = track_linepass(accelerator, pos, new_pos, element_offset, lost_plane, true, 0, {0,}, {0.0, 0.0, });
   Status::type status = track_linepass(accelerator, pos, true, element_offset, new_pos, lost_plane, 0, {0,}, {0.0, 0.0, });
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
@@ -350,7 +349,7 @@ int test_simple_drift() {
   accelerator.lattice.push_back(ds);
 
   Pos<double> pos(0.001,0.002,0.003,0.004,0.005,0.006);
-  track_elementpass (accelerator, ds, pos);
+  track_elementpass(accelerator, ds, pos);
 
   fprintf(stdout, "test_simple_drift\n");
   fprintf(stdout, "rx: %+.16f\n", pos.rx);
@@ -378,7 +377,7 @@ int test_simple_quadrupole() {
   accelerator.lattice.push_back(ds);
 
   Pos<double> pos(0.001,0.002,0.003,0.004,0.005,0.006);
-  track_elementpass (accelerator, ds, pos);
+  track_elementpass(accelerator, ds, pos);
 
   fprintf(stdout, "test_simple_quadrupole\n");
   fprintf(stdout, "rx: %+.16f\n", pos.rx);
