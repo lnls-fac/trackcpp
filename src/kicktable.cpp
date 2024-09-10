@@ -233,10 +233,10 @@ int Kicktable::add_kicktable(
   return Kicktable::add_kicktable(new_kicktable);
 }
 
-int Kicktable::add_kicktable(const std::string& filename, bool file_flag)
+int Kicktable::add_kicktable(const std::string filename)
 {
   Kicktable new_kicktable;
-  new_kicktable.load_from_file(filename, file_flag);
+  new_kicktable.load_from_file(filename, true);
   return Kicktable::add_kicktable(new_kicktable);
 }
 

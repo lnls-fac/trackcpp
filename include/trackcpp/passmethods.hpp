@@ -146,19 +146,27 @@ void kickpolythinkick(
   T hkick = 0;
   T vkick = 0;
   T rx_p = 1;
-  unsigned int k = 0;
+  unsigned int k0 = 0;
+  const size_t siz = polyx.size();
+  //   std::cout << "call" << std::endl;
   for (auto i = 0; i <= order; ++i)
   {
-    T ry_p = 1;
-    for (auto j = 0; j <= order; ++j)
-    {
-      if (i + j > order) break;
-      hkick += polyx[k] * rx_p * ry_p;
-      vkick += polyy[k] * rx_p * ry_p;
-      ry_p *= pos.ry;
-      ++k;
-    }
-    rx_p *= pos.rx;
+      T ry_p = 1;
+      unsigned int k = k0;
+      for (auto j = i; j <= order; ++j)
+      {
+          if (k >= siz) break;
+        //   std::cout << " o: " << order << " i: " << i << " j: " << j;
+        //   std::cout << " k0: " << k0 << " k: " << k << " rx: " << rx_p;
+        //   std::cout << " ry: " << ry_p << " px: " << polyx[k];
+        //   std::cout << " py: " << polyy[k] << std::endl;
+          hkick += polyx[k] * rx_p * ry_p;
+          vkick += polyy[k] * rx_p * ry_p;
+          ry_p *= pos.ry;
+          k += j + 2;
+      }
+      k0 += i + 1;
+      rx_p *= pos.rx;
   }
   // According to Ellaune's theory of kick maps:
   // https://accelconf.web.cern.ch/e92/PDF/EPAC1992_0661.PDF
@@ -562,7 +570,7 @@ Status::type pm_kickpoly_pass(
   // f(x,y) = a0 + a1*x + a2*y + a3*x² + a4*x*y + a5*y² + a6*x³ + a7*x²*y +...
   //
   // Find the order of the polynom, given its length:
-  const unsigned int order = (sqrt(1 + 8*elem.polynom_kickx.size()) - 1) / 2;
+  const unsigned int order = (sqrt(1 + 8*elem.polynom_kickx.size()) - 1)/2;
 
   global_2_local(pos, elem);
   for(unsigned int i=0; i<elem.nr_steps; ++i) {

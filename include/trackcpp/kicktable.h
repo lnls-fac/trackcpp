@@ -36,8 +36,8 @@ public:
 
   Kicktable(
     const std::vector<double>& x_pos,
-    const std::vector<double>& x_kick,
     const std::vector<double>& y_pos,
+    const std::vector<double>& x_kick,
     const std::vector<double>& y_kick,
     const double length = 1
   );
@@ -81,43 +81,47 @@ public:
     const T& rx, const T& ry, T& hkick, T& vkick
   ) const
   {
+
     // gets indices
     unsigned int ix = get_ix(rx);
     unsigned int iy = get_iy(ry);
     unsigned int ixp1, iyp1;
-
     if (ix >= x_pos.size()-1) ixp1 = ix--;
     else ixp1 = ix + 1;
     if (iy >= y_pos.size()-1) iyp1 = iy--;
     else iyp1 = iy + 1;
+    const unsigned int i00 = get_idx(ix, iy);
+    const unsigned int i01 = get_idx(ix, iyp1);
+    const unsigned int i10 = get_idx(ixp1, iy);
+    const unsigned int i11 = get_idx(ixp1, iyp1);
 
     /* coordinates */
     const double x1 = get_x(ix);
     const double x2 = get_x(ixp1);
     const double y1 = get_y(iy);
     const double y2 = get_y(iyp1);
-    double denom = (x2 - x1) * (y2 - y1);
+    const double denom = (x2 - x1) * (y2 - y1);
+    const T dx1 = rx - x1;
+    const T dx2 = x2 - rx;
+    const T dy1 = ry - y1;
+    const T dy2 = y2 - ry;
 
     // Bilinear interpolation
     // https://en.wikipedia.org/wiki/Bilinear_interpolation
     {  /* hkick */
-      const double f11 = x_kick[get_idx(ix, iy)];
-      const double f12 = x_kick[get_idx(ix, iyp1)];
-      const double f21 = x_kick[get_idx(ixp1, iy)];
-      const double f22 = x_kick[get_idx(ixp1, iyp1)];
-      hkick =
-        f11 * (x2 - rx) * (y2 - ry) + f21 * (rx - x1) * (y2 - ry) +
-        f12 * (x2 - rx) * (ry - y1) + f22 * (rx - x1) * (ry - y1);
+      const double& f11 = x_kick[i00];
+      const double& f12 = x_kick[i01];
+      const double& f21 = x_kick[i10];
+      const double& f22 = x_kick[i11];
+      hkick = (f11 * dx2 + f21 * dx1) * dy2 + (f12 * dx2 + f22 * dx1) * dy1;
       hkick /= denom;
     }
     {  /* vkick */
-      const double f11 = y_kick[get_idx(ix, iy)];
-      const double f12 = y_kick[get_idx(ix, iyp1)];
-      const double f21 = y_kick[get_idx(ixp1, iy)];
-      const double f22 = y_kick[get_idx(ixp1, iyp1)];
-      vkick =
-        f11 * (x2 - rx) * (y2 - ry) + f21 * (rx - x1) * (y2 - ry) +
-        f12 * (x2 - rx) * (ry - y1) + f22 * (rx - x1) * (ry - y1);
+      const double& f11 = y_kick[i00];
+      const double& f12 = y_kick[i01];
+      const double& f21 = y_kick[i10];
+      const double& f22 = y_kick[i11];
+      vkick = (f11 * dx2 + f21 * dx1) * dy2 + (f12 * dx2 + f22 * dx1) * dy1;
       vkick /= denom;
     }
 
@@ -140,12 +144,12 @@ public:
 
   static int add_kicktable(
     const std::vector<double>& x_pos,
-    const std::vector<double>& x_kick,
     const std::vector<double>& y_pos,
+    const std::vector<double>& x_kick,
     const std::vector<double>& y_kick,
     const double length=1
   );
-  static int add_kicktable(const std::string& filename, bool file_flag=true);
+  static int add_kicktable(const std::string filename);
   static int add_kicktable(const Kicktable &new_kicktable);
   static Kicktable& get_kicktable(const int& kicktable_idx)
   {
@@ -155,9 +159,10 @@ public:
   }
   static bool is_valid_kicktable_index(const int idx)
   {
-    return ((idx>0) & (idx < kicktable_list.size()));
+    return ((idx>=0) & (idx < kicktable_list.size()));
   }
   static void clear_kicktables();
+  static size_t get_kicktable_list_size(){return kicktable_list.size();}
 
   bool operator==(const Kicktable& o) const;
   bool operator!=(const Kicktable& o) const { return !(*this == o); }
