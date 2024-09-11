@@ -323,8 +323,12 @@ int test_kicktable(Accelerator& accelerator) {
 
   Kicktable t;
   const Kicktable *ptrKicktable = nullptr;
-  add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable.txt");
-  add_kicktable("/home/fac_files/code/python/trackcpp/pytrack/id_kicktable2.txt");
+  Kicktable::add_kicktable(
+    "/home/fac_files/code/python/trackcpp/pytrack/id_kicktable.txt"
+  );
+  Kicktable::add_kicktable(
+    "/home/fac_files/code/python/trackcpp/pytrack/id_kicktable2.txt"
+  );
   return 0;
 
 }

@@ -31,8 +31,8 @@ CC          = gcc
 CXX         = g++
 AR          = ar
 MACHINE     = -m64
-OPT_FLAG    = -O3 -std=c++11 -fPIC
-DBG_FLAG    = -O0 -g3 -std=c++11 -fPIC
+OPT_FLAG    = -O3 -std=c++17 -fPIC
+DBG_FLAG    = -O0 -g3 -std=c++17 -fPIC
 ARFLAGS     = rcs
 DFLAGS      = -DVERSION=$(VERSION)
 

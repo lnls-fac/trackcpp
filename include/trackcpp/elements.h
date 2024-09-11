@@ -61,11 +61,13 @@ public:
   double        frequency   = 0;  // [Hz]
   double        voltage     = 0;  // [V]
   double        phase_lag   = 0;  // [rad]
-  int           kicktable_idx = -1;   // index of kickmap object in kicktable_list
+  int           kicktable_idx = -1; //index of kickmap object in kicktable_list
   double        rescale_kicks = 1.0;  // for kickmaps
 
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
+  std::vector<double> polynom_kickx = default_polynom;  // for kickpoly
+  std::vector<double> polynom_kicky = default_polynom;  // for kickpoly
   Matrix              matrix66 = Matrix(6);
 
   double t_in[6];
@@ -111,7 +113,7 @@ public:
   static Element sextupole  (const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
   static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_);
   static Element kickmap    (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_ = 20, const double& rescale_length_ = 1.0, const double& rescale_kicks_ = 1.0);
-
+  static Element kickpoly   (const std::string& fam_name_, const double& length_, const int nr_steps_ = 20, const double& rescale_kicks_ = 1.0);
   bool operator==(const Element& o) const;
   bool operator!=(const Element& o) const { return !(*this == o); };
 
@@ -132,5 +134,6 @@ void initialize_quadrupole(Element& element, const double& K, const int& nr_step
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
 void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
 void initialize_kickmap(Element& element, const int& kicktable_idx, const int& nr_steps, const double &rescale_kicks);
+void initialize_kickpoly(Element& element, const int& nr_steps, const double &rescale_kicks);
 
 #endif

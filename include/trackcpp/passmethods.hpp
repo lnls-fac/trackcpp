@@ -95,13 +95,32 @@ T b2_perp(const T& bx, const T& by, const T& px, const T& py, const T& curv=1) {
 }
 
 template <typename T>
-Status::type kicktablethinkick(Pos<T>& pos, const int& kicktable_idx,
-                               const double& brho, const int nr_steps, const double& rescale_kicks) {
-
+Status::type kicktablethinkick(
+  Pos<T>& pos,
+  const Kicktable& kicktable,
+  const double& brho2,
+  const int nr_steps,
+  const double& rescale_kicks
+)
+{
   T hkick, vkick;
-  Status::type status = kicktable_getkicks(kicktable_idx, pos.rx, pos.ry, hkick, vkick);
-  pos.px += rescale_kicks * hkick / (brho * brho) / nr_steps;
-  pos.py += rescale_kicks * vkick / (brho * brho) / nr_steps;
+  Status::type status = kicktable.getkicks(pos.rx, pos.ry, hkick, vkick);
+  // According to Ellaune's theory of kick maps:
+  // https://accelconf.web.cern.ch/e92/PDF/EPAC1992_0661.PDF
+  //
+  // there should be a dependency of the kicks with 1/(1+delta)² for kick maps
+  // generated with the potential function calculated from the field
+  // integrals. However, most kicks maps we use nowadays comes from
+  // Runge-Kutta integration of the equations of motion. Tests with different
+  // energies with this integration setup have shown a very complicated
+  // behavior of the kicks as function of energy, corroborating with no or
+  // very weak dependence. For this reason the kicks here are influenced by
+  // the energy of each particle. Looking at the code of AT and Elegant, I
+  // noticed that AT normalizes the kicks by 1/(1+delta) while Elegant
+  // normalizes by 1/(1+delta)². None of them, however, adds the necessary
+  // terms to dl to make the map symplectic.
+  pos.px += rescale_kicks * hkick / brho2 / nr_steps;
+  pos.py += rescale_kicks * vkick / brho2 / nr_steps;
   if (status == Status::kicktable_out_of_range) {
     if (not isfinite(pos.px)) {
       pos.rx = nan("");
@@ -111,6 +130,60 @@ Status::type kicktablethinkick(Pos<T>& pos, const int& kicktable_idx,
     }
   }
   return status;
+}
+
+template <typename T>
+void kickpolythinkick(
+  Pos<T>& pos,
+  const std::vector<double> polyx,
+  const std::vector<double> polyy,
+  const double rescale,
+  const double& brho2,
+  const unsigned int nr_steps,
+  const unsigned int order
+)
+{
+  T hkick = 0;
+  T vkick = 0;
+  T rx_p = 1;
+  unsigned int k0 = 0;
+  const size_t siz = polyx.size();
+  //   std::cout << "call" << std::endl;
+  for (auto i = 0; i <= order; ++i)
+  {
+      T ry_p = 1;
+      unsigned int k = k0;
+      for (auto j = i; j <= order; ++j)
+      {
+          if (k >= siz) break;
+        //   std::cout << " o: " << order << " i: " << i << " j: " << j;
+        //   std::cout << " k0: " << k0 << " k: " << k << " rx: " << rx_p;
+        //   std::cout << " ry: " << ry_p << " px: " << polyx[k];
+        //   std::cout << " py: " << polyy[k] << std::endl;
+          hkick += polyx[k] * rx_p * ry_p;
+          vkick += polyy[k] * rx_p * ry_p;
+          ry_p *= pos.ry;
+          k += j + 2;
+      }
+      k0 += i + 1;
+      rx_p *= pos.rx;
+  }
+  // According to Ellaune's theory of kick maps:
+  // https://accelconf.web.cern.ch/e92/PDF/EPAC1992_0661.PDF
+  //
+  // there should be a dependency of the kicks with 1/(1+delta)² for kick maps
+  // generated with the potential function calculated from the field
+  // integrals. However, most kicks maps we use nowadays comes from
+  // Runge-Kutta integration of the equations of motion. Tests with different
+  // energies with this integration setup have shown a very complicated
+  // behavior of the kicks as function of energy, corroborating with no or
+  // very weak dependence. For this reason the kicks here are influenced by
+  // the energy of each particle. Looking at the code of AT and Elegant, I
+  // noticed that AT normalizes the kicks by 1/(1+delta) while Elegant
+  // normalizes by 1/(1+delta)². None of them, however, adds the necessary
+  // terms to dl to make the map symplectic.
+  pos.px += rescale * hkick / brho2 / nr_steps;
+  pos.py += rescale * vkick / brho2 / nr_steps;
 }
 
 template <typename T>
@@ -442,15 +515,21 @@ Status::type pm_thinsext_pass(Pos<T> &pos, const Element &elem,
 
 
 template <typename T>
-Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
-                             const Accelerator& accelerator) {
-
-  if (elem.kicktable_idx < 0 or elem.kicktable_idx >= kicktable_list.size()) return Status::kicktable_not_defined;
+Status::type pm_kickmap_pass(
+  Pos<T> &pos,
+  const Element &elem,
+  const Accelerator& accelerator
+)
+{
+  if (not Kicktable::is_valid_kicktable_index(elem.kicktable_idx))
+    return Status::kicktable_not_defined;
 
   Status::type status = Status::success;
+  const Kicktable& kicktable = Kicktable::get_kicktable(elem.kicktable_idx);
 
-  double sl   = elem.length / float(elem.nr_steps);
-  const double brho = get_magnetic_rigidity(accelerator.energy);
+  double sl = elem.length / float(elem.nr_steps);
+  double brho2 = get_magnetic_rigidity(accelerator.energy);
+  brho2 *= brho2;
 
   global_2_local(pos, elem);
   if (elem.kicktable_idx < 0) {
@@ -458,10 +537,54 @@ Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
   } else {
     for(unsigned int i=0; i<elem.nr_steps; ++i) {
       drift<T>(pos, sl / 2);
-      Status::type status = kicktablethinkick(pos, elem.kicktable_idx, brho, elem.nr_steps, elem.rescale_kicks);
+      Status::type status = kicktablethinkick(
+        pos,
+        kicktable,
+        brho2,
+        elem.nr_steps,
+        elem.rescale_kicks
+      );
       if (status != Status::success) return status;
       drift<T>(pos, sl / 2);
     }
+  }
+  local_2_global(pos, elem);
+
+  return status;
+}
+
+template <typename T>
+Status::type pm_kickpoly_pass(
+  Pos<T> &pos,
+  const Element &elem,
+  const Accelerator& accelerator
+){
+  Status::type status = Status::success;
+
+  double sl   = elem.length / float(elem.nr_steps);
+  double brho2 = get_magnetic_rigidity(accelerator.energy);
+  brho2 *= brho2;
+
+  // the polynom_kickx and polynom_kicky variables are the coefficients
+  // of 2D polynoms ordered in the following way:
+  // f(x,y) = a0 + a1*x + a2*y + a3*x² + a4*x*y + a5*y² + a6*x³ + a7*x²*y +...
+  //
+  // Find the order of the polynom, given its length:
+  const unsigned int order = (sqrt(1 + 8*elem.polynom_kickx.size()) - 1)/2;
+
+  global_2_local(pos, elem);
+  for(unsigned int i=0; i<elem.nr_steps; ++i) {
+    drift<T>(pos, sl / 2);
+    kickpolythinkick(
+      pos,
+      elem.polynom_kickx,
+      elem.polynom_kicky,
+      elem.rescale_kicks,
+      brho2,
+      elem.nr_steps,
+      order
+    );
+    drift<T>(pos, sl / 2);
   }
   local_2_global(pos, elem);
 

@@ -19,7 +19,7 @@ INSTRUCTIONS
 
 REQUIREMENTS
 
-- a C++ compiler with C++11 support (tested with GCC 4.8)
+- a C++ compiler with C++17 support (tested with GCC 4.8)
 - pthread
 - blas
 - gsl (GNU Scientific Library)
@@ -49,7 +49,7 @@ INSTRUCTIONS
 
 REQUIREMENTS
 
-- a C++ compiler with C++11 support (tested with GCC 4.8)
+- a C++ compiler with C++17 support (tested with GCC 4.8)
 - blas
 - gsl (GNU Scientific Library)
 - SWIG 2 (tested with SWIG 2.0.11)

@@ -37,6 +37,8 @@ std::vector<int>     latt_findcells_angle       (const std::vector<Element>& lat
 std::vector<int>     latt_findcells_frequency   (const std::vector<Element>& lattice, const double& value,      bool reverse = false);
 std::vector<int>     latt_findcells_polynom_b   (const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse = false);
 std::vector<int>     latt_findcells_polynom_a   (const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse = false);
+std::vector<int>     latt_findcells_polynom_kickx(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse = false);
+std::vector<int>     latt_findcells_polynom_kicky(const std::vector<Element>& lattice, unsigned int n, const double& value, bool reverse = false);
 std::vector<int>     latt_findcells_pass_method (const std::vector<Element>& lattice, const std::string& value, bool reverse = false);
 
 template <typename T>

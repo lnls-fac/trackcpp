@@ -94,6 +94,9 @@ Status::type track_elementpass (
     case PassMethod::pm_drift_g2l_pass:
         if ((status = pm_drift_g2l_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
         break;
+    case PassMethod::pm_kickpoly_pass:
+        if ((status = pm_kickpoly_pass<T>(orig_pos, el, accelerator)) != Status::success) return status;
+        break;
     default:
         return Status::passmethod_not_defined;
     }

@@ -35,8 +35,39 @@
 %include "carrays.i"
 %include "std_string.i"
 %include "std_vector.i"
+%include "std_list.i"
 %include "stl.i"
 %include "typemaps.i"
+%include "std_except.i"
+
+
+// Define a custom exception in Python
+%pythoncode {
+    class TrackingError(Exception):
+        pass
+}
+
+%exception {
+    try
+    {
+        $action
+    }
+    catch (const std::out_of_range &e)
+    {
+        PyObject *ex = PyObject_GetAttrString(
+            PyImport_AddModule("trackcpp"), "TrackingError"
+        );
+        if (ex != NULL) PyErr_SetString(ex, e.what());
+        else PyErr_SetString(PyExc_IndexError, e.what());
+        SWIG_fail;
+    }
+    catch (...)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Unknown exception occurred");
+        SWIG_fail;
+    }
+}
+
 
 namespace std {
     %template(CppStringVector) vector<string>;
@@ -50,24 +81,25 @@ namespace std {
     %template(CppDoubleMatrixVector) vector< vector< vector<double> > >;
     %template(CppTwissVector) vector<Twiss>;
     %template(CppMatrixVector) vector< Matrix >;
-    %template(CppKicktableVector) vector< Kicktable >;
+    %template(CppKicktableVector) list< Kicktable >;
 }
 
 %inline %{
-double c_array_get(double* v, int i) {
-    return v[i];
-}
-void c_array_set(double* v, int i, double x) {
-    v[i] = x;
-}
-double get_double_max() {
-    return DBL_MAX;
-}
-
+    double c_array_get(double* v, int i) {
+        return v[i];
+    }
+    void c_array_set(double* v, int i, double x) {
+        v[i] = x;
+    }
+    double get_double_max() {
+        return DBL_MAX;
+    }
 %}
 
-%extend std::vector<double> {
-    double* data_() {
+%extend std::vector<double>
+{
+    double* data_()
+    {
         return $self->data();
     }
 }
@@ -89,30 +121,47 @@ double get_double_max() {
     (double* twiss, int n1, int n2)}
 
 //For find_m66 and diffusion_matrix
-%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
-    (double *cumul_tm, int n1_tm, int n2_tm, int n3_tm)}
-%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
-    (double *elem_tm, int n1_tm, int n2_tm, int n3_tm)}
-%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 ) {
-    (double *bdiffmats, int n1_bd, int n2_bd, int n3_bd)}
-%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
-    (double *m66, int n1_m66, int n2_m66)}
+%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 )
+{
+    (double *cumul_tm, int n1_tm, int n2_tm, int n3_tm)
+}
+%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 )
+{
+    (double *elem_tm, int n1_tm, int n2_tm, int n3_tm)
+}
+%apply (double* INPLACE_ARRAY3, int DIM1, int DIM2, int DIM3 )
+{
+    (double *bdiffmats, int n1_bd, int n2_bd, int n3_bd)
+}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 )
+{
+    (double *m66, int n1_m66, int n2_m66)
+}
 
 // For naff_general
-%apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
-    (double* re_in, int n1_re_in, int n2_re_in)}
-%apply (double* IN_ARRAY2, int DIM1, int DIM2 ){
-    (double* im_in, int n1_im_in, int n2_im_in)}
-%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
-    (double *ff_out, int n1_ff_out, int n2_ff_out)}
-%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
-    (double *re_out, int n1_re_out, int n2_re_out)}
-%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 ) {
-    (double *im_out, int n1_im_out, int n2_im_out)}
+%apply (double* IN_ARRAY2, int DIM1, int DIM2 )
+{
+    (double* re_in, int n1_re_in, int n2_re_in)
+}
+%apply (double* IN_ARRAY2, int DIM1, int DIM2 )
+{
+    (double* im_in, int n1_im_in, int n2_im_in)
+}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 )
+{
+    (double *ff_out, int n1_ff_out, int n2_ff_out)
+}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 )
+{
+    (double *re_out, int n1_re_out, int n2_re_out)
+}
+%apply (double* INPLACE_ARRAY2, int DIM1, int DIM2 )
+{
+    (double *im_out, int n1_im_out, int n2_im_out)
+}
 
-// For kicktable_getkicks
+// For Kicktable::getkicks
 %apply double *OUTPUT { double &hkick__, double &vkick__ };
-
 
 %include "../include/trackcpp/elements.h"
 %include "../include/trackcpp/kicktable.h"
