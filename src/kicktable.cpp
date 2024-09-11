@@ -23,7 +23,7 @@
 #include <memory>
 
 
-std::vector<Kicktable> Kicktable::kicktable_list;
+std::list<Kicktable> Kicktable::kicktable_list;
 
 Kicktable::Kicktable(const std::string& filename_) :
   filename("")
@@ -229,29 +229,33 @@ int Kicktable::add_kicktable(
   const double length
 )
 {
-  Kicktable new_kicktable = Kicktable(x_pos, y_pos, x_kick, y_kick, length);
-  return Kicktable::add_kicktable(new_kicktable);
+  Kicktable new_ktab = Kicktable(x_pos, y_pos, x_kick, y_kick, length);
+  return Kicktable::add_kicktable(new_ktab);
 }
 
 int Kicktable::add_kicktable(const std::string filename)
 {
-  Kicktable new_kicktable;
-  new_kicktable.load_from_file(filename, true);
-  return Kicktable::add_kicktable(new_kicktable);
+  Kicktable new_ktab;
+  new_ktab.load_from_file(filename, true);
+  return Kicktable::add_kicktable(new_ktab);
 }
 
-int Kicktable::add_kicktable(const Kicktable &new_kicktable)
+int Kicktable::add_kicktable(const Kicktable &new_ktab)
 {
-  if (not new_kicktable.is_valid_kicktable())
+  if (not new_ktab.is_valid_kicktable())
     return -1;
 
   // looks through vector of kicktables...
-  for(int i=0; i<kicktable_list.size(); ++i)
-    if (kicktable_list[i] == new_kicktable)
-      return i;
+  const auto it = std::find(
+    kicktable_list.begin(), kicktable_list.end(), new_ktab);
 
-  kicktable_list.push_back(new_kicktable);
-  return kicktable_list.size() - 1;
+  if (it == kicktable_list.end())
+  {
+    kicktable_list.push_back(new_ktab);
+    return (int) kicktable_list.size() - 1;
+  }
+
+  return std::distance(kicktable_list.begin(), it);
 }
 
 void Kicktable::clear_kicktables() {
@@ -260,10 +264,10 @@ void Kicktable::clear_kicktables() {
 
 bool Kicktable::operator==(const Kicktable& o) const {
   if (this == &o) return true;
-  if (this->length != o.length) return false;
-  if (this->x_pos != o.x_pos) return false;
-  if (this->y_pos != o.y_pos) return false;
-  if (this->x_kick != o.x_kick) return false;
-  if (this->y_kick != o.y_kick) return false;
+  if (length != o.length) return false;
+  if (x_pos != o.x_pos) return false;
+  if (y_pos != o.y_pos) return false;
+  if (x_kick != o.x_kick) return false;
+  if (y_kick != o.y_kick) return false;
   return true;
 }

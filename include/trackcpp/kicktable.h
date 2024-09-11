@@ -21,6 +21,7 @@
 // #include "../alglib/interpolation.h"
 #include <string>
 #include <vector>
+#include <list>
 #include <algorithm>
 
 
@@ -32,7 +33,7 @@ public:
   double              length;
   std::vector<double> x_pos, y_pos;
   std::vector<double> x_kick,  y_kick;
-  static std::vector<Kicktable> kicktable_list;
+  static std::list<Kicktable> kicktable_list;
 
   Kicktable(
     const std::vector<double>& x_pos,
@@ -150,12 +151,15 @@ public:
     const double length=1
   );
   static int add_kicktable(const std::string filename);
-  static int add_kicktable(const Kicktable &new_kicktable);
+  static int add_kicktable(const Kicktable &new_ktab);
   static Kicktable& get_kicktable(const int& kicktable_idx)
   {
     if (not is_valid_kicktable_index(kicktable_idx))
       throw std::out_of_range("kicktable_idx is out of range.");
-    return kicktable_list[kicktable_idx];
+
+    auto it = kicktable_list.begin();
+    std::advance(it, kicktable_idx);
+    return *it;
   }
   static bool is_valid_kicktable_index(const int idx)
   {

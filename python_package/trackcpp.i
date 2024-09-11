@@ -35,6 +35,7 @@
 %include "carrays.i"
 %include "std_string.i"
 %include "std_vector.i"
+%include "std_list.i"
 %include "stl.i"
 %include "typemaps.i"
 %include "std_except.i"
@@ -80,7 +81,7 @@ namespace std {
     %template(CppDoubleMatrixVector) vector< vector< vector<double> > >;
     %template(CppTwissVector) vector<Twiss>;
     %template(CppMatrixVector) vector< Matrix >;
-    %template(CppKicktableVector) vector< Kicktable >;
+    %template(CppKicktableVector) list< Kicktable >;
 }
 
 %inline %{
