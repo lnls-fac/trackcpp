@@ -24,27 +24,29 @@
 // ====
 // Author:         Ximenes R. Resende
 // email:          xresende@gmail.com, ximenes.resende@lnls.br
-// affiliation:    LNLS - Laboratorio Nacional de Luz Sincrotron
-// Date:        August 31st, 2006 @ LNLS
+// affiliation:    LNLS - Laboratório Nacional de Luz Síncrotron
+// Date:           August 31st, 2006 @ LNLS
 //
 // Notes:
 //
-// 01. This is an implementation for a pre-defined-at-compile-time number of variables
-//     and of polynomial order.
-// 02. Multiplication algorithm makes use of one OSIP (one-step index pointer) in a
-//     forward scheme (as thought by A. Dragt, according to Y. Yan) in order to achieve
-//     optimized efficiency.
-// 03. I have to better understand template friend functions and operators. This way I
-//     should be able to convert some non-member functions to friends and improve
-//     their algorithms by having access to protected class members. Try to ask folks
-//     from the C++ community?
-// 04. Is it worth trying to implement syntactic sugars with expression templates in order
-//     to minimize the problem of temporaries? It is not clear for me that, for the TPS class,
-//     something is to be gained in terms of efficiency...
-// 05. Is it worth trying to implement multiplication with FFT? How to map multivariate
-//     polynomials into (can it be onto?) univariate polynomials of higher order? The prospects
-//     of using FFT are interesting since the Beam Dynamics community does not seem to have
-//     realized that the method could speed up calculation of taylor maps...
+// 01. This is an implementation for a pre-defined-at-compile-time number
+//     of variables and of polynomial order.
+// 02. Multiplication algorithm makes use of one OSIP (one-step index pointer)
+//     in a forward scheme (as thought by A. Dragt, according to Y. Yan) in
+//     order to achieve optimized efficiency.
+// 03. I have to better understand template friend functions and operators.
+//     This way I should be able to convert some non-member functions to
+//     friends and improve their algorithms by having access to protected
+//     class members. Try to ask folks from the C++ community?
+// 04. Is it worth trying to implement syntactic sugars with expression
+//     templates in order to minimize the problem of temporaries ?
+//     It is not clear for me that, for the TPS class, something is to be
+//     gained in terms of efficiency...
+// 05. Is it worth trying to implement multiplication with FFT? How to map
+//     multivariate polynomials into (can it be onto?) univariate polynomials
+//     of higher order? The prospects of using FFT are interesting since the
+//     beam dynamics community does not seem to have realized that the method
+//     could speed up calculation of taylor maps...
 
 
 
@@ -54,10 +56,12 @@
 #include <complex>
 #include <cstring>
 #include <ostream>
+#include <vector>
 
 
-// Expression Templates: IMPLEMENTATION OF BINOMIALS COEFFICIENTS AND RELATED RELEVANT EXPRESSIONS
-// -----------------------------------------------------------------------------------------------
+// Expression Templates:
+// IMPLEMENTATION OF BINOMIALS COEFFICIENTS AND RELATED RELEVANT EXPRESSIONS
+// -------------------------------------------------------------------------
 
 template <int N, int K>        struct et_binomial      { enum { val = et_binomial<N-1,K-1>::val + et_binomial<N-1,K>::val }; };
 template <int K>               struct et_binomial<0,K> { enum { val = 0 }; };
@@ -158,9 +162,11 @@ public:
     static unsigned int  get_size()      { return et_binomial<N+V,V>::val; }
     static unsigned int  get_osip_size() { return et_osip<V,N,N>::val; }
     static unsigned int  get_index (const unsigned int* power_);
-    static void          get_power (const unsigned int idx, unsigned int* power);
+    static void          get_power (const unsigned int idx,
+                                    unsigned int* power);
     const TYPE&          get_c(unsigned int index) const { return c[index]; }
     TYPE&                set_c(unsigned int index)  { return c[index]; }
+    TYPE                 eval(const std::vector<TYPE>& val) const;
 
 //private:
 public:
@@ -172,9 +178,15 @@ public:
     static unsigned int osip[et_osip<V,N,N>::val];
     static unsigned int powers[et_osip<V,N,N>::val][V];
 
-    static unsigned int& C(unsigned int v, unsigned int n) { return binomials[(((v+n-1)*(n+v))>>1) + n]; }
-    static unsigned int  first_at_order(unsigned int order) { return (order==0) ? 0 : C(V,order-1); }
-    static unsigned int  last_at_order (unsigned int order) { return (order==0) ? 1 : C(V,order); }
+    static unsigned int& C(unsigned int v, unsigned int n) {
+        return binomials[(((v+n-1)*(n+v))>>1) + n];
+    }
+    static unsigned int  first_at_order(unsigned int order) {
+        return (order==0) ? 0 : C(V,order-1);
+    }
+    static unsigned int  last_at_order (unsigned int order) {
+        return (order==0) ? 1 : C(V,order);
+    }
 
 };
 
@@ -464,12 +476,30 @@ void Tpsa<V,N,TYPE>::get_power(unsigned int idx_, unsigned int* power_) {
     }
 }
 
+template <unsigned int V, unsigned int N, typename TYPE>
+TYPE Tpsa<V,N,TYPE>::eval(const std::vector<TYPE>& val) const {
+    if (val.size() != V) {
+        std::cerr << "Invalid vector size in Tpsa::eval!" << std::endl;
+        return 0;
+    }
+    TYPE r = 0;
+    unsigned int power[V];
+    for(unsigned int i=0; i<this->get_size(); i++) {
+        TYPE mon = this->c[i];
+        this->get_power(i,power);
+        for(unsigned int j=0; j<val.size(); j++) {
+            mon *= std::pow(val[j], power[j]);
+        }
+        r += mon;
+    }
+    return r;
+}
 
-
-// Implementation: NON-MEMBER FUNCTIONS AND OPERATORS WITH ARGUMENTS OF CLASS TYPE
-// -------------------------------------------------------------------------------
-// Note: these functions are generating Stack Overflow at run-time for large N,V
-// (N=10,V=10 for example) at a P4 with 1Gb of RAM
+// Implementation:
+// NON-MEMBER FUNCTIONS AND OPERATORS WITH ARGUMENTS OF CLASS TYPE
+// ---------------------------------------------------------------
+// NOTE: these functions are generating Stack Overflow at run-time for
+// large N,V (N=10,V=10 for example) at a P4 with 1Gb of RAM
 
 template <typename T, unsigned int V, unsigned int N, typename TYPE>
 Tpsa<V,N,TYPE> operator + (const T& o1, const Tpsa<V,N,TYPE>& o2) { return o2 + o1; }
@@ -493,7 +523,8 @@ Tpsa<V,N,TYPE> pow(const Tpsa<V,N,TYPE>& a_, const int n) {
         return r;
     } else {
         // for more efficient computation when n >~ N,
-        // multiplication implemented as N-truncated binomial expansion a0^n*(1 + x/a0)^n, x^(N+1) = 0
+        // multiplication implemented as N-truncated binomial expansion
+        // a0^n*(1 + x/a0)^n, x^(N+1) = 0
         Tpsa<V,N,TYPE> r;
         Tpsa<V,N,TYPE> x(a_); x.c[0] = 0; x /= a_.c[0];
         Tpsa<V,N,TYPE> p(1);
@@ -622,7 +653,8 @@ Tpsa<V,N,TYPE> atan(const Tpsa<V,N,TYPE>& a_) {
     TYPE          s1 = a_.c[0] * c1;
     TYPE          ci = c1;
     TYPE          si = s1;
-    // ArcTan function implementation based on expression D[1/(1+x^2)] = (1/2) D[1/(1+xi) + 1/(1-xi)]
+    // ArcTan function implementation based on expression
+    // D[1/(1+x^2)] = (1/2) D[1/(1+xi) + 1/(1-xi)]
     for(int i=1; i<=N; i++) {
         if (i&1) {
             // odd terms
@@ -673,7 +705,8 @@ Tpsa<V,N,TYPE> atanh(const Tpsa<V,N,TYPE>& a_) {
     TYPE          s1 = a_.c[0] * c1;
     TYPE          ci = c1;
     TYPE          si = s1;
-    // ArcTan function implementation based on expression D[1/(1+x^2)] = (1/2) D[1/(1+xi) + 1/(1-xi)]
+    // ArcTan function implementation based on expression
+    // D[1/(1+x^2)] = (1/2) D[1/(1+xi) + 1/(1-xi)]
     for(int i=1; i<=N; i++) {
         if (i&1) {
             // odd terms
