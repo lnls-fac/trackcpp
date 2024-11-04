@@ -53,6 +53,15 @@ public:
     }
     int size() const { return passmethods.size(); }
     std::string operator[](const int i) const { return passmethods[i]; }
+    bool is_time_aware_pm(const int i) const {
+        switch (i)
+        {
+        case pm_cavity_pass:
+            return true;
+        default:
+            return false;
+        }
+    };
 private:
     std::vector<std::string> passmethods;
 };
