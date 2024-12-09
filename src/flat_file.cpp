@@ -28,8 +28,6 @@ static const int np = 17; // number precision
 static bool read_boolean_string(std::istringstream& ss);
 static int process_rad_property(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
-// static bool has_t_vector(const double* t);
-// static bool has_r_matrix(const double* r);
 static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
@@ -229,19 +227,27 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
     if (cmd.compare("rescale_kicks")   == 0) { ss >> e.rescale_kicks; continue; }
     if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i];  continue; }
+    e.reflag_t_in();
+
     if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) ss >> e.t_out[i]; continue; }
+    e.reflag_t_out();
+
     if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[0*6+i]; continue; }
     if (cmd.compare("px|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[1*6+i]; continue; }
     if (cmd.compare("ry|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[2*6+i]; continue; }
     if (cmd.compare("py|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[3*6+i]; continue; }
     if (cmd.compare("de|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[4*6+i]; continue; }
     if (cmd.compare("dl|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[5*6+i]; continue; }
+    e.reflag_r_in();
+
     if (cmd.compare("rx|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[0*6+i]; continue; }
     if (cmd.compare("px|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[1*6+i]; continue; }
     if (cmd.compare("ry|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[2*6+i]; continue; }
     if (cmd.compare("py|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[3*6+i]; continue; }
     if (cmd.compare("de|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[4*6+i]; continue; }
     if (cmd.compare("dl|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[5*6+i]; continue; }
+    e.reflag_r_out();
+
     if (cmd.compare("rx|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[0][i]; continue; }
     if (cmd.compare("px|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[1][i]; continue; }
     if (cmd.compare("ry|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[2][i]; continue; }
@@ -308,11 +314,6 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (line.size()<2) continue;
     return Status::flat_file_error;
   }
-
-  e.reflag_t_in();
-  e.reflag_t_out();
-  e.reflag_r_in();
-  e.reflag_r_out();
 
   if (e.fam_name.compare("") != 0) {
     accelerator.lattice.push_back(e);
@@ -486,31 +487,6 @@ static std::string get_boolean_string(bool value) {
   else
     return "false";
 }
-
-// static bool has_t_vector(const double* t) {
-//   for (int i=0; i<6; ++i)
-//     if (t[i] != 0)
-//       return true;
-
-//   return false;
-// }
-
-// static bool has_r_matrix(const double* r) {
-//   const double id[36] = {
-//     1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-//     0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-//     0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-//     0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-//     0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-//     0.0, 0.0, 0.0, 0.0, 0.0, 1.0
-//   };
-
-//   for (int i=0; i<36; ++i)
-//     if (r[i] != id[i])
-//       return true;
-
-//   return false;
-// }
 
 static bool has_matrix66(const Matrix& m) {
   for (int i=0; i<6; ++i)
