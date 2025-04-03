@@ -186,7 +186,7 @@ Status::type track_linepass (
 
         status = track_elementpass(accelerator, element, orig_pos);
 
-        if (element_offset == time_aware_element_indices.back()) {
+        if (time_aware_element_indices.size() > 0 && element_offset == time_aware_element_indices.back()) {
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
         }
 
