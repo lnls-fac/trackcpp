@@ -112,7 +112,7 @@ Status::type track_elementpass (
     const Element& el, // element through which to track particle
     std::vector<Pos<T> >& orig_pos // initial electron coordinates
 ){
-    Status::type status  = Status::success;
+    Status::type status = Status::success;
     for(auto&& pos: orig_pos) {
         Status::type status2 = track_elementpass(accelerator, el, pos);
         if (status2 != Status::success) status = status2;
@@ -178,7 +178,7 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
-        if (i == time_aware_element_indices[TAW_pivot]) {
+        if (element_offset == time_aware_element_indices[TAW_pivot]) {
             ddl = light_speed*accelerator.harmonic_number/element.frequency - line_length;
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
             TAW_pivot++;
@@ -186,7 +186,7 @@ Status::type track_linepass (
 
         status = track_elementpass(accelerator, element, orig_pos);
 
-        if (i == time_aware_element_indices.back()) {
+        if (element_offset == time_aware_element_indices.back()) {
             orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
         }
 
