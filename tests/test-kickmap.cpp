@@ -65,14 +65,18 @@ int main() {
     Plane::type lost_plane;
     unsigned int element_offset = 0;
 
+    // for longitudinal kick before RF cavities
+    std::vector<double> TAW_positions;
+    std::vector<unsigned int> TAW_indices;
+    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 66
+
     status = track_linepass(
-        accelerator, fp, true, element_offset, closed_orbit, lost_plane, 0, {0,}, {0.0, 0.0, }
-    );
+        accelerator, fp, true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions);
     if (status != Status::success) return status;
 
     std::vector<Matrix> atm;
     Pos<double> v0;
-    status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0,  0, {0,}, {0.0, 0.0, });
+    status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0);
     if (status != Status::success) return status;
     std::cout << m66[0][0] + m66[1][1] << std::endl;
     std::cout << m66[2][2] + m66[3][3] << std::endl;
@@ -119,8 +123,7 @@ int main() {
         fpp.ry += twiss0.etay[0] * dpp;
         fpp.py += twiss0.etay[1] * dpp;
         Status::type status = track_linepass(
-            accelerator, fpp, true, element_offset, codp, lost_plane, 0, {0,}, {0.0, 0.0, }
-        );
+            accelerator, fpp, true, element_offset, codp, lost_plane, accelerator_length, TAW_indices, TAW_positions);
         std::cout << "h2" << std::endl;
         if (status != Status::success) return status;
     }

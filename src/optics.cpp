@@ -103,7 +103,7 @@ Status::type calc_twiss(Accelerator& accelerator,
 
   std::vector<Matrix> atm;
   Pos<double> v0;
-  status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0, accelerator_length, TAW_indices, TAW_positions);
+  status = track_findm66(accelerator, closed_orbit[0], atm, m66, v0);
   if (status != Status::success) return status;
 
 #ifdef TIMEIT

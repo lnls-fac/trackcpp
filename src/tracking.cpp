@@ -41,10 +41,7 @@ Status::type track_findm66 (Accelerator& accelerator,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
                             Pos<double>& v0,
-                            std::vector<unsigned int >& indices,
-                            const double line_length,
-                            const std::vector<unsigned int>& time_aware_element_indices,
-                            const std::vector<double>& time_aware_element_positions) {
+                            std::vector<unsigned int >& indices) {
 
   Status::type status  = Status::success;
   const std::vector<Element>& lattice = accelerator.lattice;
@@ -70,6 +67,9 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   tm.clear(); tm.reserve(indices.size());
   unsigned int TAW_pivot = 0;
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double line_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0);
   double ddl = 0;
   for(unsigned int i=0; i<lattice.size(); ++i) {
     if (indcs[i]){
@@ -89,16 +89,12 @@ Status::type track_findm66 (Accelerator& accelerator,
     tm.push_back(std::move(m));
     }
     // track through element
-    if (i == time_aware_element_indices[TAW_pivot]) {
-            ddl = light_speed*accelerator.harmonic_number/lattice[i].frequency - line_length;
-            map.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
-            TAW_pivot++;
+    if (i == TAW_indices[TAW_pivot]) {
+      ddl = light_speed*accelerator.harmonic_number/lattice[i].frequency - line_length;
+      map.dl -= ddl * (TAW_positions[TAW_pivot]) / line_length;
+      if (TAW_pivot < TAW_indices.size() - 1) {TAW_pivot++;}
     }
     if ((status = track_elementpass (accelerator, lattice[i], map)) != Status::success) return status;
-
-    if (i == time_aware_element_indices.back()) {
-            map.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
-    }
   }
 
   m66 = Matrix(6);
@@ -132,10 +128,7 @@ Status::type track_findm66 (Accelerator& accelerator,
                             const Pos<double>& fixed_point,
                             std::vector<Matrix>& tm,
                             Matrix& m66,
-                            Pos<double>& v0,
-                            const double line_length,
-        const std::vector<unsigned int>& time_aware_element_indices,
-        const std::vector<double>& time_aware_element_positions) {
+                            Pos<double>& v0) {
 
   std::vector<unsigned int> indices;
   unsigned int nr_elements = accelerator.lattice.size();
@@ -143,7 +136,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   indices.reserve(nr_elements + 1);
 	for (unsigned int i=0; i<=nr_elements; ++i) indices.push_back(i);
 
-	return track_findm66 (accelerator, fixed_point, tm, m66, v0, indices, line_length, time_aware_element_indices, time_aware_element_positions);
+	return track_findm66 (accelerator, fixed_point, tm, m66, v0, indices);
 }
 
 
@@ -163,11 +156,6 @@ Status::type track_findorbit6(
     accelerator.radiation_on = RadiationState::damping;
   }
 
-  // for longitudinal kick before RF cavities
-  std::vector<double> TAW_positions;
-  std::vector<unsigned int> TAW_indices;
-  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions);
-
   // temporary vectors and matrices
   std::vector<Pos<double> > co(7,0);
   for(auto i=0; i<7; ++i) co[i] = fixed_point_guess;
@@ -176,6 +164,11 @@ Status::type track_findorbit6(
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,1.0,1.0);
   matrix6_set_identity_posvec(D, delta);
+
+  // for longitudinal kick before RF cavities
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 182
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
@@ -265,11 +258,6 @@ Status::type track_findorbit4(
     accelerator.radiation_on = RadiationState::damping;
   }
 
-  // for longitudinal kick before RF cavities
-  std::vector<double> TAW_positions;
-  std::vector<unsigned int> TAW_indices;
-  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions);
-
   // temporary vectors and matrices
   // std::vector<Pos<double> > co(7,0); // no initial guess
   std::vector<Pos<double> > co(7,fixed_point_guess);
@@ -279,6 +267,11 @@ Status::type track_findorbit4(
   Pos<double> dco(1.0,1.0,1.0,1.0,0.0,0.0);
   Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
   matrix6_set_identity_posvec(D, delta);
+
+  // for longitudinal kick before RF cavities
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 285
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {

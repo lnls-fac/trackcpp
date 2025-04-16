@@ -33,9 +33,6 @@ struct LinePassArgs {
     std::vector<unsigned int> lost_plane;
     std::vector<int> lost_element;
     std::vector<bool> lost_flag;
-    double line_length;
-    std::vector<unsigned int> time_aware_element_indices;
-    std::vector<double> time_aware_element_positions;
 };
 
 struct RingPassArgs : public LinePassArgs {
@@ -108,10 +105,7 @@ Status::type track_findm66_wrapper(
     const Pos<double>& fixed_point,
     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
     double *m66, int n1_m66, int n2_m66,
-    Pos<double>& v0, std::vector<unsigned int >& indices,
-    double line_length,
-    std::vector<unsigned int > TAW_indices,
-    std::vector<double > TAW_positions);
+    Pos<double>& v0, std::vector<unsigned int >& indices);
 
 
 Status::type track_diffusionmatrix_wrapper(

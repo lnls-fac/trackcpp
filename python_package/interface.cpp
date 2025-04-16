@@ -52,6 +52,9 @@ Status::type track_linepass_wrapper(
 
     std::vector<Pos<double> > post;
     std::vector<Pos<double> > orig_post;
+    std::vector<double> TAW_positions;
+    std::vector<unsigned int> TAW_indices;
+    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, args.element_offset);
 
     orig_post.reserve(ni2);
     for (unsigned int i=0; i<ni2; ++i){
@@ -70,9 +73,9 @@ Status::type track_linepass_wrapper(
         args.lost_plane,
         args.lost_flag,
         args.lost_element,
-        args.line_length,
-        args.time_aware_element_indices,
-        args.time_aware_element_positions
+        accelerator_length,
+        TAW_indices,
+        TAW_positions
 );
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
@@ -258,16 +261,13 @@ Status::type track_findm66_wrapper(
     double *cumul_tm, int n1_tm, int n2_tm, int n3_tm,
     double *m66, int n1_m66, int n2_m66,
     Pos<double>& v0,
-    std::vector<unsigned int >& indices,
-    double line_length,
-    std::vector<unsigned int > TAW_indices,
-    std::vector<double > TAW_positions) {
+    std::vector<unsigned int >& indices) {
 
     std::vector<Matrix> vec_tm;
     Matrix vec_m66;
 
     Status::type status = track_findm66(
-        accelerator, fixed_point, vec_tm, vec_m66, v0, indices, line_length, TAW_indices, TAW_positions);
+        accelerator, fixed_point, vec_tm, vec_m66, v0, indices);
 
     for (unsigned int i=0; i<vec_tm.size(); ++i){
         const Matrix& m = vec_tm[i];

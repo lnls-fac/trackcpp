@@ -36,9 +36,12 @@ int test_linepass(const Accelerator& accelerator) {
   std::vector<Pos<> > new_pos;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
+  // for longitudinal kick before RF cavities
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 37
   Status::type status = track_linepass(
-    accelerator, pos, true, element_offset, new_pos, lost_plane, 0, {0,}, {0.0, 0.0, }
-  );
+    accelerator, pos, true, element_offset, new_pos, lost_plane, acc_length, TAW_indices, TAW_positions);
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
 
@@ -67,9 +70,12 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   std::vector<Pos<Tpsa<6,order> > > new_tpsa;
   unsigned int element_offset = 0;
   Plane::type lost_plane;
+  // for longitudinal kick before RF cavities
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 71
   track_linepass(
-    accelerator, tpsa, false, element_offset, new_tpsa, lost_plane, 0, {0,}, {0.0, 0.0, }
-  );
+    accelerator, tpsa, false, element_offset, new_tpsa, lost_plane, acc_length, TAW_indices, TAW_positions);
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
     //const Pos<Tpsa<6,1> >& c = new_particles[i];
     //std::cout << c.rx << std::endl;
@@ -409,6 +415,11 @@ int test_linepass2() {
   Plane::type lost_plane;
   bool trajectory = true;
 
+  // for longitudinal kick before RF cavities
+  std::vector<double> TAW_positions;
+  std::vector<unsigned int> TAW_indices;
+  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 414
+
   orig_pos.rx = 0.0001;
   orig_pos.px = 0.0001;
 
@@ -419,9 +430,9 @@ int test_linepass2() {
       element_offset,
       pos,
       lost_plane,
-      0,
-      {0,},
-      {0.0, 0.0, }
+      acc_length,
+      TAW_indices,
+      TAW_positions
   );
 
       for(unsigned int i=0; i<10; ++i) {
