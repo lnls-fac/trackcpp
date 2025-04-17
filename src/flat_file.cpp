@@ -226,28 +226,20 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("angle_in")    == 0) { ss >> e.angle_in;  continue; }
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
     if (cmd.compare("rescale_kicks")   == 0) { ss >> e.rescale_kicks; continue; }
-    if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i];  continue; }
-    e.reflag_t_in();
-
-    if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) ss >> e.t_out[i]; continue; }
-    e.reflag_t_out();
-
-    if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[0*6+i]; continue; }
-    if (cmd.compare("px|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[1*6+i]; continue; }
-    if (cmd.compare("ry|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[2*6+i]; continue; }
-    if (cmd.compare("py|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[3*6+i]; continue; }
-    if (cmd.compare("de|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[4*6+i]; continue; }
-    if (cmd.compare("dl|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[5*6+i]; continue; }
-    e.reflag_r_in();
-
-    if (cmd.compare("rx|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[0*6+i]; continue; }
-    if (cmd.compare("px|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[1*6+i]; continue; }
-    if (cmd.compare("ry|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[2*6+i]; continue; }
-    if (cmd.compare("py|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[3*6+i]; continue; }
-    if (cmd.compare("de|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[4*6+i]; continue; }
-    if (cmd.compare("dl|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[5*6+i]; continue; }
-    e.reflag_r_out();
-
+    if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i]; e.reflag_t_in(); continue; }
+    if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) ss >> e.t_out[i]; e.reflag_t_out(); continue; }
+    if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[0*6+i]; e.reflag_r_in(); continue; }
+    if (cmd.compare("px|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[1*6+i]; e.reflag_r_in(); continue; }
+    if (cmd.compare("ry|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[2*6+i]; e.reflag_r_in(); continue; }
+    if (cmd.compare("py|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[3*6+i]; e.reflag_r_in(); continue; }
+    if (cmd.compare("de|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[4*6+i]; e.reflag_r_in(); continue; }
+    if (cmd.compare("dl|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[5*6+i]; e.reflag_r_in(); continue; }
+    if (cmd.compare("rx|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[0*6+i]; e.reflag_r_out(); continue; }
+    if (cmd.compare("px|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[1*6+i]; e.reflag_r_out(); continue; }
+    if (cmd.compare("ry|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[2*6+i]; e.reflag_r_out(); continue; }
+    if (cmd.compare("py|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[3*6+i]; e.reflag_r_out(); continue; }
+    if (cmd.compare("de|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[4*6+i]; e.reflag_r_out(); continue; }
+    if (cmd.compare("dl|r_out")  == 0) { for(auto i=0; i<6; ++i) ss >> e.r_out[5*6+i]; e.reflag_r_out(); continue; }
     if (cmd.compare("rx|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[0][i]; continue; }
     if (cmd.compare("px|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[1][i]; continue; }
     if (cmd.compare("ry|matrix66")  == 0) { for(auto i=0; i<6; ++i) ss >> e.matrix66[2][i]; continue; }
