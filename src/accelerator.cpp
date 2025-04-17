@@ -52,3 +52,45 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "lattice_version: " << a.lattice_version;
   return out;
 }
+
+
+double Accelerator::get_time_aware_elements_info(std::vector<unsigned int>& TAW_indices, std::vector<double>& TAW_positions, unsigned int element_offset) const {
+  // for longitudinal kick before RF cavities
+  TAW_positions.clear();
+  TAW_indices.clear();
+  size_t nr_elements = this->lattice.size();
+  PassMethodsClass PMClass = PassMethodsClass();
+
+  std::vector<double> temp_positions;
+  std::vector<unsigned int> temp_indices;
+  double s_pos = 0.0;
+  double acclen = 0.0;
+  for (size_t i = 0; i < nr_elements; i++) {
+      auto elem = this->lattice[i];
+      acclen += elem.length;
+      if (PMClass.is_time_aware_pm(elem.pass_method)) {
+        temp_indices.push_back(i);
+        temp_positions.push_back(s_pos + elem.length/2);
+        s_pos = 0.0 + elem.length/2;
+      }
+      else {
+        s_pos += elem.length;
+      }
+
+  }
+  temp_positions[0] += s_pos;
+
+  size_t split = 0;
+  for (; split < temp_indices.size(); split++) {
+    if (temp_indices[split] >= element_offset) {break;}
+  }
+
+  TAW_indices.insert(TAW_indices.end(), temp_indices.begin() + split, temp_indices.end());
+  TAW_indices.insert(TAW_indices.end(), temp_indices.begin(), temp_indices.begin() + split);
+
+  TAW_positions.insert(TAW_positions.end(), temp_positions.begin() + split, temp_positions.end());
+  TAW_positions.insert(TAW_positions.end(), temp_positions.begin(), temp_positions.begin() + split);
+
+  return acclen;
+
+}

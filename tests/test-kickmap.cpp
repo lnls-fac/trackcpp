@@ -65,9 +65,13 @@ int main() {
     Plane::type lost_plane;
     unsigned int element_offset = 0;
 
+    // for longitudinal kick before RF cavities
+    std::vector<double> TAW_positions;
+    std::vector<unsigned int> TAW_indices;
+    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 66
+
     status = track_linepass(
-        accelerator, fp, true, element_offset, closed_orbit, lost_plane
-    );
+        accelerator, fp, true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions);
     if (status != Status::success) return status;
 
     std::vector<Matrix> atm;
@@ -119,8 +123,7 @@ int main() {
         fpp.ry += twiss0.etay[0] * dpp;
         fpp.py += twiss0.etay[1] * dpp;
         Status::type status = track_linepass(
-            accelerator, fpp, true, element_offset, codp, lost_plane
-        );
+            accelerator, fpp, true, element_offset, codp, lost_plane, accelerator_length, TAW_indices, TAW_positions);
         std::cout << "h2" << std::endl;
         if (status != Status::success) return status;
     }
@@ -137,7 +140,7 @@ int main() {
     // Plane::type lost_plane;
     // unsigned int element_offset = 0;
     // Status::type status1 = track_linepass(
-    //     sirius, fp, true, element_offset, traj, lost_plane
+    //     sirius, fp, true, element_offset, traj, lost_plane, 0, {0,}, {0.0, 0.0, }
     // );
     // for(auto i=0; i <= closed_orbit)
     // std::cout << status1 << std::endl;

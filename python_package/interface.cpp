@@ -52,6 +52,9 @@ Status::type track_linepass_wrapper(
 
     std::vector<Pos<double> > post;
     std::vector<Pos<double> > orig_post;
+    std::vector<double> TAW_positions;
+    std::vector<unsigned int> TAW_indices;
+    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, args.element_offset);
 
     orig_post.reserve(ni2);
     for (unsigned int i=0; i<ni2; ++i){
@@ -69,8 +72,11 @@ Status::type track_linepass_wrapper(
         post,
         args.lost_plane,
         args.lost_flag,
-        args.lost_element
-    );
+        args.lost_element,
+        accelerator_length,
+        TAW_indices,
+        TAW_positions
+);
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
         pos[2*n2 + i] = post[i].ry; pos[3*n2 + i] = post[i].py;

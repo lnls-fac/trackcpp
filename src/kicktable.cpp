@@ -104,7 +104,7 @@ Status::type Kicktable::load_from_file(const std::string& filename_) {
 }
 
 int add_kicktable(const std::string& filename) {
-  
+
   // looks through vector of kicktables...
   for(unsigned int i=0; i<kicktable_list.size(); ++i) {
     if (kicktable_list[i].filename == filename) {
