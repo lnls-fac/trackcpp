@@ -3,7 +3,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
@@ -16,7 +16,7 @@ jobs:
       - name: Build using make and generate compile commands
         run: |
           make clean
-          CONDA_PREFIX=/dummy-prefix PIP=pip3 PYTHON=python3 bear make -j$(nproc)
+          CONDA_PREFIX=/dummy-prefix PIP=pip3 PYTHON=python3 bear -- make -j$(nproc)
 
       # - name: Build using make and generate compile commands
       #   run: |
