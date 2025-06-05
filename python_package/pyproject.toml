@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trackcpp"
+authors = [ { name = "lnls-fac" }, ]
+description = "trackcpp python package"
+readme = "README.md"
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.6"
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering",
+]
+license = "MIT"
+license-files= [ "LICENSE", ]
+
+[project.urls]
+Homepage = "https://github.com/lnls-fac/trackcpp"
+Download = "https://github.com/lnls-fac/trackcpp"
+
+# --- Configurações específicas do Setuptools ---
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+dependencies = { file = "requirements.txt" }
+
+[tool.setuptools.package-data]
+trackcpp = ["VERSION", "_trackcpp.so"]
