@@ -1084,7 +1084,17 @@ int cmd_track_linepass(const std::vector<std::string>& args) {
   std::vector<Pos<double>> pos_list;
   Plane::type lost_plane;
   unsigned int offset_element = start_element;
-  track_linepass(accelerator, pos, true, offset_element, pos_list, lost_plane);
+  // for longitudinal kick before RF cavities
+  std::vector<unsigned int> time_aware_indices;
+  std::vector<double> time_aware_displacements;
+  double line_length = accelerator.get_time_aware_elements_info(
+      time_aware_indices,
+      time_aware_displacements,
+      offset_element
+  );
+  track_linepass(accelerator, pos, true, offset_element, pos_list, lost_plane,
+    line_length, time_aware_indices, time_aware_displacements
+  );
 
   std::cout << get_timestamp() << " saving track_linepass data to file" << std::endl;
   status = print_tracking_linepass(accelerator, pos_list, start_element, "track_linepass_out.txt");
