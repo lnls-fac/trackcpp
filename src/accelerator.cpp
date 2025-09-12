@@ -55,8 +55,8 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
 
 double Accelerator::get_time_aware_elements_info(
   std::vector<unsigned int>& time_aware_indices,
-    std::vector<double>& time_aware_displacements,
-    unsigned int element_offset
+  std::vector<double>& time_aware_displacements,
+  unsigned int element_offset
 ) const {
 
   // for longitudinal kick before RF cavities
@@ -83,7 +83,7 @@ double Accelerator::get_time_aware_elements_info(
 
   // In case no element is "time aware"
   if (time_aware_indices.size() < 1) {
-    time_aware_indices.push_back(-1);
+    time_aware_indices.push_back(0);
     time_aware_displacements.push_back(0.0);
   } else {
     time_aware_displacements[0] += s_pos;
