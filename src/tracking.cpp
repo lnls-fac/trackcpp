@@ -66,8 +66,21 @@ Status::type track_findm66 (Accelerator& accelerator,
   map.ry = Tpsa<6,1>(fp.ry, 2); map.py = Tpsa<6,1>(fp.py, 3);
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
+  // for longitudinal kick before RF cavities
+  unsigned int element_offset = 0;
+  unsigned int time_aware_pivot = 0;
+  std::vector<unsigned int> time_aware_indices;
+  std::vector<double> time_aware_displacements;
+  double line_length = accelerator.get_time_aware_elements_info(
+      time_aware_indices,
+      time_aware_displacements,
+      element_offset
+  );
+
+
   tm.clear(); tm.reserve(indices.size());
   for(unsigned int i=0; i<lattice.size(); ++i) {
+    // const Element& element = lattice[i];
     if (indcs[i]){
       Matrix m (6);
       m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3];
@@ -84,6 +97,16 @@ Status::type track_findm66 (Accelerator& accelerator,
       m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
     tm.push_back(std::move(m));
     }
+    adjust_path_length(
+      accelerator,
+      lattice[i],
+      element_offset,
+      map,
+      line_length,
+      time_aware_indices,
+      time_aware_displacements,
+      time_aware_pivot
+    );
     // track through element
     if ((status = track_elementpass(accelerator, lattice[i], map)) != Status::success) return status;
   }
