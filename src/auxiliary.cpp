@@ -22,6 +22,8 @@ static std::normal_distribution<double>  distr_gauss(0., 1.);
 static std::uniform_real_distribution<double> distr_uniform(-sqrt(3.0), sqrt(3.0));
 int choosen_distribution = Distributions::normal;
 
+const std::vector<int> PassMethodsClass::TAW_pms = { PassMethodsClass::pm_cavity_pass };
+
 void set_random_distribution(unsigned value){
   if (value == Distributions::normal){
     choosen_distribution = value;

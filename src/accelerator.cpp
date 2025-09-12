@@ -66,30 +66,26 @@ double Accelerator::get_time_aware_elements_info(std::vector<unsigned int>& TAW_
   double s_pos = 0.0;
   double acclen = 0.0;
   for (size_t i = 0; i < nr_elements; i++) {
-      auto elem = this->lattice[i];
-      acclen += elem.length;
-      if (PMClass.is_time_aware_pm(elem.pass_method)) {
+      const Element& element = this->lattice[element_offset];
+      acclen += element.length;
+      if (PMClass.is_time_aware_pm(element.pass_method)) {
         temp_indices.push_back(i);
-        temp_positions.push_back(s_pos + elem.length/2);
-        s_pos = 0.0 + elem.length/2;
+        temp_positions.push_back(s_pos + element.length/2);
+        s_pos = 0.0 + element.length/2;
       }
       else {
-        s_pos += elem.length;
+        s_pos += element.length;
       }
-
-  }
-  temp_positions[0] += s_pos;
-
-  size_t split = 0;
-  for (; split < temp_indices.size(); split++) {
-    if (temp_indices[split] >= element_offset) {break;}
+      element_offset = (element_offset + 1) % nr_elements;
   }
 
-  TAW_indices.insert(TAW_indices.end(), temp_indices.begin() + split, temp_indices.end());
-  TAW_indices.insert(TAW_indices.end(), temp_indices.begin(), temp_indices.begin() + split);
-
-  TAW_positions.insert(TAW_positions.end(), temp_positions.begin() + split, temp_positions.end());
-  TAW_positions.insert(TAW_positions.end(), temp_positions.begin(), temp_positions.begin() + split);
+  // In case no element is "time aware"
+  if (temp_indices.size() < 1) {
+    TAW_indices.push_back(-1);
+    TAW_positions.push_back(0.0);
+  } else {
+    temp_positions[0] += s_pos;
+  }
 
   return acclen;
 

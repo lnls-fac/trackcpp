@@ -66,11 +66,14 @@ Status::type track_findm66 (Accelerator& accelerator,
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
   tm.clear(); tm.reserve(indices.size());
+
+  // For longitudinal RF kick
   unsigned int TAW_pivot = 0;
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
   double line_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0);
   double ddl = 0;
+
   for(unsigned int i=0; i<lattice.size(); ++i) {
     if (indcs[i]){
       Matrix m (6);
@@ -88,12 +91,15 @@ Status::type track_findm66 (Accelerator& accelerator,
       m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
     tm.push_back(std::move(m));
     }
-    // track through element
+
+    // For longitudinal RF kick
     if (i == TAW_indices[TAW_pivot]) {
       ddl = light_speed*accelerator.harmonic_number/lattice[i].frequency - line_length;
       map.dl -= ddl * (TAW_positions[TAW_pivot]) / line_length;
       if (TAW_pivot < TAW_indices.size() - 1) {TAW_pivot++;}
     }
+
+    // track through element
     if ((status = track_elementpass (accelerator, lattice[i], map)) != Status::success) return status;
   }
 
@@ -146,6 +152,7 @@ Status::type track_findorbit6(
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
+  unsigned int element_offset = 0;
 
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
@@ -168,14 +175,13 @@ Status::type track_findorbit6(
   // for longitudinal kick before RF cavities
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
-  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 182
+  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
-    unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
 
@@ -232,7 +238,6 @@ Status::type track_findorbit6(
 
   // propagates fixed point throught the_ring
   closed_orbit.clear();
-  unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(
     accelerator, co[6], true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions
@@ -248,6 +253,7 @@ Status::type track_findorbit4(
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
+  unsigned int element_offset = 0;
 
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
@@ -271,14 +277,13 @@ Status::type track_findorbit4(
   // for longitudinal kick before RF cavities
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
-  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 285
+  double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
-    unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
     status = (Status::type) ((int) status | (int) track_linepass(
@@ -322,7 +327,6 @@ Status::type track_findorbit4(
 
   // propagates fixed point throught the_ring
   closed_orbit.clear();
-  unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(
     accelerator, co[6], true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions

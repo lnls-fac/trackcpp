@@ -38,6 +38,7 @@ public:
     static const int pm_matrix_pass                    = 9;
     static const int pm_drift_g2l_pass                 = 10;
     static const int pm_nr_pms                         = 11;  // counter for number of passmethods
+    static const std::vector<int> TAW_pms;
     PassMethodsClass() {
         passmethods.push_back("identity_pass");
         passmethods.push_back("drift_pass");
@@ -47,20 +48,19 @@ public:
         passmethods.push_back("cavity_pass");
         passmethods.push_back("thinquad_pass");
         passmethods.push_back("thinsext_pass");
-        passmethods.push_back("kicktable_pass");
+        passmethods.push_back("kickmap_pass");
         passmethods.push_back("matrix_pass");
         passmethods.push_back("drift_g2l_pass");
     }
     int size() const { return passmethods.size(); }
+
     std::string operator[](const int i) const { return passmethods[i]; }
+
     bool is_time_aware_pm(const int i) const {
-        switch (i)
-        {
-        case pm_cavity_pass:
-            return true;
-        default:
-            return false;
+        for (int pm: TAW_pms) {
+            if (i == pm) {return true;}
         }
+        return false;
     };
 private:
     std::vector<std::string> passmethods;
@@ -95,7 +95,7 @@ const std::vector<std::string> pm_dict = {
     "cavity_pass",
     "thinquad_pass",
     "thinsext_pass",
-    "kicktable_pass",
+    "kickmap_pass",
     "matrix_pass",
     "drift_g2l_pass",
 };

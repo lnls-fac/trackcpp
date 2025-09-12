@@ -68,7 +68,7 @@ int main() {
     // for longitudinal kick before RF cavities
     std::vector<double> TAW_positions;
     std::vector<unsigned int> TAW_indices;
-    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 66
+    double accelerator_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
 
     status = track_linepass(
         accelerator, fp, true, element_offset, closed_orbit, lost_plane, accelerator_length, TAW_indices, TAW_positions);

@@ -52,7 +52,7 @@ Pos<double>  linalg_solve6_posvec(
 
 
 template <typename T>
-Status::type track_elementpass (
+Status::type track_elementpass(
     const Accelerator& accelerator,
     const Element& el, // element through which to track particle
     Pos<T> &orig_pos // initial electron coordinates
@@ -101,7 +101,7 @@ Status::type track_elementpass (
 }
 
 template <typename T>
-Status::type track_elementpass (
+Status::type track_elementpass(
     const Accelerator& accelerator,
     const Element& el, // element through which to track particle
     std::vector<Pos<T> >& orig_pos // initial electron coordinates
@@ -137,7 +137,7 @@ Status::type track_elementpass (
 //      status do tracking (see 'auxiliary.h')
 //
 template <typename T>
-Status::type track_linepass (
+Status::type track_linepass(
     const Accelerator& accelerator,
     Pos<T>& orig_pos,
     const std::vector<unsigned int>& indices,
@@ -152,7 +152,10 @@ Status::type track_linepass (
     Status::type status = Status::success;
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
+
+    // For longitudinal RF kick
     double ddl = 0.0;
+    unsigned int TAW_pivot = 0;
 
     //pos.clear(); other functions assume pos is not clearedin linepass!
     pos.reserve(pos.size() + indices.size());
@@ -163,7 +166,6 @@ Status::type track_linepass (
     for (unsigned int i=0; i<=nr_elements; ++i) indcs[i] = false;
     for (auto&& i: indices) if (i<=nr_elements) indcs[i] = true;
 
-    unsigned int TAW_pivot = 0;
     for(int i=0; i<nr_elements; ++i) {
 
         // syntactic-sugar for read-only access to element object parameters
@@ -172,27 +174,24 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
+        // For longitudinal RF kick
         if (element_offset == time_aware_element_indices[TAW_pivot]) {
             ddl = light_speed*accelerator.harmonic_number/element.frequency - line_length;
-
-            // std::cout << "elem idx = " << element_offset << "  taw_idx[pivot] = " << time_aware_element_indices[TAW_pivot] << std::endl;
-            // std::cout << "c = " << light_speed << "  h = " << accelerator.harmonic_number << "  elem freq = " << element.frequency << "  line length = " << line_length << std::endl;
-            // std::cout << "ddl = " << ddl << std::endl;
-            // std::cout << "dl before = " << orig_pos.dl << std::endl;
-
             orig_pos.dl -= ddl * time_aware_element_positions[TAW_pivot] / line_length;
-
-            // std::cout << "dl after  = " << orig_pos.dl << std::endl;
-
             if (TAW_pivot < time_aware_element_indices.size() - 1) {TAW_pivot++;}
         }
 
+        // tracking itself
         status = track_elementpass(accelerator, element, orig_pos);
 
+        //!  Superseded by lines 178-181
         // if (time_aware_element_indices.size() > 0 && i == time_aware_element_indices.back()) {
-        //     orig_pos.dl -= ddl * (time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]) / line_length;
+        //     orig_pos.dl -= ddl * (
+        //         time_aware_element_positions[TAW_pivot+1]-time_aware_element_positions[TAW_pivot]
+        //     ) / line_length;
         // }
 
+        // checking particle loss
         lost_plane = check_particle_loss(accelerator, element, orig_pos);
         if (lost_plane != Plane::no_plane) status = Status::particle_lost;
 
@@ -236,7 +235,7 @@ Status::type track_linepass (
 //      status do tracking (see 'auxiliary.h')
 //
 template <typename T>
-Status::type track_linepass (
+Status::type track_linepass(
     const Accelerator& accelerator,
     Pos<T>& orig_pos,
     const bool trajectory,
@@ -256,7 +255,7 @@ Status::type track_linepass (
         indices.push_back(nr_elements);
     }
 
-    return track_linepass (
+    return track_linepass(
         accelerator,
         orig_pos,
         indices,
@@ -294,7 +293,7 @@ Status::type track_linepass (
 //      status do tracking (see 'auxiliary.h')
 //
 template <typename T>
-Status::type track_linepass (
+Status::type track_linepass(
     const Accelerator& accelerator,
     std::vector<Pos<T>> &orig_pos,
     const std::vector<unsigned int >& indices,
@@ -322,8 +321,17 @@ Status::type track_linepass (
     for(unsigned int i=0; i<orig_pos.size(); ++i) {
         unsigned int le = element_offset;
 
-        status2 = track_linepass (
-            accelerator, orig_pos[i], indices, le, final_pos, lp, line_length, time_aware_element_indices, time_aware_element_positions);
+        status2 = track_linepass(
+            accelerator,
+            orig_pos[i],
+            indices,
+            le,
+            final_pos,
+            lp,
+            line_length,
+            time_aware_element_indices,
+            time_aware_element_positions
+        );
 
         if (status2 != Status::success){
             status = status2;
@@ -388,7 +396,7 @@ Status::type track_linepass (
 // RETURN:
 //     status do tracking (see 'auxiliary.h')
 template <typename T>
-Status::type track_ringpass (
+Status::type track_ringpass(
     const Accelerator& accelerator,
     Pos<T>& orig_pos,
     const unsigned int nr_turns,
@@ -414,7 +422,7 @@ Status::type track_ringpass (
         // stores turn_by_turn at beggining of each turn
         if (turn_by_turn) pos.push_back(orig_pos);
 
-        if ((status = track_linepass (
+        if ((status = track_linepass(
             accelerator,
             orig_pos,
             false,
@@ -442,7 +450,7 @@ Status::type track_ringpass (
 
 
 template <typename T>
-Status::type track_ringpass (
+Status::type track_ringpass(
     const Accelerator& accelerator,
     std::vector<Pos<T> > &orig_pos,
     const unsigned int nr_turns,

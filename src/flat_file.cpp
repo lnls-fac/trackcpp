@@ -98,10 +98,10 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     fp << std::setw(pw) << "fam_name" << e.fam_name << '\n';
     fp << std::setw(pw) << "length" << e.length << '\n';
     fp << std::setw(pw) << "pass_method" << pm_dict[e.pass_method] << '\n';
-    if (pm_dict[e.pass_method].compare("kicktable_pass") == 0) {
+    if (pm_dict[e.pass_method].compare("kickmap_pass") == 0) {
       unsigned int idx = e.kicktable_idx;
       const Kicktable& ktable = kicktable_list[idx];
-      fp << std::setw(pw) << "kicktable_fname" << ktable.filename << '\n';
+      fp << std::setw(pw) << "kickmap_fname" << ktable.filename << '\n';
     }
     if (e.nr_steps != 1) {
       fp.unsetf(std::ios_base::showpos);

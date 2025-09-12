@@ -39,7 +39,7 @@ int test_linepass(const Accelerator& accelerator) {
   // for longitudinal kick before RF cavities
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
-  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 37
+  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
   Status::type status = track_linepass(
     accelerator, pos, true, element_offset, new_pos, lost_plane, acc_length, TAW_indices, TAW_positions);
   std::cout << "status: " << string_error_messages[status] << std::endl;
@@ -73,7 +73,7 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   // for longitudinal kick before RF cavities
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
-  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 71
+  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
   track_linepass(
     accelerator, tpsa, false, element_offset, new_tpsa, lost_plane, acc_length, TAW_indices, TAW_positions);
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
@@ -418,7 +418,7 @@ int test_linepass2() {
   // for longitudinal kick before RF cavities
   std::vector<double> TAW_positions;
   std::vector<unsigned int> TAW_indices;
-  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, 0); // 0 -> element_offset = 0 #line 414
+  double acc_length = accelerator.get_time_aware_elements_info(TAW_indices, TAW_positions, element_offset);
 
   orig_pos.rx = 0.0001;
   orig_pos.px = 0.0001;
