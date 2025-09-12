@@ -193,7 +193,6 @@ Status::type track_findorbit6(
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
-    unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
 
@@ -306,7 +305,6 @@ Status::type track_findorbit4(
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
-    unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
     status = (Status::type) ((int) status | (int) track_linepass(
@@ -355,7 +353,6 @@ Status::type track_findorbit4(
 
   // propagates fixed point throught the_ring
   closed_orbit.clear();
-  unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(
     accelerator, co[6], true, element_offset, closed_orbit, lost_plane,
