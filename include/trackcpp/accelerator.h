@@ -32,6 +32,7 @@ public:
   int                     radiation_on = RadiationState::off;
   bool                    vchamber_on = false;
   int                     harmonic_number = 0;
+  double                  frequency = 0; // [Hz]
   std::vector<Element>    lattice;
   std::string             lattice_version = "";
 
