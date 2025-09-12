@@ -503,11 +503,11 @@ template <typename T>
 inline void adjust_path_length(
   const Accelerator& accelerator,
   const Element& element,
-  const unsigned int& element_offset,
+  unsigned int& element_offset,
   Pos<T>& pos,
   const double line_length,
-  const std::vector<unsigned int>& time_aware_element_indices,
-  const std::vector<double>& time_aware_element_positions,
+  const std::vector<unsigned int>& time_aware_indices,
+  const std::vector<double>& time_aware_displacements,
   unsigned int& time_aware_pivot
 ) {
   if (element_offset == time_aware_element_indices[time_aware_pivot]) {
