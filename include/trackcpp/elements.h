@@ -58,7 +58,7 @@ public:
   double        fint_out    = 0;
   double        thin_KL     = 0;  // [1/m]
   double        thin_SL     = 0;  // [1/m²]
-  double        frequency   = 0;  // [Hz]
+  int           harmonic    = 0;  //
   double        voltage     = 0;  // [V]
   double        phase_lag   = 0;  // [rad]
   int           kicktable_idx = -1;   // index of kickmap object in kicktable_list

@@ -196,7 +196,7 @@ bool Element::operator==(const Element& o) const {
     if (this->fint_out != o.fint_out) return false;
     if (this->thin_KL != o.thin_KL) return false;
     if (this->thin_SL != o.thin_SL) return false;
-    if (this->frequency != o.frequency) return false;
+    if (this->harmonic != o.harmonic) return false;
     if (this->voltage != o.voltage) return false;
     if (this->phase_lag != o.phase_lag) return false;
     if (this->polynom_a != o.polynom_a) return false;
@@ -240,7 +240,7 @@ std::ostream& operator<< (std::ostream &out, const Element& el) {
   }
   print_polynom(        out,                "polynom_a     : ", el.polynom_a);
   print_polynom(        out,                "polynom_b     : ", el.polynom_b);
-  if (el.frequency != 0)out << std::endl << "frequency     : " << el.frequency;
+  if (el.harmonic != 0) out << std::endl << "harmonic      : " << el.harmonic;
   if (el.voltage != 0)  out << std::endl << "voltage       : " << el.voltage;
   if (el.phase_lag != 0)out << std::endl << "phase_lag     : " << el.phase_lag;
   return out;
