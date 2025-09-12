@@ -21,10 +21,6 @@
 
 void sirius_v500(std::vector<Element>& the_ring) {
 
-    int  harmonic_number = 864;
-
-    //double energy = 3e9;
-
     // AC10_5
     double qaf_strength       =  2.536876;
     double qad_strength       = -2.730416;
@@ -257,15 +253,6 @@ void sirius_v500(std::vector<Element>& the_ring) {
         }
     }
 
-    //""" sets cavity frequency according to lattice length """
-    double C = latt_findspos(the_ring, 1+the_ring.size());
-
-    double rev_freq = light_speed / C;
-    std::vector<int> rf_idx = latt_findcells_fam_name(the_ring, "cav");
-
-    for(unsigned int idx = 0; idx<rf_idx.size(); ++idx) {
-        the_ring[rf_idx[idx]].frequency = rev_freq * harmonic_number;
-    }
     latt_setcavity(the_ring, "on");
     //latt_setradiation(the_ring, "on", 3e9);
 
