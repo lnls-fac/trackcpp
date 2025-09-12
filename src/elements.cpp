@@ -140,9 +140,9 @@ Element Element::rbend (const std::string& fam_name_, const double& length_,
   return e;
 }
 
-Element Element::rfcavity (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_) {
+Element Element::rfcavity (const std::string& fam_name_, const double& length_, const double& harmonic_, const double& voltage_, const double& phase_lag_) {
   Element e = Element(fam_name_, length_);
-    initialize_rfcavity(e, frequency_, voltage_, phase_lag_);
+    initialize_rfcavity(e, harmonic_, voltage_, phase_lag_);
   return e;
 }
 
@@ -295,9 +295,9 @@ void initialize_sextupole(Element &element, const double &S, const int &nr_steps
     element.nr_steps = nr_steps;
 }
 
-void initialize_rfcavity(Element &element, const double &frequency, const double &voltage, const double &phase_lag) {
+void initialize_rfcavity(Element &element, const double &harmonic, const double &voltage, const double &phase_lag) {
     element.pass_method = PassMethod::pm_cavity_pass;
-    element.frequency = frequency;
+    element.harmonic = harmonic;
     element.voltage = voltage;
     element.phase_lag = phase_lag;
 }

@@ -229,8 +229,8 @@ Element sextupole_wrapper(const std::string &fam_name_, const double &length_, c
     return Element::sextupole(fam_name_, length_, S_, nr_steps_);
 }
 
-Element rfcavity_wrapper(const std::string &fam_name_, const double &length_, const double &frequency_, const double &voltage_, const double &phase_lag_) {
-    return Element::rfcavity(fam_name_, length_, frequency_, voltage_, phase_lag_);
+Element rfcavity_wrapper(const std::string &fam_name_, const double &length_, const double &harmonic_, const double &voltage_, const double &phase_lag_) {
+    return Element::rfcavity(fam_name_, length_, harmonic_, voltage_, phase_lag_);
 }
 
 Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kicktable_fname_, const int nr_steps_, const double& rescale_length_, const double& rescale_kicks_) {
