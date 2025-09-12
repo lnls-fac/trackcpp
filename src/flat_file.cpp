@@ -82,6 +82,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
 
   fp << std::setw(hw) << "% energy" << accelerator.energy << " eV\n";
   fp << std::setw(hw) << "% harmonic_number" << accelerator.harmonic_number << "\n";
+  fp << std::setw(hw) << "% frequency" << accelerator.frequency << "\n";
   fp << std::setw(hw) << "% cavity_on" << get_boolean_string(accelerator.cavity_on) << "\n";
   fp << std::setw(hw) << "% radiation_on" << accelerator.radiation_on << "\n";
   fp << std::setw(hw) << "% vchamber_on" << get_boolean_string(accelerator.vchamber_on) << "\n";
@@ -122,7 +123,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.fint_in != 0) { fp << std::setw(pw) << "fint_in" << e.fint_in << '\n'; }
     if (e.fint_out != 0) { fp << std::setw(pw) << "fint_out" << e.fint_out << '\n'; }
     if (e.voltage != 0) { fp << std::setw(pw) << "voltage" << e.voltage << '\n'; }
-    if (e.frequency != 0) { fp << std::setw(pw) << "frequency" << e.frequency << '\n'; }
+    if (e.harmonic != 0) { fp << std::setw(pw) << "harmonic" << e.harmonic << '\n'; }
     if (e.phase_lag != 0) { fp << std::setw(pw) << "phase_lag" << e.phase_lag << '\n'; }
     if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
     if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
@@ -170,6 +171,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
   bool found_hmin = false;
   bool found_vmin = false;
   unsigned int line_count = 0;
+  std::vector<double> frequencies = {};
   while (std::getline(fp, line)) {
     //std::cout << line << std::endl;
     line_count++;
@@ -182,6 +184,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       ss >> cmd;
       if (cmd.compare("energy") == 0) { ss >> accelerator.energy; continue; }
       if (cmd.compare("harmonic_number") == 0) { ss >> accelerator.harmonic_number; continue; }
+      if (cmd.compare("frequency") == 0) { ss >> accelerator.frequency; continue; }
       if (cmd.compare("cavity_on") == 0) { accelerator.cavity_on = read_boolean_string(ss); continue; }
       // radiation_on needs its own processing function due backward compatibility
       if (cmd.compare("radiation_on") == 0){ accelerator.radiation_on = process_rad_property(ss); continue; }
@@ -221,7 +224,13 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("fint_in")     == 0) { ss >> e.fint_in;   continue; }
     if (cmd.compare("fint_out")    == 0) { ss >> e.fint_out;  continue; }
     if (cmd.compare("voltage")     == 0) { ss >> e.voltage;   continue; }
-    if (cmd.compare("frequency")   == 0) { ss >> e.frequency; continue; }
+    if (cmd.compare("harmonic")    == 0) { ss >> e.harmonic; continue; }
+    if (cmd.compare("frequency")   == 0) {
+      double freq;
+      ss >> freq;
+      frequencies.push_back(freq);
+      continue;
+    }
     if (cmd.compare("phase_lag")   == 0) { ss >> e.phase_lag; continue; }
     if (cmd.compare("angle_in")    == 0) { ss >> e.angle_in;  continue; }
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
@@ -311,6 +320,10 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     accelerator.lattice.push_back(e);
   }
 
+  if (frequencies.size() > 0) {
+    accelerator.frequency = frequencies[0];
+  }
+
   return Status::success;
 
 }
@@ -364,11 +377,12 @@ static Status::type read_flat_file_tracy(const std::string& filename, Accelerato
       case FlatFileType::cavity:
       {
         e.pass_method = PassMethod::pm_cavity_pass;
-        int hnumber; double energy;
-        fp >> e.voltage >> e.frequency >> hnumber >> energy;
-        e.voltage *= energy; e.frequency *= light_speed / (2*M_PI);
+        int hnumber; double energy; double freq;
+        fp >> e.voltage >> freq >> hnumber >> energy;
+        e.voltage *= energy; freq *= light_speed / (2*M_PI);
         accelerator.harmonic_number = hnumber;
         accelerator.energy = energy;
+        accelerator.frequency = freq;
       }; break;
       case FlatFileType::mpole:
       {
