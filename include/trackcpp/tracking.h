@@ -143,12 +143,18 @@ Status::type track_linepass (
     const std::vector<unsigned int>& indices,
     unsigned int& element_offset,
     std::vector<Pos<T> >& pos,
-    Plane::type& lost_plane
+    Plane::type& lost_plane,
+    const double line_length,
+    const std::vector<unsigned int>& time_aware_indices,
+    const std::vector<double>& time_aware_displacements
 ) {
 
     Status::type status = Status::success;
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
+
+    // For longitudinal RF kick
+    unsigned int time_aware_pivot = 0;
 
     //pos.clear(); other functions assume pos is not clearedin linepass!
     pos.reserve(pos.size() + indices.size());
@@ -167,6 +173,16 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
+        adjust_path_length(
+            accelerator,
+            element,
+            element_offset,
+            orig_pos,
+            line_length,
+            time_aware_indices,
+            time_aware_displacements,
+            time_aware_pivot
+        );
         status = track_elementpass(accelerator, element, orig_pos);
         lost_plane = check_particle_loss(accelerator, element, orig_pos);
         if (lost_plane != Plane::no_plane) status = Status::particle_lost;
@@ -217,7 +233,10 @@ Status::type track_linepass (
     const bool trajectory,
     unsigned int& element_offset,
     std::vector<Pos<T> >& pos,
-    Plane::type& lost_plane
+    Plane::type& lost_plane,
+    const double line_length,
+    const std::vector<unsigned int>& time_aware_indices,
+    const std::vector<double>& time_aware_displacements
 ) {
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -234,7 +253,10 @@ Status::type track_linepass (
         indices,
         element_offset,
         pos,
-        lost_plane
+        lost_plane,
+        line_length,
+        time_aware_indices,
+        time_aware_displacements
     );
 }
 
@@ -271,7 +293,10 @@ Status::type track_linepass (
     std::vector<Pos<T>> &pos,
     std::vector<unsigned int >& lost_plane,
     std::vector<bool>& lost_flag,
-    std::vector<int>& lost_element
+    std::vector<int>& lost_element,
+    const double line_length,
+    const std::vector<unsigned int>& time_aware_indices,
+    const std::vector<double>& time_aware_displacements
 ) {
 
     int nr_elements = accelerator.lattice.size();
@@ -289,7 +314,15 @@ Status::type track_linepass (
         unsigned int le = element_offset;
 
         status2 = track_linepass(
-            accelerator, orig_pos[i], indices, le, final_pos, lp
+            accelerator,
+            orig_pos[i],
+            indices,
+            le,
+            final_pos,
+            lp,
+            line_length,
+            time_aware_indices,
+            time_aware_displacements
         );
 
         if (status2 != Status::success){
@@ -369,6 +402,15 @@ Status::type track_ringpass (
     Status::type status  = Status::success;
     std::vector<Pos<T> > final_pos;
 
+    // for longitudinal kick before RF cavities
+    std::vector<unsigned int> time_aware_indices;
+    std::vector<double> time_aware_displacements;
+    double line_length = accelerator.get_time_aware_elements_info(
+        time_aware_indices,
+        time_aware_displacements,
+        element_offset
+    );
+
     if (turn_by_turn) pos.reserve(nr_turns+1);
 
     for(lost_turn=0; lost_turn<nr_turns; ++lost_turn) {
@@ -382,7 +424,10 @@ Status::type track_ringpass (
             false,
             element_offset,
             final_pos,
-            lost_plane
+            lost_plane,
+            line_length,
+            time_aware_indices,
+            time_aware_displacements
         )) != Status::success) {
 
             // fill last of vector with nans
