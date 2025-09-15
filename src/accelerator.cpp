@@ -82,11 +82,7 @@ double Accelerator::get_time_aware_elements_info(
       element_offset = (element_offset + 1) % nr_elements;
   }
 
-  // In case no element is "time aware"
-  if (time_aware_indices.size() < 1) {
-    time_aware_indices.push_back(UINT_MAX);
-    time_aware_displacements.push_back(0.0);
-  } else {
+  if (time_aware_indices.size() > 0) {
     time_aware_displacements[0] += s_pos;
     //? NOTE : The diference between "acclen" and the sum of "time_aware_displacements" is on the order of 1e-15 ~ 1e-16,
     //? and the propagation of this tiny error affects the tracking. The following line avoids losing precision.

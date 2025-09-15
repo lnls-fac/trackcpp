@@ -510,7 +510,7 @@ inline void adjust_path_length(
   const std::vector<double>& time_aware_displacements,
   unsigned int& time_aware_pivot
 ) {
-  if (element_offset == time_aware_indices[time_aware_pivot]) {
+  if (!time_aware_indices.empty() && element_offset == time_aware_indices[time_aware_pivot]) {
     double ddl = light_speed*accelerator.harmonic_number/element.frequency - line_length;
     pos.dl -= ddl * time_aware_displacements[time_aware_pivot] / line_length;
     if (time_aware_pivot < time_aware_indices.size() - 1) {time_aware_pivot++;}
