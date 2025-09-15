@@ -72,8 +72,9 @@ double Accelerator::get_time_aware_elements_info(
       acclen += element.length;
       if (PMClass.is_time_aware_pm(element.pass_method)) {
         time_aware_indices.push_back(i);
-        time_aware_displacements.push_back(s_pos + element.length/2);
-        s_pos = 0.0 + element.length/2;
+        s_pos += 0.5 * element.length;
+        time_aware_displacements.push_back(s_pos);
+        s_pos = 0.5 * element.length;
       }
       else {
         s_pos += element.length;
@@ -87,6 +88,9 @@ double Accelerator::get_time_aware_elements_info(
     time_aware_displacements.push_back(0.0);
   } else {
     time_aware_displacements[0] += s_pos;
+    //? NOTE : The diference between "acclen" and the sum of "time_aware_displacements" is on the order of 1e-15 ~ 1e-16,
+    //? and the propagation of this tiny error affects the tracking. The following line avoids losing precision.
+    time_aware_displacements.back() += acclen - std::accumulate(time_aware_displacements.begin(), time_aware_displacements.end(), 0.0);
   }
 
   return acclen;
