@@ -64,10 +64,10 @@ Status::type track_linepass_wrapper(
 
     // for longitudinal kick before RF cavities
     std::vector<unsigned int> time_aware_indices;
-    std::vector<double> time_aware_displacements;
-    double line_length = accelerator.get_time_aware_elements_info(
+    std::vector<double> time_aware_dl_kicks;
+    accelerator.get_time_aware_elements_info(
         time_aware_indices,
-        time_aware_displacements,
+        time_aware_dl_kicks,
         args.element_offset
     );
 
@@ -80,9 +80,8 @@ Status::type track_linepass_wrapper(
         args.lost_plane,
         args.lost_flag,
         args.lost_element,
-        line_length,
         time_aware_indices,
-        time_aware_displacements
+        time_aware_dl_kicks
     );
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;

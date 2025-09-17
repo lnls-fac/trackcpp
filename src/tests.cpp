@@ -39,16 +39,16 @@ int test_linepass(const Accelerator& accelerator) {
 
   // for longitudinal kick before RF cavities
   std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_displacements;
-  double line_length = accelerator.get_time_aware_elements_info(
+  std::vector<double> time_aware_dl_kicks;
+  accelerator.get_time_aware_elements_info(
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       element_offset
   );
 
   Status::type status = track_linepass(
     accelerator, pos, true, element_offset, new_pos, lost_plane,
-    line_length, time_aware_indices, time_aware_displacements
+    time_aware_indices, time_aware_dl_kicks
   );
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
@@ -81,16 +81,16 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
 
   // for longitudinal kick before RF cavities
   std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_displacements;
-  double line_length = accelerator.get_time_aware_elements_info(
+  std::vector<double> time_aware_dl_kicks;
+  accelerator.get_time_aware_elements_info(
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       element_offset
   );
 
   track_linepass(
     accelerator, tpsa, false, element_offset, new_tpsa, lost_plane,
-    line_length, time_aware_indices, time_aware_displacements
+    time_aware_indices, time_aware_dl_kicks
   );
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
     //const Pos<Tpsa<6,1> >& c = new_particles[i];
@@ -433,10 +433,10 @@ int test_linepass2() {
 
   // for longitudinal kick before RF cavities
   std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_displacements;
-  double line_length = accelerator.get_time_aware_elements_info(
+  std::vector<double> time_aware_dl_kicks;
+  accelerator.get_time_aware_elements_info(
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       element_offset
   );
 
@@ -450,9 +450,8 @@ int test_linepass2() {
       element_offset,
       pos,
       lost_plane,
-      line_length,
       time_aware_indices,
-      time_aware_displacements
+      time_aware_dl_kicks
   );
 
       for(unsigned int i=0; i<10; ++i) {

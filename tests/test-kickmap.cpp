@@ -67,16 +67,16 @@ int main() {
 
     // for longitudinal kick before RF cavities
     std::vector<unsigned int> time_aware_indices;
-    std::vector<double> time_aware_displacements;
-    double line_length = accelerator.get_time_aware_elements_info(
+    std::vector<double> time_aware_dl_kicks;
+    accelerator.get_time_aware_elements_info(
         time_aware_indices,
-        time_aware_displacements,
+        time_aware_dl_kicks,
         element_offset
     );
 
     status = track_linepass(
         accelerator, fp, true, element_offset, closed_orbit, lost_plane,
-        line_length, time_aware_indices, time_aware_displacements
+        time_aware_indices, time_aware_dl_kicks
     );
     if (status != Status::success) return status;
 
@@ -130,7 +130,7 @@ int main() {
         fpp.py += twiss0.etay[1] * dpp;
         Status::type status = track_linepass(
             accelerator, fpp, true, element_offset, codp, lost_plane,
-            line_length, time_aware_indices, time_aware_displacements
+            time_aware_indices, time_aware_dl_kicks
         );
         std::cout << "h2" << std::endl;
         if (status != Status::success) return status;

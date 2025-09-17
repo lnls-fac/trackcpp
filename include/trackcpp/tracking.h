@@ -144,9 +144,8 @@ Status::type track_linepass (
     unsigned int& element_offset,
     std::vector<Pos<T> >& pos,
     Plane::type& lost_plane,
-    const double line_length,
     const std::vector<unsigned int>& time_aware_indices,
-    const std::vector<double>& time_aware_displacements
+    const std::vector<double>& time_aware_dl_kicks
 ) {
 
     Status::type status = Status::success;
@@ -178,9 +177,8 @@ Status::type track_linepass (
             element,
             element_offset,
             orig_pos,
-            line_length,
             time_aware_indices,
-            time_aware_displacements,
+            time_aware_dl_kicks,
             time_aware_pivot
         );
         status = track_elementpass(accelerator, element, orig_pos);
@@ -234,9 +232,8 @@ Status::type track_linepass (
     unsigned int& element_offset,
     std::vector<Pos<T> >& pos,
     Plane::type& lost_plane,
-    const double line_length,
     const std::vector<unsigned int>& time_aware_indices,
-    const std::vector<double>& time_aware_displacements
+    const std::vector<double>& time_aware_dl_kicks
 ) {
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -254,9 +251,8 @@ Status::type track_linepass (
         element_offset,
         pos,
         lost_plane,
-        line_length,
         time_aware_indices,
-        time_aware_displacements
+        time_aware_dl_kicks
     );
 }
 
@@ -294,9 +290,8 @@ Status::type track_linepass (
     std::vector<unsigned int >& lost_plane,
     std::vector<bool>& lost_flag,
     std::vector<int>& lost_element,
-    const double line_length,
     const std::vector<unsigned int>& time_aware_indices,
-    const std::vector<double>& time_aware_displacements
+    const std::vector<double>& time_aware_dl_kicks
 ) {
 
     int nr_elements = accelerator.lattice.size();
@@ -320,9 +315,8 @@ Status::type track_linepass (
             le,
             final_pos,
             lp,
-            line_length,
             time_aware_indices,
-            time_aware_displacements
+            time_aware_dl_kicks
         );
 
         if (status2 != Status::success){
@@ -404,10 +398,10 @@ Status::type track_ringpass (
 
     // for longitudinal kick before RF cavities
     std::vector<unsigned int> time_aware_indices;
-    std::vector<double> time_aware_displacements;
-    double line_length = accelerator.get_time_aware_elements_info(
+    std::vector<double> time_aware_dl_kicks;
+    accelerator.get_time_aware_elements_info(
         time_aware_indices,
-        time_aware_displacements,
+        time_aware_dl_kicks,
         element_offset
     );
 
@@ -425,9 +419,8 @@ Status::type track_ringpass (
             element_offset,
             final_pos,
             lost_plane,
-            line_length,
             time_aware_indices,
-            time_aware_displacements
+            time_aware_dl_kicks
         )) != Status::success) {
 
             // fill last of vector with nans

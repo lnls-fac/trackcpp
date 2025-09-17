@@ -70,10 +70,10 @@ Status::type track_findm66 (Accelerator& accelerator,
   unsigned int element_offset = 0;
   unsigned int time_aware_pivot = 0;
   std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_displacements;
-  double line_length = accelerator.get_time_aware_elements_info(
+  std::vector<double> time_aware_dl_kicks;
+  accelerator.get_time_aware_elements_info(
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       element_offset
   );
 
@@ -102,9 +102,8 @@ Status::type track_findm66 (Accelerator& accelerator,
       lattice[i],
       element_offset,
       map,
-      line_length,
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       time_aware_pivot
     );
     // track through element
@@ -181,10 +180,10 @@ Status::type track_findorbit6(
 
   // for longitudinal kick before RF cavities
   std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_displacements;
-  double line_length = accelerator.get_time_aware_elements_info(
+  std::vector<double> time_aware_dl_kicks;
+  accelerator.get_time_aware_elements_info(
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       element_offset
   );
 
@@ -198,31 +197,31 @@ Status::type track_findorbit6(
 
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[0], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[1], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[2], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[3], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[4], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[5], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[6], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
 
     if (status != Status::success) {
@@ -259,7 +258,7 @@ Status::type track_findorbit6(
   Plane::type lost_plane;
   track_linepass(
     accelerator, co[6], true, element_offset, closed_orbit, lost_plane,
-    line_length, time_aware_indices, time_aware_displacements
+    time_aware_indices, time_aware_dl_kicks
   );
   accelerator.radiation_on = radsts;
   return Status::success;
@@ -293,10 +292,10 @@ Status::type track_findorbit4(
 
   // for longitudinal kick before RF cavities
   std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_displacements;
-  double line_length = accelerator.get_time_aware_elements_info(
+  std::vector<double> time_aware_dl_kicks;
+  accelerator.get_time_aware_elements_info(
       time_aware_indices,
-      time_aware_displacements,
+      time_aware_dl_kicks,
       element_offset
   );
 
@@ -309,23 +308,23 @@ Status::type track_findorbit4(
     Status::type status = Status::success;
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[0], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[1], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[2], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[3], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
       accelerator, co[6], false, element_offset, co2, lost_plane,
-      line_length, time_aware_indices, time_aware_displacements
+      time_aware_indices, time_aware_dl_kicks
     ));
     if (status != Status::success) {
       return Status::findorbit_one_turn_matrix_problem;
@@ -356,7 +355,7 @@ Status::type track_findorbit4(
   Plane::type lost_plane;
   track_linepass(
     accelerator, co[6], true, element_offset, closed_orbit, lost_plane,
-    line_length, time_aware_indices, time_aware_displacements
+    time_aware_indices, time_aware_dl_kicks
   );
   accelerator.radiation_on = radsts;
   return Status::success;
