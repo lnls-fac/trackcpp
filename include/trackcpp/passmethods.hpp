@@ -505,14 +505,12 @@ inline void adjust_path_length(
   const Element& element,
   unsigned int& element_offset,
   Pos<T>& pos,
-  const double line_length,
   const std::vector<unsigned int>& time_aware_indices,
-  const std::vector<double>& time_aware_displacements,
+  const std::vector<double>& time_aware_dl_kicks,
   unsigned int& time_aware_pivot
 ) {
   if (!time_aware_indices.empty() && element_offset == time_aware_indices[time_aware_pivot]) {
-    double ddl = light_speed*accelerator.harmonic_number/element.frequency - line_length;
-    pos.dl -= ddl * time_aware_displacements[time_aware_pivot] / line_length;
+    pos.dl -= time_aware_dl_kicks[time_aware_pivot];
     if (time_aware_pivot < time_aware_indices.size() - 1) {time_aware_pivot++;}
   }
 }
