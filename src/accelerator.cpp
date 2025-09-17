@@ -59,7 +59,7 @@ void Accelerator::get_time_aware_elements_info(
   unsigned int element_offset
 ) const {
 
-  // for longitudinal kick before RF cavities
+  // for adjusting dl to keep the arrival-time in sync with the wall clock
   time_aware_indices.clear();
   time_aware_dl_kicks.clear();
   std::vector<double> time_aware_displacements = {};

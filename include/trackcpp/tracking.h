@@ -152,7 +152,7 @@ Status::type track_linepass (
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
 
-    // For longitudinal RF kick
+    // for adjusting dl to keep the arrival-time in sync with the wall clock
     unsigned int time_aware_pivot = 0;
 
     //pos.clear(); other functions assume pos is not clearedin linepass!
@@ -396,7 +396,7 @@ Status::type track_ringpass (
     Status::type status  = Status::success;
     std::vector<Pos<T> > final_pos;
 
-    // for longitudinal kick before RF cavities
+    // for adjusting dl to keep the arrival-time in sync with the wall clock
     std::vector<unsigned int> time_aware_indices;
     std::vector<double> time_aware_dl_kicks;
     accelerator.get_time_aware_elements_info(

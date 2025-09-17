@@ -82,7 +82,7 @@ Status::type calc_twiss(Accelerator& accelerator,
   Plane::type lost_plane;
   unsigned int element_offset = 0;
 
-  // for longitudinal kick before RF cavities
+  // for adjusting dl to keep the arrival-time in sync with the wall clock
   std::vector<unsigned int> time_aware_indices;
   std::vector<double> time_aware_dl_kicks;
   accelerator.get_time_aware_elements_info(
