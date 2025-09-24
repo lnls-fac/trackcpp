@@ -67,16 +67,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  unsigned int element_offset = 0;
-  unsigned int time_aware_pivot = 0;
-  std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_dl_kicks;
-  accelerator.get_time_aware_elements_info(
-      time_aware_indices,
-      time_aware_dl_kicks,
-      element_offset
-  );
-
+  accelerator.update_time_aware_info();
 
   tm.clear(); tm.reserve(indices.size());
   for(unsigned int i=0; i<lattice.size(); ++i) {
@@ -97,15 +88,7 @@ Status::type track_findm66 (Accelerator& accelerator,
       m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
     tm.push_back(std::move(m));
     }
-    adjust_path_length(
-      accelerator,
-      lattice[i],
-      element_offset,
-      map,
-      time_aware_indices,
-      time_aware_dl_kicks,
-      time_aware_pivot
-    );
+    adjust_path_length(accelerator, i, map);
     // track through element
     if ((status = track_elementpass(accelerator, lattice[i], map)) != Status::success) return status;
   }
@@ -159,7 +142,6 @@ Status::type track_findorbit6(
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
-  unsigned int element_offset = 0;
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
@@ -179,49 +161,37 @@ Status::type track_findorbit6(
   matrix6_set_identity_posvec(D, delta);
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_dl_kicks;
-  accelerator.get_time_aware_elements_info(
-      time_aware_indices,
-      time_aware_dl_kicks,
-      element_offset
-  );
+  accelerator.update_time_aware_info();
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
+    unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
 
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[0], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[0], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[1], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[1], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[2], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[2], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[3], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[3], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[4], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[4], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[5], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[5], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[6], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[6], false, element_offset, co2, lost_plane
     ));
 
     if (status != Status::success) {
@@ -255,10 +225,10 @@ Status::type track_findorbit6(
 
   // propagates fixed point throught the_ring
   closed_orbit.clear();
+  unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(
-    accelerator, co[6], true, element_offset, closed_orbit, lost_plane,
-    time_aware_indices, time_aware_dl_kicks
+    accelerator, co[6], true, element_offset, closed_orbit, lost_plane
   );
   accelerator.radiation_on = radsts;
   return Status::success;
@@ -271,7 +241,6 @@ Status::type track_findorbit4(
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
-  unsigned int element_offset = 0;
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
@@ -291,40 +260,30 @@ Status::type track_findorbit4(
   matrix6_set_identity_posvec(D, delta);
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_dl_kicks;
-  accelerator.get_time_aware_elements_info(
-      time_aware_indices,
-      time_aware_dl_kicks,
-      element_offset
-  );
+  accelerator.update_time_aware_info();
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
     co = co + D;
     Pos<double> Ri = co[6];
     std::vector<Pos<double> > co2;
+    unsigned int element_offset = 0;
     Plane::type lost_plane;
     Status::type status = Status::success;
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[0], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[0], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[1], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[1], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[2], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[2], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[3], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[3], false, element_offset, co2, lost_plane
     ));
     status = (Status::type) ((int) status | (int) track_linepass(
-      accelerator, co[6], false, element_offset, co2, lost_plane,
-      time_aware_indices, time_aware_dl_kicks
+      accelerator, co[6], false, element_offset, co2, lost_plane
     ));
     if (status != Status::success) {
       return Status::findorbit_one_turn_matrix_problem;
@@ -352,10 +311,10 @@ Status::type track_findorbit4(
 
   // propagates fixed point throught the_ring
   closed_orbit.clear();
+  unsigned int element_offset = 0;
   Plane::type lost_plane;
   track_linepass(
-    accelerator, co[6], true, element_offset, closed_orbit, lost_plane,
-    time_aware_indices, time_aware_dl_kicks
+    accelerator, co[6], true, element_offset, closed_orbit, lost_plane
   );
   accelerator.radiation_on = radsts;
   return Status::success;

@@ -143,17 +143,12 @@ Status::type track_linepass (
     const std::vector<unsigned int>& indices,
     unsigned int& element_offset,
     std::vector<Pos<T> >& pos,
-    Plane::type& lost_plane,
-    const std::vector<unsigned int>& time_aware_indices,
-    const std::vector<double>& time_aware_dl_kicks
+    Plane::type& lost_plane
 ) {
 
     Status::type status = Status::success;
     const std::vector<Element>& line = accelerator.lattice;
     int nr_elements  = line.size();
-
-    // for adjusting dl to keep the arrival-time in sync with the wall clock
-    unsigned int time_aware_pivot = 0;
 
     //pos.clear(); other functions assume pos is not clearedin linepass!
     pos.reserve(pos.size() + indices.size());
@@ -172,15 +167,9 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
-        adjust_path_length(
-            accelerator,
-            element,
-            element_offset,
-            orig_pos,
-            time_aware_indices,
-            time_aware_dl_kicks,
-            time_aware_pivot
-        );
+        // for adjusting dl to keep the arrival-time in sync with the wall clock
+        adjust_path_length(accelerator, element_offset, orig_pos);
+
         status = track_elementpass(accelerator, element, orig_pos);
         lost_plane = check_particle_loss(accelerator, element, orig_pos);
         if (lost_plane != Plane::no_plane) status = Status::particle_lost;
@@ -231,9 +220,7 @@ Status::type track_linepass (
     const bool trajectory,
     unsigned int& element_offset,
     std::vector<Pos<T> >& pos,
-    Plane::type& lost_plane,
-    const std::vector<unsigned int>& time_aware_indices,
-    const std::vector<double>& time_aware_dl_kicks
+    Plane::type& lost_plane
 ) {
     std::vector<unsigned int> indices;
     unsigned int nr_elements = accelerator.lattice.size();
@@ -250,9 +237,7 @@ Status::type track_linepass (
         indices,
         element_offset,
         pos,
-        lost_plane,
-        time_aware_indices,
-        time_aware_dl_kicks
+        lost_plane
     );
 }
 
@@ -289,9 +274,7 @@ Status::type track_linepass (
     std::vector<Pos<T>> &pos,
     std::vector<unsigned int >& lost_plane,
     std::vector<bool>& lost_flag,
-    std::vector<int>& lost_element,
-    const std::vector<unsigned int>& time_aware_indices,
-    const std::vector<double>& time_aware_dl_kicks
+    std::vector<int>& lost_element
 ) {
 
     int nr_elements = accelerator.lattice.size();
@@ -314,9 +297,7 @@ Status::type track_linepass (
             indices,
             le,
             final_pos,
-            lp,
-            time_aware_indices,
-            time_aware_dl_kicks
+            lp
         );
 
         if (status2 != Status::success){
@@ -397,13 +378,7 @@ Status::type track_ringpass (
     std::vector<Pos<T> > final_pos;
 
     // for adjusting dl to keep the arrival-time in sync with the wall clock
-    std::vector<unsigned int> time_aware_indices;
-    std::vector<double> time_aware_dl_kicks;
-    accelerator.get_time_aware_elements_info(
-        time_aware_indices,
-        time_aware_dl_kicks,
-        element_offset
-    );
+    accelerator.update_time_aware_info();
 
     if (turn_by_turn) pos.reserve(nr_turns+1);
 
@@ -418,9 +393,7 @@ Status::type track_ringpass (
             false,
             element_offset,
             final_pos,
-            lost_plane,
-            time_aware_indices,
-            time_aware_dl_kicks
+            lost_plane
         )) != Status::success) {
 
             // fill last of vector with nans

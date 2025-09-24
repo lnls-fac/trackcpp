@@ -38,17 +38,10 @@ int test_linepass(const Accelerator& accelerator) {
   Plane::type lost_plane;
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_dl_kicks;
-  accelerator.get_time_aware_elements_info(
-      time_aware_indices,
-      time_aware_dl_kicks,
-      element_offset
-  );
+  accelerator.update_time_aware_info();
 
   Status::type status = track_linepass(
-    accelerator, pos, true, element_offset, new_pos, lost_plane,
-    time_aware_indices, time_aware_dl_kicks
+    accelerator, pos, true, element_offset, new_pos, lost_plane
   );
   std::cout << "status: " << string_error_messages[status] << std::endl;
 
@@ -80,17 +73,10 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   Plane::type lost_plane;
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_dl_kicks;
-  accelerator.get_time_aware_elements_info(
-      time_aware_indices,
-      time_aware_dl_kicks,
-      element_offset
-  );
+  accelerator.update_time_aware_info();
 
   track_linepass(
-    accelerator, tpsa, false, element_offset, new_tpsa, lost_plane,
-    time_aware_indices, time_aware_dl_kicks
+    accelerator, tpsa, false, element_offset, new_tpsa, lost_plane
   );
   for(unsigned int i=0; i<new_tpsa.size(); ++i) {
     //const Pos<Tpsa<6,1> >& c = new_particles[i];
@@ -432,13 +418,7 @@ int test_linepass2() {
   bool trajectory = true;
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  std::vector<unsigned int> time_aware_indices;
-  std::vector<double> time_aware_dl_kicks;
-  accelerator.get_time_aware_elements_info(
-      time_aware_indices,
-      time_aware_dl_kicks,
-      element_offset
-  );
+  accelerator.update_time_aware_info();
 
   orig_pos.rx = 0.0001;
   orig_pos.px = 0.0001;
@@ -449,9 +429,7 @@ int test_linepass2() {
       trajectory,
       element_offset,
       pos,
-      lost_plane,
-      time_aware_indices,
-      time_aware_dl_kicks
+      lost_plane
   );
 
       for(unsigned int i=0; i<10; ++i) {

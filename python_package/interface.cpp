@@ -63,13 +63,7 @@ Status::type track_linepass_wrapper(
     }
 
     // for adjusting dl to keep the arrival-time in sync with the wall clock
-    std::vector<unsigned int> time_aware_indices;
-    std::vector<double> time_aware_dl_kicks;
-    accelerator.get_time_aware_elements_info(
-        time_aware_indices,
-        time_aware_dl_kicks,
-        args.element_offset
-    );
+    accelerator.update_time_aware_info();
 
     Status::type status = track_linepass(
         accelerator,
@@ -79,9 +73,7 @@ Status::type track_linepass_wrapper(
         post,
         args.lost_plane,
         args.lost_flag,
-        args.lost_element,
-        time_aware_indices,
-        time_aware_dl_kicks
+        args.lost_element
     );
     for (unsigned int i=0; i<post.size(); ++i){
         pos[0*n2 + i] = post[i].rx; pos[1*n2 + i] = post[i].px;
