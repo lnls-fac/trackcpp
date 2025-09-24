@@ -53,15 +53,11 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   return out;
 }
 
-void Accelerator::get_time_aware_elements_info(
-  std::vector<unsigned int>& time_aware_indices,
-  std::vector<double>& time_aware_dl_kicks,
-  unsigned int element_offset
-) const {
+void Accelerator::update_time_aware_info(void) const {
 
   // for adjusting dl to keep the arrival-time in sync with the wall clock
-  time_aware_indices.clear();
-  time_aware_dl_kicks.clear();
+  this->time_aware_indices.clear();
+  this->time_aware_dl_kicks.clear();
   std::vector<double> time_aware_displacements = {};
 
   size_t nr_elements = this->lattice.size();
@@ -70,10 +66,10 @@ void Accelerator::get_time_aware_elements_info(
   double s_pos = 0.0;
 
   for (size_t i = 0; i < nr_elements; i++) {
-      const Element& element = this->lattice[element_offset];
+      const Element& element = this->lattice[i];
 
       if (PMClass.is_time_aware_pm(element.pass_method)) {
-        time_aware_indices.push_back(i);
+        this->time_aware_indices.push_back(i);
         s_pos += 0.5 * element.length;
         time_aware_displacements.push_back(s_pos);
         s_pos = 0.5 * element.length;
@@ -81,23 +77,22 @@ void Accelerator::get_time_aware_elements_info(
       else {
         s_pos += element.length;
       }
-      element_offset = (element_offset + 1) % nr_elements;
   }
 
-  if (time_aware_indices.size() > 0) {
+  if (this->time_aware_indices.size() > 0) {
     time_aware_displacements[0] += s_pos;
   }
 
   //? NOTE : The diference between "line_length" and the sum of "time_aware_displacements" (cum_length) is on the order of
-  //? 1e-15 ~ 1e-16. The propagation of this tiny error affects the tracking. The following line avoids losing precision.
+  //? 1e-15 ~ 1e-16. The propagation of this tiny error affects the tracking. The following lines avoid losing precision.
   double cum_length = std::accumulate(time_aware_displacements.begin(), time_aware_displacements.end(), 0.0);
   double line_length = this->get_length();
   time_aware_displacements.back() += line_length - cum_length;
 
   double ddl = 0.0;
-  for (size_t i=0; i<time_aware_indices.size(); i++) {
-    ddl = light_speed*this->harmonic_number/this->lattice[time_aware_indices[i]].frequency - line_length;
-    time_aware_dl_kicks.push_back(ddl * time_aware_displacements[i] / line_length);
+  for (size_t i=0; i<this->time_aware_indices.size(); i++) {
+    ddl = light_speed*this->harmonic_number/this->lattice[this->time_aware_indices[i]].frequency - line_length;
+    this->time_aware_dl_kicks.push_back(ddl * time_aware_displacements[i] / line_length);
   }
 
 }

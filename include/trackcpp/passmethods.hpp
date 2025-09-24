@@ -32,6 +32,7 @@
 #include "tpsa.h"
 #include "linalg.h"
 #include <cmath>
+#include <algorithm>
 
 template <typename T> inline T SQR(const T& X) { return X*X; }
 template <typename T> inline T POW3(const T& X) { return X*X*X; }
@@ -502,16 +503,13 @@ Status::type pm_matrix_pass(Pos<T> &pos, const Element &elem,
 template <typename T>
 inline void adjust_path_length(
   const Accelerator& accelerator,
-  const Element& element,
-  unsigned int& element_offset,
-  Pos<T>& pos,
-  const std::vector<unsigned int>& time_aware_indices,
-  const std::vector<double>& time_aware_dl_kicks,
-  unsigned int& time_aware_pivot
+  unsigned int& element_index,
+  Pos<T>& pos
 ) {
-  if (!time_aware_indices.empty() && element_offset == time_aware_indices[time_aware_pivot]) {
-    pos.dl -= time_aware_dl_kicks[time_aware_pivot];
-    if (time_aware_pivot < time_aware_indices.size() - 1) {time_aware_pivot++;}
+  auto it = std::find(accelerator.time_aware_indices.begin(), accelerator.time_aware_indices.end(), element_index);
+  if (it != accelerator.time_aware_indices.end()) {
+    auto idx = std::distance(accelerator.time_aware_indices.begin(), it);
+    pos.dl -= accelerator.time_aware_dl_kicks[idx];
   }
 }
 
