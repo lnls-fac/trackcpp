@@ -82,7 +82,7 @@ Status::type calc_twiss(Accelerator& accelerator,
   Plane::type lost_plane;
   unsigned int element_offset = 0;
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   Status::type status = track_linepass(

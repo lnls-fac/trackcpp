@@ -37,7 +37,7 @@ int test_linepass(const Accelerator& accelerator) {
   unsigned int element_offset = 0;
   Plane::type lost_plane;
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   Status::type status = track_linepass(
@@ -72,7 +72,7 @@ int test_linepass_tpsa(const Accelerator& accelerator, const std::vector<Element
   unsigned int element_offset = 0;
   Plane::type lost_plane;
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   track_linepass(
@@ -417,7 +417,7 @@ int test_linepass2() {
   Plane::type lost_plane;
   bool trajectory = true;
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   orig_pos.rx = 0.0001;

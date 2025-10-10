@@ -55,7 +55,7 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
 
 void Accelerator::update_time_aware_info(void) const {
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   this->time_aware_indices.clear();
   this->time_aware_dl_kicks.clear();
   std::vector<double> time_aware_displacements = {};

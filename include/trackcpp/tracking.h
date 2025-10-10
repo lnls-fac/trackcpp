@@ -167,7 +167,7 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
-        // for adjusting dl to keep the arrival-time in sync with the wall clock
+        // adjust dl to keep the arrival-time in sync with wall clock
         adjust_path_length(accelerator, element_offset, orig_pos);
 
         status = track_elementpass(accelerator, element, orig_pos);
@@ -377,7 +377,7 @@ Status::type track_ringpass (
     Status::type status  = Status::success;
     std::vector<Pos<T> > final_pos;
 
-    // for adjusting dl to keep the arrival-time in sync with the wall clock
+    // adjust dl to keep the arrival-time in sync with wall clock
     accelerator.update_time_aware_info();
 
     if (turn_by_turn) pos.reserve(nr_turns+1);

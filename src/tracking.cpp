@@ -66,7 +66,7 @@ Status::type track_findm66 (Accelerator& accelerator,
   map.ry = Tpsa<6,1>(fp.ry, 2); map.py = Tpsa<6,1>(fp.py, 3);
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   tm.clear(); tm.reserve(indices.size());
@@ -160,7 +160,7 @@ Status::type track_findorbit6(
   Pos<double> dco(1.0,1.0,1.0,1.0,1.0,1.0);
   matrix6_set_identity_posvec(D, delta);
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   int nr_iter = 0;
@@ -259,7 +259,7 @@ Status::type track_findorbit4(
   Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
   matrix6_set_identity_posvec(D, delta);
 
-  // for adjusting dl to keep the arrival-time in sync with the wall clock
+  // adjust dl to keep the arrival-time in sync with wall clock
   accelerator.update_time_aware_info();
 
   int nr_iter = 0;
