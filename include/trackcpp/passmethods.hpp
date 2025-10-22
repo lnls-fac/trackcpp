@@ -400,9 +400,10 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
 
   global_2_local(pos, elem);
   double nv = elem.voltage / accelerator.energy;
+  double freq = elem.harmonic * accelerator.frequency;
   if (elem.length == 0) {
     T &de = pos.de, &dl = pos.dl;
-    de +=  -nv * sin(TWOPI*elem.frequency * dl/ light_speed - elem.phase_lag);
+    de +=  -nv * sin(TWOPI*freq * dl/ light_speed - elem.phase_lag);
     } else {
     T &rx = pos.rx, &px = pos.px;
     T &ry = pos.ry, &py = pos.py;
@@ -414,7 +415,7 @@ Status::type pm_cavity_pass(Pos<T> &pos, const Element &elem,
     ry += norml * py;
     dl += 0.5 * norml * pnorm * (px*px + py*py);
     // longitudinal momentum kick
-    de += -nv * sin(TWOPI*elem.frequency*dl/light_speed - elem.phase_lag);
+    de += -nv * sin(TWOPI*freq*dl/light_speed - elem.phase_lag);
     // drift half length
     pnorm   = 1.0 / (1.0 + de);
     norml   = (0.5 * elem.length) * pnorm;

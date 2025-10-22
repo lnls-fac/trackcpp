@@ -399,6 +399,7 @@ int test_linepass2() {
   //sirius_v500(accelerator.lattice);
   accelerator.energy = 3e9; // [ev]
   accelerator.harmonic_number = 864;
+  accelerator.frequency = light_speed * accelerator.harmonic_number / accelerator.get_length();
   accelerator.radiation_on = RadiationState::off;
   accelerator.cavity_on = false;
   accelerator.vchamber_on = false;

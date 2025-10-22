@@ -58,7 +58,7 @@ public:
   double        fint_out    = 0;
   double        thin_KL     = 0;  // [1/m]
   double        thin_SL     = 0;  // [1/m²]
-  double        frequency   = 0;  // [Hz]
+  int           harmonic    = 0;  //
   double        voltage     = 0;  // [V]
   double        phase_lag   = 0;  // [rad]
   int           kicktable_idx = -1;   // index of kickmap object in kicktable_list
@@ -109,7 +109,7 @@ public:
                              const double& K_ = 0, const double& S_ = 0, const int nr_steps_ = 20);
   static Element quadrupole (const std::string& fam_name_, const double& length_, const double& K_, const int nr_steps_ = 10);
   static Element sextupole  (const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
-  static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_);
+  static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& harmonic_, const double& voltage_, const double& phase_lag_);
   static Element kickmap    (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_ = 20, const double& rescale_length_ = 1.0, const double& rescale_kicks_ = 1.0);
 
   bool operator==(const Element& o) const;
@@ -130,7 +130,7 @@ void initialize_rbend(Element& element, const double& angle, const double& angle
             const double& K, const double& S, const int nr_steps);
 void initialize_quadrupole(Element& element, const double& K, const int& nr_steps);
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
-void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
+void initialize_rfcavity(Element& element, const double& harmonic, const double& voltage, const double& phase_lag);
 void initialize_kickmap(Element& element, const int& kicktable_idx, const int& nr_steps, const double &rescale_kicks);
 
 #endif
