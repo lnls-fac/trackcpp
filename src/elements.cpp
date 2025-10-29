@@ -156,6 +156,12 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
   return e;
 }
 
+Element Element::field3d (const std::string& fam_name_, const double& length_, const std::vector<std::vector<double>>& coefs_, const double& step_size_ = 0.2) {
+  Element e = Element(fam_name_, length_);
+    initialize_field3d(e, coefs_, step_size_);
+  return e;
+}
+
 
 void print_polynom(std::ostream& out, const std::string& label, const std::vector<double>& polynom) {
   int order = 0;
@@ -307,4 +313,8 @@ void initialize_kickmap(Element& element, const int& kicktable_idx, const int& n
     element.nr_steps = nr_steps;
     element.kicktable_idx = kicktable_idx;
     element.rescale_kicks = rescale_kicks;
+}
+
+void initialize_field3d(Element& element, const std::vector<std::vector<double>>& coefs_, const double& step_size_) {
+    element.pass_method = PassMethod::pm_kickmap_pass;
 }
