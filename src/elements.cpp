@@ -321,5 +321,5 @@ void initialize_field3d(Element& element, const double& s0, const double& kx, co
     element.coefs = coefs;
     element.kx = kx;
     element.ks = ks;
-    element.s_init = s0;
+    element.s0 = s0;
 }

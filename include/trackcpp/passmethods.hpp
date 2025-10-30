@@ -113,6 +113,7 @@ Status::type kicktablethinkick(Pos<T>& pos, const int& kicktable_idx,
   return status;
 }
 
+
 template <typename T>
 void matthinkick(Pos<T> &pos, const Matrix &m) {
 
@@ -466,6 +467,22 @@ Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
   local_2_global(pos, elem);
 
   return status;
+}
+
+template <typename T>
+Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem,
+                            const Accelerator& accelerator) {
+
+  global_2_local(pos, elem);
+  const double brho = get_magnetic_rigidity(accelerator.energy);
+  const double gamma = energy / electron_rest_energy_eV;
+  const double beta0  = sqrt(1 - 1/(gamma*gamma));
+  double step   = elem.length / float(elem.nr_steps);
+  for (int i=0; i<elem.nr_steps; ++i){
+    prop_step(beta0, brho, elem.kx, elem.ks, elem.coefs, pos, elem.s0, step)
+  }
+  local_2_global(pos, elem);
+  return Status::success;
 }
 
 template <typename T>
