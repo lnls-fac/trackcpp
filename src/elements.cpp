@@ -156,9 +156,9 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
   return e;
 }
 
-Element Element::field3d (const std::string& fam_name_, const double& length_, const double& kx_, const double& ks_, const std::vector<std::vector<double>>& coefs_, const int nr_steps_) {
+Element Element::field3d (const std::string& fam_name_, const double& length_, const double& s0_, const double& kx_, const double& ks_, const std::vector<std::vector<double>>& coefs_, const int nr_steps_) {
   Element e = Element(fam_name_, length_);
-    initialize_field3d(e, kx_, ks_, coefs_, nr_steps_);
+    initialize_field3d(e, s0_, kx_, ks_, coefs_, nr_steps_);
   return e;
 }
 
@@ -315,10 +315,11 @@ void initialize_kickmap(Element& element, const int& kicktable_idx, const int& n
     element.rescale_kicks = rescale_kicks;
 }
 
-void initialize_field3d(Element& element, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, const int nr_steps) {
+void initialize_field3d(Element& element, const double& s0, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, const int nr_steps) {
     element.pass_method = PassMethod::pm_field3d_pass;
     element.nr_steps = nr_steps;
     element.coefs = coefs;
     element.kx = kx;
     element.ks = ks;
+    element.s_init = s0;
 }
