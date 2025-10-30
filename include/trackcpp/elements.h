@@ -65,8 +65,8 @@ public:
   double        rescale_kicks = 1.0;  // for kickmaps
   double        ks = 0;       // [1/m]
   double        kx = 0;       // [1/m]
-  double        s0 = 0;   // [m]
-  std::vector<std::vector<double>> coefs = std::vector<std::vector<double>>(5, std::vector<double>(5, 0.0));
+  double        s0 = 0;       // [m]
+  std::vector<std::vector<double>> coefs;
   
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
