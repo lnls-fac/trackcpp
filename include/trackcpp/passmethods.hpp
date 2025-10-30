@@ -475,11 +475,11 @@ Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem,
 
   global_2_local(pos, elem);
   const double brho = get_magnetic_rigidity(accelerator.energy);
-  const double gamma = energy / electron_rest_energy_eV;
+  const double gamma = accelerator.energy / electron_rest_energy_eV;
   const double beta0  = sqrt(1 - 1/(gamma*gamma));
   double step   = elem.length / float(elem.nr_steps);
   for (int i=0; i<elem.nr_steps; ++i){
-    prop_step(beta0, brho, elem.kx, elem.ks, elem.coefs, pos, elem.s0, step)
+    prop_step(beta0, brho, elem.kx, elem.ks, elem.coefs, pos, elem.s0, step);
   }
   local_2_global(pos, elem);
   return Status::success;
