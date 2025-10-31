@@ -132,7 +132,7 @@ void exp_h2_y(const double& beta0, Pos<T>& map, double step) {
 template <typename T>
 void exp_h2_z(const double& beta0, Pos<T>& map, double step) {
     T d = calc_D(beta0, map.de);
-    T factor = (pow(map.py, 2)*(1/beta0+map.de)/(2*pow(d, 3)));
+    T factor = (map.py * map.py)*(1/beta0+map.de)/(2*d*d*d);
     map.dl -= factor*step/2;
 }
 
@@ -160,7 +160,7 @@ void exp_h3_x(const double& beta0, Pos<T>& map, double step) {
 template <typename T>
 void exp_h3_z(const double& beta0, Pos<T>& map, double step) {
     T d = calc_D(beta0, map.de);
-    T factor = (pow(map.px, 2)*(1/beta0+map.de)/(2*pow(d, 3)));
+    T factor = (map.px*map.px)*(1/beta0+map.de)/(2*d*d*d);
     map.dl -= factor*step;
 }
 
