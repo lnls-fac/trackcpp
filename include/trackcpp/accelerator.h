@@ -18,7 +18,6 @@
 #define _ACCELERATOR_H
 
 #include "kicktable.h"
-#include "field3d.h"
 #include "elements.h"
 #include <vector>
 #include <string>

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <trackcpp/field3d.h>
 #include <trackcpp/auxiliary.h>
 #include <string>
 #include <fstream>
@@ -105,19 +104,20 @@ void exp_h1_z(const double& beta0, Pos<T>& map, double step) {
     map.dl += factor * step / 2.0;
 }
 
-void exp_h1_s(double& s, double step) {
+template <typename T>
+void exp_h1_s(T& s, T step) {
     s += step / 2.0;
 }
 
 template <typename T>
-void exp_iy_px(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign = 1, double step) {
+void exp_iy_px(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step) {
     T factor = inty_day_dx(brho, kx, ks, coefs, map.rx, map.ry, s) * sign * -1;
     map.px += factor;
 }
 
 
 template <typename T>
-void exp_iy_py(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign = 1, double step) {
+void exp_iy_py(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step) {
     T factor = ay(brho, kx, ks, coefs, map.rx, map.ry, s) * sign * -1;
     map.py += factor;
 }
@@ -138,14 +138,14 @@ void exp_h2_z(const double& beta0, Pos<T>& map, double step) {
 
 
 template <typename T>
-void exp_ix_px(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign = 1, double step) {
+void exp_ix_px(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step) {
     T factor = ax(brho, kx, ks, coefs, map.rx, map.ry, s) * sign * -1;
     map.px += factor;
 }
 
 
 template <typename T>
-void exp_ix_py(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign = 1, double step) {
+void exp_ix_py(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step) {
     T factor = intx_dax_dy(brho, kx, ks, coefs, map.rx, map.ry, s) * sign * -1;
     map.py += factor;
 }
@@ -183,14 +183,14 @@ void prop_h3(const double& beta0, Pos<T>& map, double step) {
 }
 
 template <typename T>
-void prop_ix(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign = 1, double step) {
+void prop_ix(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step) {
     exp_ix_px(brho, kx, ks, coefs, map, s, sign, step);
     exp_ix_py(brho, kx, ks, coefs, map, s, sign, step);
 
 }
 
 template <typename T>
-void prop_iy(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign = 1, double step) {
+void prop_iy(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step) {
     exp_iy_px(brho, kx, ks, coefs, map, s, sign, step);
     exp_iy_py(brho, kx, ks, coefs, map, s, sign, step);
 
@@ -210,5 +210,3 @@ void prop_step(const double& beta0, const double& brho, const double& kx, const 
     prop_iy(brho, kx, ks, coefs, map, s, -1, step);
     prop_h1(beta0, map, s, step);
 }
-
-#endif

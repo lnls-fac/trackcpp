@@ -91,8 +91,4 @@ void prop_ix(const double& brho, const double& kx, const double& ks, const std::
 template <typename T>
 void prop_iy(const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double s, int sign, double step);
 
-template <typename T>
-void prop_step(const double& beta0, const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, double& s, double step);
-
-
 #endif
