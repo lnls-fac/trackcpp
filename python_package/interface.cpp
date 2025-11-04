@@ -239,7 +239,7 @@ Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kickta
 
 Element field3d_wrapper(const std::string& fam_name_, const double& length_, const double& s0_, const double& kx_, const double& ks_, 
                         const std::vector<std::vector<double>>& coefs_, const std::vector<std::vector<double>>& coefs2_,
-                        const std::vector<std::vector<double>>& coefs4_, const std::vector<std::vector<double>>& coefs3_,
+                        const std::vector<std::vector<double>>& coefs3_, const std::vector<std::vector<double>>& coefs4_,
                         const int nr_steps_) {
     return Element::field3d(fam_name_, length_, s0_, kx_, ks_, coefs_, coefs2_, coefs3_, coefs4_, nr_steps_);
 }

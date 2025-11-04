@@ -33,12 +33,18 @@ T ay(const double& brho, const double& kx, const double& ks,
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac = coefs[m - 1][n - 1] * (m * kx) / (n * ks * ky);
-            ay_ += fac * sin(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
+            double fac1 = coefs[m - 1][n - 1] * (m * kx) / (n * ks * ky);
+            double fac2 = coefs2[m - 1][n - 1] * (m * kx) / (n * ks * ky);
+            double fac3 = -coefs3[m - 1][n - 1] * (m * kx) / (n * ks * ky);
+            double fac4 = -coefs4[m - 1][n - 1] * (m * kx) / (n * ks * ky);
+            ay_ += fac1 * sin(m * kx * x) * sinh(ky * y) * std::sin(n * ks * s);
+            ay_ += fac2 * cos(m * kx * x) * sinh(ky * y) * std::sin(n * ks * s);
+            ay_ += fac3 * sin(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
+            ay_ += fac4 * cos(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
         }
     }
 
-    return -1 * ay_/brho;
+    return 1 * ay_/brho;
 }
 
 template <typename T>
@@ -54,12 +60,18 @@ T ax(const double& brho, const double& kx, const double& ks,
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac = coefs[m - 1][n - 1] / (n * ks);
-            ax_ += fac * cos(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
+            double fac1 = coefs[m - 1][n - 1] / (n * ks);
+            double fac2 = coefs2[m - 1][n - 1] / (n * ks);
+            double fac3 = -coefs3[m - 1][n - 1] / (n * ks);
+            double fac4 = -coefs4[m - 1][n - 1] / (n * ks);
+            ax_ += fac1 * cos(m * kx * x) * cosh(ky * y) * std::sin(n * ks * s);
+            ax_ += fac2 * sin(m * kx * x) * cosh(ky * y) * std::sin(n * ks * s);
+            ax_ += fac3 * cos(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
+            ax_ += fac4 * sin(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
         }
     }
 
-    return -1 * ax_/brho;
+    return 1 * ax_/brho;
 }
 
 template <typename T>
@@ -75,12 +87,18 @@ T inty_day_dx(const double& brho, const double& kx, const double& ks,
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac = coefs[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
-            day_dx += fac * cos(m * kx * x)* std::cos(n * ks * s)* (cosh(ky * y) - 1.0);
+            double fac1 = coefs[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
+            double fac2 = -coefs2[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
+            double fac3 = -coefs3[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
+            double fac4 = coefs4[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
+            day_dx += fac1 * cos(m * kx * x) * std::sin(n * ks * s) * (cosh(ky * y) - 1.0);
+            day_dx += fac2 * sin(m * kx * x) * std::sin(n * ks * s) * (cosh(ky * y) - 1.0);
+            day_dx += fac3 * cos(m * kx * x) * std::cos(n * ks * s) * (cosh(ky * y) - 1.0);
+            day_dx += fac4 * sin(m * kx * x) * std::cos(n * ks * s) * (cosh(ky * y) - 1.0);
         }
     }
 
-    return -1 * day_dx/brho;
+    return 1 * day_dx/brho;
 }
 
 template <typename T>
@@ -96,12 +114,18 @@ T intx_dax_dy(const double& brho, const double& kx, const double& ks,
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac = coefs[m - 1][n - 1] * ky / (n * ks * m * kx);
-            dax_dy += fac * sin(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
+            double fac1 = coefs[m - 1][n - 1] * ky / (n * ks * m * kx);
+            double fac2 = -coefs2[m - 1][n - 1] * ky / (n * ks * m * kx);
+            double fac3 = -coefs3[m - 1][n - 1] * ky / (n * ks * m * kx);
+            double fac4 = coefs4[m - 1][n - 1] * ky / (n * ks * m * kx);
+            dax_dy += fac1 * sin(m * kx * x) * std::sin(n * ks * s) * sinh(ky * y);
+            dax_dy += fac2 * cos(m * kx * x) * std::sin(n * ks * s) * sinh(ky * y);
+            dax_dy += fac3 * sin(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
+            dax_dy += fac4 * cos(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
         }
     }
 
-    return -1* dax_dy/brho;
+    return 1* dax_dy/brho;
 }
 
 template <typename T>
