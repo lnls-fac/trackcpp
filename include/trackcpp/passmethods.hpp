@@ -482,7 +482,7 @@ Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem,
   double s0 = elem.s0;
   T d = calc_D<T>(beta0, pos.de);
   for (int i=0; i<elem.nr_steps; ++i){
-    prop_step(beta0, -1*brho, elem.kx, elem.ks, elem.coefs, pos, d, s0, step);
+    prop_step(beta0, -1*brho, elem.kx, elem.ks, elem.coefs, elem.coefs2, elem.coefs3, elem.coefs4, pos, d, s0, step);
   }
   local_2_global(pos, elem);
   return Status::success;

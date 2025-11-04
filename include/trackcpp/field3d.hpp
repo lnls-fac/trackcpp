@@ -192,7 +192,10 @@ void prop_iy(const double& brho, const double& kx, const double& ks, const std::
 }
 
 template <typename T>
-void prop_step(const double& beta0, const double& brho, const double& kx, const double& ks, const std::vector<std::vector<double>>& coefs, Pos<T>& map, const T& d, double& s, double step) {
+void prop_step(const double& beta0, const double& brho, const double& kx, const double& ks,
+               const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
+               const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+               Pos<T>& map, const T& d, double& s, double step) {
     prop_h1(beta0, map, d, s, step);
     prop_iy(brho, kx, ks, coefs, map, s, +1, step);
     prop_h2(beta0, map, d, step);
