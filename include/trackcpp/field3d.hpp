@@ -130,7 +130,8 @@ T intx_dax_dy(const double& brho, const double& kx, const double& ks,
 
 template <typename T>
 T calc_D(const double& beta0, const T& delta) {
-    return sqrt(1.0 + 2.0 * delta / beta0 + delta * delta);
+    // return sqrt(1.0 + 2.0 * delta / beta0 + delta * delta);
+    return 1.0 + delta;
 }
 
 template <typename T>
