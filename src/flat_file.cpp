@@ -30,9 +30,11 @@ static int process_rad_property(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
 static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
+static bool has_coeffs(const std::vector<std::vector<double>>& matrix);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
+static void write_coeffs(std::ostream& fp, const std::string& label, const std::vector<std::vector<double>>& matrix);
 static void synchronize_polynomials(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
 static void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator);
@@ -127,6 +129,15 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
     if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
     if (e.rescale_kicks != 1.0) { fp << std::setw(pw) << "rescale_kicks" << e.rescale_kicks << '\n'; }
+    if (e.kx != 0) { fp << std::setw(pw) << "kx" << e.kx << '\n'; }
+    if (e.ks != 0) { fp << std::setw(pw) << "ks" << e.ks << '\n'; }
+    if (e.s0 != 0) { fp << std::setw(pw) << "s0" << e.s0 << '\n'; }
+    if (has_coeffs(e.coefs)) write_coeffs(fp, "coefs", e.coefs);
+    if (has_coeffs(e.coefs2)) write_coeffs(fp, "coefs2", e.coefs2);
+    if (has_coeffs(e.coefs3)) write_coeffs(fp, "coefs3", e.coefs3);
+    if (has_coeffs(e.coefs4)) write_coeffs(fp, "coefs4", e.coefs4);
+    
+    
     if (e.has_t_in) write_6d_vector(fp, "t_in", e.t_in);
     if (e.has_t_out) write_6d_vector(fp, "t_out", e.t_out);
     if (e.has_r_in) {
@@ -226,6 +237,9 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("angle_in")    == 0) { ss >> e.angle_in;  continue; }
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
     if (cmd.compare("rescale_kicks")   == 0) { ss >> e.rescale_kicks; continue; }
+    if (cmd.compare("kx")       == 0) { ss >> e.kx;     continue; }
+    if (cmd.compare("ks")       == 0) { ss >> e.ks;     continue; }
+    if (cmd.compare("s0")       == 0) { ss >> e.s0;     continue; }
     if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i]; e.reflag_t_in(); continue; }
     if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) ss >> e.t_out[i]; e.reflag_t_out(); continue; }
     if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[0*6+i]; e.reflag_r_in(); continue; }
@@ -303,6 +317,49 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       synchronize_polynomials(e);
       continue;
     }
+
+    if (cmd.compare("coefs") == 0 || 
+        cmd.compare("coefs2") == 0 ||
+        cmd.compare("coefs3") == 0 ||
+        cmd.compare("coefs4") == 0) {
+        std::vector<std::vector<double>> Element::* M = nullptr;
+      
+        if (cmd == "coefs")  M = &Element::coefs;
+        if (cmd == "coefs2") M = &Element::coefs2;
+        if (cmd == "coefs3") M = &Element::coefs3;
+        if (cmd == "coefs4") M = &Element::coefs4;
+
+        std::vector<unsigned int> row;
+        std::vector<unsigned int> col;
+        std::vector<double>       val;
+
+        unsigned int max_row = 0;
+        unsigned int max_col = 0;
+
+        while (!ss.eof()) {
+            unsigned int r, c;
+            double v;
+            ss >> r >> c >> v;
+
+            if (ss.eof()) break;
+
+            row.push_back(r);
+            col.push_back(c);
+            val.push_back(v);
+
+            if (r + 1 > max_row) max_row = r + 1;
+            if (c + 1 > max_col) max_col = c + 1;
+        }
+
+        if (max_row > 0 && max_col > 0) {
+            (e.*M).assign(max_row, std::vector<double>(max_col, 0.0));
+
+          for (unsigned int k = 0; k < val.size(); ++k)
+              (e.*M)[row[k]][col[k]] = val[k];
+        }
+
+    continue;
+  }
     if (line.size()<2) continue;
     return Status::flat_file_error;
   }
@@ -490,6 +547,13 @@ static bool has_matrix66(const Matrix& m) {
   return false;
 }
 
+static bool has_coeffs(const std::vector<std::vector<double>>& matrix) {
+    if (!matrix.empty())
+      return true;
+    else
+      return false;
+}
+
 static bool has_polynom(const std::vector<double>& p) {
   for (int i=0; i<p.size(); ++i)
     if (p[i] != 0)
@@ -510,6 +574,25 @@ static void write_6d_vector(std::ostream& fp, const std::string& label, const st
   for (int i=0; i<6; ++i)
     fp << t[i] << "  ";
   fp << '\n';
+}
+
+static void write_coeffs(std::ostream& fp,
+                         const std::string& label,
+                         const std::vector<std::vector<double>>& M)
+{
+    fp << std::setw(pw) << label;
+
+    for (unsigned int i = 0; i < M.size(); ++i) {
+        for (unsigned int j = 0; j < M[i].size(); ++j) {
+          
+          fp.unsetf(std::ios_base::showpos);
+          fp << i << ' ' << j << ' ';
+          fp.setf(std::ios_base::showpos);
+          fp << M[i][j] << ' ';
+          
+        }
+    }
+    fp << '\n';
 }
 
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p) {

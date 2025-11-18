@@ -92,7 +92,7 @@ const std::vector<std::string> pm_dict = {
     "kicktable_pass",
     "matrix_pass",
     "drift_g2l_pass",
-    "pm_field3d_pass",
+    "field3d_pass",
 };
 
 struct RadiationState {

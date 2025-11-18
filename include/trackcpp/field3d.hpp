@@ -150,7 +150,7 @@ void exp_iy_px(const double& brho, const double& kx, const double& ks,
                const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
                const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = inty_day_dx(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1;
+    T factor = inty_day_dx(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
     map.px += factor;
 }
 
@@ -160,20 +160,21 @@ void exp_iy_py(const double& brho, const double& kx, const double& ks,
                const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
                const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = ay(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1;
+    T factor = ay(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
     map.py += factor;
 }
 
 template <typename T>
-void exp_h2_y(const double& beta0, Pos<T>& map, const T& d, double step) {
-    map.ry += map.py/d*step/2.0;
+void exp_h2_y(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+    map.ry += 0.5*step*pnorm*map.py;
 }
 
 
 template <typename T>
-void exp_h2_z(const double& beta0, Pos<T>& map, const T& d, double step) {
-    T factor = (map.py * map.py)*(1/beta0+map.de)/(2*d*d*d);
-    map.dl -= factor*step/2;
+void exp_h2_z(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+    // T factor = (map.py * map.py)*(1/beta0+map.de)/(2*d*d*d);
+    // T factor = (map.py * map.py)/d/d*0.5;
+    map.dl += 0.25*step*pnorm*pnorm*(map.py * map.py);
 }
 
 
@@ -182,7 +183,7 @@ void exp_ix_px(const double& brho, const double& kx, const double& ks,
                const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
                const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = ax(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1;
+    T factor = ax(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
     map.px += factor;
 }
 
@@ -192,38 +193,39 @@ void exp_ix_py(const double& brho, const double& kx, const double& ks,
                const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
                const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = intx_dax_dy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1;
+    T factor = intx_dax_dy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
     map.py += factor;
 }
 
 
 template <typename T>
-void exp_h3_x(const double& beta0, Pos<T>& map, const T& d, double step) {
-    map.rx += map.px/d*step;
+void exp_h3_x(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+    map.rx += step*pnorm*map.px;
 }
 
 template <typename T>
-void exp_h3_z(const double& beta0, Pos<T>& map, const T& d, double step) {
-    T factor = (map.px*map.px)*(1/beta0+map.de)/(2*d*d*d);
-    map.dl -= factor*step;
+void exp_h3_z(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+    // T factor = (map.px*map.px)*(1/beta0+map.de)/(2*d*d*d);
+    // T factor = (map.px*map.px)/d/d*0.5;
+    map.dl += 0.5*step*pnorm*pnorm*(map.px * map.px);
 }
 
 template <typename T>
 void prop_h1(const double& beta0, Pos<T>& map, const T& d, double& s, double step) {
-    exp_h1_z(beta0, map, d, step);
+    // exp_h1_z(beta0, map, d, step);
     exp_h1_s(s, step);
 }
 
 template <typename T>
-void prop_h2(const double& beta0, Pos<T>& map, const T& d, double step) {
-    exp_h2_y(beta0, map, d, step);
-    exp_h2_z(beta0, map, d, step);
+void prop_h2(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+    exp_h2_y(beta0, map, pnorm, step);
+    exp_h2_z(beta0, map, pnorm, step);
 }
 
 template <typename T>
-void prop_h3(const double& beta0, Pos<T>& map, const T& d, double step) {
-    exp_h3_x(beta0, map, d, step);
-    exp_h3_z(beta0, map, d, step);
+void prop_h3(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+    exp_h3_x(beta0, map, pnorm, step);
+    exp_h3_z(beta0, map, pnorm, step);
 }
 
 template <typename T>
@@ -250,16 +252,16 @@ template <typename T>
 void prop_step(const double& beta0, const double& brho, const double& kx, const double& ks,
                const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
                const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
-               Pos<T>& map, const T& d, double& s, double step) {
-    prop_h1(beta0, map, d, s, step);
-    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
-    prop_h2(beta0, map, d, step);
-    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
-    prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
-    prop_h3(beta0, map, d, step);
-    prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
-    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
-    prop_h2(beta0, map, d, step);
-    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
-    prop_h1(beta0, map, d, s, step);
+               Pos<T>& map, const T& pnorm, double& s, double step) {
+    // prop_h1(beta0, map, pnorm, s, step);
+    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
+    prop_h2(beta0, map, pnorm, step);
+    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
+    // prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
+    prop_h3(beta0, map, pnorm, step);
+    // prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
+    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
+    prop_h2(beta0, map, pnorm, step);
+    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
+    // prop_h1(beta0, map, pnorm, s, step);
 }
