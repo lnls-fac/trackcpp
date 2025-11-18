@@ -253,15 +253,15 @@ void prop_step(const double& beta0, const double& brho, const double& kx, const 
                const std::vector<std::vector<double>>& coefs, const std::vector<std::vector<double>>& coefs2,
                const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
                Pos<T>& map, const T& pnorm, double& s, double step) {
-    // prop_h1(beta0, map, pnorm, s, step);
-    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
+    prop_h1(beta0, map, pnorm, s, step);
+    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
     prop_h2(beta0, map, pnorm, step);
-    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
-    // prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
+    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
+    prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
     prop_h3(beta0, map, pnorm, step);
-    // prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
-    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
+    prop_ix(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
+    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, +1, step);
     prop_h2(beta0, map, pnorm, step);
-    // prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
-    // prop_h1(beta0, map, pnorm, s, step);
+    prop_iy(brho, kx, ks, coefs, coefs2, coefs3, coefs4, map, s, -1, step);
+    prop_h1(beta0, map, pnorm, s, step);
 }
