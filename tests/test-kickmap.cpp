@@ -65,6 +65,9 @@ int main() {
     Plane::type lost_plane;
     unsigned int element_offset = 0;
 
+    // adjust dl to keep the arrival-time in sync with wall clock
+    accelerator.update_time_aware_info();
+
     status = track_linepass(
         accelerator, fp, true, element_offset, closed_orbit, lost_plane
     );

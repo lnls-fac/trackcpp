@@ -61,6 +61,10 @@ Status::type track_linepass_wrapper(
             orig_pos[4*ni2 + i], orig_pos[5*ni2 + i]
         );
     }
+
+    // adjust dl to keep the arrival-time in sync with wall clock
+    accelerator.update_time_aware_info();
+
     Status::type status = track_linepass(
         accelerator,
         orig_post,

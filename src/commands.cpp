@@ -1084,7 +1084,10 @@ int cmd_track_linepass(const std::vector<std::string>& args) {
   std::vector<Pos<double>> pos_list;
   Plane::type lost_plane;
   unsigned int offset_element = start_element;
-  track_linepass(accelerator, pos, true, offset_element, pos_list, lost_plane);
+  // adjust dl to keep the arrival-time in sync with wall clock
+  accelerator.update_time_aware_info();
+  track_linepass(accelerator, pos, true, offset_element, pos_list, lost_plane
+  );
 
   std::cout << get_timestamp() << " saving track_linepass data to file" << std::endl;
   status = print_tracking_linepass(accelerator, pos_list, start_element, "track_linepass_out.txt");

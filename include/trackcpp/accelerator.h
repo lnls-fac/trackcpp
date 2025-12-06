@@ -34,12 +34,15 @@ public:
   int                     harmonic_number = 0;
   std::vector<Element>    lattice;
   std::string             lattice_version = "";
+  mutable std::vector<unsigned int> time_aware_indices;
+  mutable std::vector<double> time_aware_dl_kicks;
 
   bool operator==(const Accelerator& o) const;
   bool operator!=(const Accelerator& o) const { return !(*this == o); };
   bool isequal(const Accelerator& a) const { return *this == a; } // necessary for python_package
   double get_length() const;
   friend std::ostream& operator<< (std::ostream &out, const Accelerator& a);
+  void update_time_aware_info(void) const;
 };
 
 #endif

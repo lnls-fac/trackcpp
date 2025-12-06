@@ -52,3 +52,47 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "lattice_version: " << a.lattice_version;
   return out;
 }
+
+void Accelerator::update_time_aware_info(void) const {
+
+  // adjust dl to keep the arrival-time in sync with wall clock
+  this->time_aware_indices.clear();
+  this->time_aware_dl_kicks.clear();
+  std::vector<double> time_aware_displacements = {};
+
+  size_t nr_elements = this->lattice.size();
+  PassMethodsClass PMClass = PassMethodsClass();
+
+  double s_pos = 0.0;
+
+  for (size_t i = 0; i < nr_elements; i++) {
+      const Element& element = this->lattice[i];
+
+      if (PMClass.is_time_aware_pm(element.pass_method)) {
+        this->time_aware_indices.push_back(i);
+        s_pos += 0.5 * element.length;
+        time_aware_displacements.push_back(s_pos);
+        s_pos = 0.5 * element.length;
+      }
+      else {
+        s_pos += element.length;
+      }
+  }
+
+  if (this->time_aware_indices.size() > 0) {
+    time_aware_displacements[0] += s_pos;
+  }
+
+  //? NOTE : The diference between "line_length" and the sum of "time_aware_displacements" (cum_length) is on the order of
+  //? 1e-15 ~ 1e-16. The propagation of this tiny error affects the tracking. The following lines avoid losing precision.
+  double cum_length = std::accumulate(time_aware_displacements.begin(), time_aware_displacements.end(), 0.0);
+  double line_length = this->get_length();
+  time_aware_displacements.back() += line_length - cum_length;
+
+  double ddl = 0.0;
+  for (size_t i=0; i<this->time_aware_indices.size(); i++) {
+    ddl = light_speed*this->harmonic_number/this->lattice[this->time_aware_indices[i]].frequency - line_length;
+    this->time_aware_dl_kicks.push_back(ddl * time_aware_displacements[i] / line_length);
+  }
+
+}

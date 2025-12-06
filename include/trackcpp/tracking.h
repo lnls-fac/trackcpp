@@ -167,6 +167,9 @@ Status::type track_linepass (
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
 
+        // adjust dl to keep the arrival-time in sync with wall clock
+        adjust_path_length(accelerator, element_offset, orig_pos);
+
         status = track_elementpass(accelerator, element, orig_pos);
         lost_plane = check_particle_loss(accelerator, element, orig_pos);
         if (lost_plane != Plane::no_plane) status = Status::particle_lost;
@@ -289,7 +292,12 @@ Status::type track_linepass (
         unsigned int le = element_offset;
 
         status2 = track_linepass(
-            accelerator, orig_pos[i], indices, le, final_pos, lp
+            accelerator,
+            orig_pos[i],
+            indices,
+            le,
+            final_pos,
+            lp
         );
 
         if (status2 != Status::success){
@@ -368,6 +376,9 @@ Status::type track_ringpass (
 
     Status::type status  = Status::success;
     std::vector<Pos<T> > final_pos;
+
+    // adjust dl to keep the arrival-time in sync with wall clock
+    accelerator.update_time_aware_info();
 
     if (turn_by_turn) pos.reserve(nr_turns+1);
 
