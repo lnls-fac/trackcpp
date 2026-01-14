@@ -76,7 +76,7 @@ double latt_findspos(const std::vector<Element>& lattice, const int idx) {
 
 void latt_setcavity(std::vector<Element>& lattice, const std::string& state) {
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if (lattice[i].frequency != 0) {
+    if (lattice[i].harmonic != 0) {
       if (state == "on") {
         lattice[i].pass_method = PassMethod::pm_cavity_pass;
       } else if (state == "off") {
@@ -100,10 +100,10 @@ std::vector<int> latt_findcells_fam_name(const std::vector<Element>& lattice, co
   return r;
 }
 
-std::vector<int> latt_findcells_frequency(const std::vector<Element>& lattice, const double& value, bool reverse) {
+std::vector<int> latt_findcells_harmonic(const std::vector<Element>& lattice, const double& value, bool reverse) {
   std::vector<int> r;
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    if ((reverse and (lattice[i].frequency != value)) or (!reverse and (lattice[i].frequency == value))) {
+    if ((reverse and (lattice[i].harmonic != value)) or (!reverse and (lattice[i].harmonic == value))) {
       r.push_back(i);
     }
   };

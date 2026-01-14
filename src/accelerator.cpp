@@ -34,6 +34,7 @@ bool Accelerator::operator==(const Accelerator& o) const {
   if (this->radiation_on != o.radiation_on) return false;
   if (this->vchamber_on != o.vchamber_on) return false;
   if (this->harmonic_number != o.harmonic_number) return false;
+  if (this->frequency != o.frequency) return false;
   if (this->lattice != o.lattice) return false;
   if (this->lattice_version != o.lattice_version) return false;
 
@@ -48,6 +49,7 @@ std::ostream& operator<< (std::ostream &out, const Accelerator& a) {
   out << std::endl << "radiation_on   : " << a.radiation_on;
   out << std::endl << "vchamber_on    : " << a.vchamber_on;
   out << std::endl << "harmonic_number: " << a.harmonic_number;
+  out << std::endl << "frequency      : " << a.frequency;
   out << std::endl << "lattice        : " << a.lattice.size() << " elements";
   out << std::endl << "lattice_version: " << a.lattice_version;
   return out;
