@@ -164,11 +164,13 @@ Status::type track_linepass (
         // syntactic-sugar for read-only access to element object parameters
         const Element& element = line[element_offset];
 
+        // adjust dl to keep the arrival-time in sync with wall clock
+        // note: for performance reasons, the adjustment of the path length
+        // is done only at the beginning of "time aware" elements (e.g. RF cavities)
+        adjust_path_length(accelerator, element_offset, orig_pos);
+        
         // stores trajectory at entrance of each element
         if (indcs[i]) pos.push_back(orig_pos);
-
-        // adjust dl to keep the arrival-time in sync with wall clock
-        adjust_path_length(accelerator, element_offset, orig_pos);
 
         status = track_elementpass(accelerator, element, orig_pos);
         lost_plane = check_particle_loss(accelerator, element, orig_pos);

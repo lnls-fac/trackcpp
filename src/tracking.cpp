@@ -71,7 +71,9 @@ Status::type track_findm66 (Accelerator& accelerator,
 
   tm.clear(); tm.reserve(indices.size());
   for(unsigned int i=0; i<lattice.size(); ++i) {
-    // const Element& element = lattice[i];
+    // note: for performance reasons, the adjustment of the path length
+    // is done only at the beginning of "time aware" elements (e.g. RF cavities)
+    adjust_path_length(accelerator, i, map);
     if (indcs[i]){
       Matrix m (6);
       m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3];
@@ -88,7 +90,6 @@ Status::type track_findm66 (Accelerator& accelerator,
       m[5][3] = map.dl.c[4]; m[5][4] = map.dl.c[5]; m[5][5] = map.dl.c[6];
     tm.push_back(std::move(m));
     }
-    adjust_path_length(accelerator, i, map);
     // track through element
     if ((status = track_elementpass(accelerator, lattice[i], map)) != Status::success) return status;
   }
