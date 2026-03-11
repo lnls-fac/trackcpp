@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cmath>
 #include <random>
+#include <algorithm>
 
 class PassMethodsClass {
 public:
@@ -38,6 +39,7 @@ public:
     static const int pm_matrix_pass                    = 9;
     static const int pm_drift_g2l_pass                 = 10;
     static const int pm_nr_pms                         = 11;  // counter for number of passmethods
+    static const std::vector<int> time_aware_passmethods;
     PassMethodsClass() {
         passmethods.push_back("identity_pass");
         passmethods.push_back("drift_pass");
@@ -53,6 +55,9 @@ public:
     }
     int size() const { return passmethods.size(); }
     std::string operator[](const int i) const { return passmethods[i]; }
+    bool is_time_aware_pm(const int i) const {
+        return std::find(time_aware_passmethods.begin(), time_aware_passmethods.end(), i) != time_aware_passmethods.end();
+    };
 private:
     std::vector<std::string> passmethods;
 };
