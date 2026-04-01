@@ -1,0 +1,5 @@
+build.sh
+trackpybind/__pycache__
+trackpybind.egg-info
+trackpybind/*.pyi
+trackpybind/*.so

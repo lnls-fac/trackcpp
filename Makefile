@@ -82,6 +82,7 @@ SRCDIR = src
 INCDIR = include
 
 PYTHON_PACKAGE_DIR = python_package
+PYBIND_PACKAGE_DIR = pybind11
 
 $(shell touch $(SRCDIR)/output.cpp) # this is so that last compilation time always goes into executable
 
@@ -171,9 +172,11 @@ uninstall-cpp:
 
 install-py: uninstall-py
 	$(MAKE) install -C $(PYTHON_PACKAGE_DIR)
+	$(MAKE) install -C $(PYBIND_PACKAGE_DIR)
 
 uninstall-py:
 	$(MAKE) uninstall -C $(PYTHON_PACKAGE_DIR)
+	$(MAKE) uninstall -C $(PYBIND_PACKAGE_DIR)
 
 install: clean install-cpp install-py
 
