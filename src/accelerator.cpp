@@ -79,10 +79,10 @@ void Accelerator::update_time_aware_info(void) const {
       }
   }
 
-  if (this->time_aware_indices.size() > 0) {
-    time_aware_displacements[0] += s_pos;
-  }
+  if (this->time_aware_indices.size() == 0) return;
 
+  time_aware_displacements[0] += s_pos;
+  
   //? NOTE : The diference between "line_length" and the sum of "time_aware_displacements" (cum_length) is on the order of
   //? 1e-15 ~ 1e-16. The propagation of this tiny error affects the tracking. The following lines avoid losing precision.
   double cum_length = std::accumulate(time_aware_displacements.begin(), time_aware_displacements.end(), 0.0);
