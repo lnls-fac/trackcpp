@@ -132,7 +132,7 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.kx != 0) { fp << std::setw(pw) << "kx" << e.kx << '\n'; }
     if (e.ks != 0) { fp << std::setw(pw) << "ks" << e.ks << '\n'; }
     if (e.s0 != 0) { fp << std::setw(pw) << "s0" << e.s0 << '\n'; }
-    if (has_coeffs(e.coefs)) write_coeffs(fp, "coefs", e.coefs);
+    if (has_coeffs(e.coefs1)) write_coeffs(fp, "coefs1", e.coefs1);
     if (has_coeffs(e.coefs2)) write_coeffs(fp, "coefs2", e.coefs2);
     if (has_coeffs(e.coefs3)) write_coeffs(fp, "coefs3", e.coefs3);
     if (has_coeffs(e.coefs4)) write_coeffs(fp, "coefs4", e.coefs4);
@@ -318,13 +318,13 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       continue;
     }
 
-    if (cmd.compare("coefs") == 0 || 
+    if (cmd.compare("coefs1") == 0 || 
         cmd.compare("coefs2") == 0 ||
         cmd.compare("coefs3") == 0 ||
         cmd.compare("coefs4") == 0) {
         std::vector<std::vector<double>> Element::* M = nullptr;
       
-        if (cmd == "coefs")  M = &Element::coefs;
+        if (cmd == "coefs1")  M = &Element::coefs1;
         if (cmd == "coefs2") M = &Element::coefs2;
         if (cmd == "coefs3") M = &Element::coefs3;
         if (cmd == "coefs4") M = &Element::coefs4;
