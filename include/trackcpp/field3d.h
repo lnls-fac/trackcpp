@@ -77,7 +77,7 @@ template <typename T>
 void exp_h3_z(const double& beta0, Pos<T>& map, double step);
 
 template <typename T>
-void prop_h1(const double& beta0, Pos<T>& map, double& s, double step);
+void prop_h1(Pos<T>& map, double& s, double step);
 
 template <typename T>
 void prop_h2(const double& beta0, Pos<T>& map, double step);

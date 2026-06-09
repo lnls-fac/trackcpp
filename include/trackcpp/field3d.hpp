@@ -22,8 +22,8 @@
 
 template <typename T>
 T ay(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-              const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+              const std::vector<std::vector<double>>& coefs1,
+              const std::vector<std::vector<double>>& coefs2,
               const T& x, const T& y, const double& s) 
 {
     T ay_ = 0.0;
@@ -34,13 +34,9 @@ T ay(const double& brho, const double& kx, const double& ks,
         for (int n = 1; n <= N; ++n) {
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
             double fac1 = coefs1[m - 1][n - 1] * (m * kx) / (n * ks * ky);
-            double fac2 = coefs2[m - 1][n - 1] * (m * kx) / (n * ks * ky);
-            double fac3 = -coefs3[m - 1][n - 1] * (m * kx) / (n * ks * ky);
-            double fac4 = -coefs4[m - 1][n - 1] * (m * kx) / (n * ks * ky);
+            double fac2 = -coefs2[m - 1][n - 1] * (m * kx) / (n * ks * ky);
             ay_ += fac1 * sin(m * kx * x) * sinh(ky * y) * std::sin(n * ks * s);
-            ay_ += fac2 * cos(m * kx * x) * sinh(ky * y) * std::sin(n * ks * s);
-            ay_ += fac3 * sin(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
-            ay_ += fac4 * cos(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
+            ay_ += fac2 * sin(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
         }
     }
 
@@ -49,8 +45,8 @@ T ay(const double& brho, const double& kx, const double& ks,
 
 template <typename T>
 T ax(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-              const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+              const std::vector<std::vector<double>>& coefs1,
+              const std::vector<std::vector<double>>& coefs2,
               const T& x, const T& y, const double& s)
 {
     T ax_ = 0.0;
@@ -61,13 +57,9 @@ T ax(const double& brho, const double& kx, const double& ks,
         for (int n = 1; n <= N; ++n) {
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
             double fac1 = coefs1[m - 1][n - 1] / (n * ks);
-            double fac2 = coefs2[m - 1][n - 1] / (n * ks);
-            double fac3 = -coefs3[m - 1][n - 1] / (n * ks);
-            double fac4 = -coefs4[m - 1][n - 1] / (n * ks);
+            double fac2 = -coefs2[m - 1][n - 1] / (n * ks);
             ax_ += fac1 * cos(m * kx * x) * cosh(ky * y) * std::sin(n * ks * s);
-            ax_ += fac2 * sin(m * kx * x) * cosh(ky * y) * std::sin(n * ks * s);
-            ax_ += fac3 * cos(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
-            ax_ += fac4 * sin(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
+            ax_ += fac2 * cos(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
         }
     }
 
@@ -76,8 +68,8 @@ T ax(const double& brho, const double& kx, const double& ks,
 
 template <typename T>
 T inty_day_dx(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-              const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+              const std::vector<std::vector<double>>& coefs1,
+              const std::vector<std::vector<double>>& coefs2,
               const T& x, const T& y, const double& s)
 {
     T day_dx = 0.0;
@@ -89,12 +81,8 @@ T inty_day_dx(const double& brho, const double& kx, const double& ks,
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
             double fac1 = coefs1[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
             double fac2 = -coefs2[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
-            double fac3 = -coefs3[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
-            double fac4 = coefs4[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
             day_dx += fac1 * cos(m * kx * x) * std::sin(n * ks * s) * (cosh(ky * y) - 1.0);
-            day_dx += fac2 * sin(m * kx * x) * std::sin(n * ks * s) * (cosh(ky * y) - 1.0);
-            day_dx += fac3 * cos(m * kx * x) * std::cos(n * ks * s) * (cosh(ky * y) - 1.0);
-            day_dx += fac4 * sin(m * kx * x) * std::cos(n * ks * s) * (cosh(ky * y) - 1.0);
+            day_dx += fac2 * cos(m * kx * x) * std::cos(n * ks * s) * (cosh(ky * y) - 1.0);
         }
     }
 
@@ -103,8 +91,8 @@ T inty_day_dx(const double& brho, const double& kx, const double& ks,
 
 template <typename T>
 T intx_dax_dy(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-              const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+              const std::vector<std::vector<double>>& coefs1,
+              const std::vector<std::vector<double>>& coefs2,
               const T& x, const T& y, const double& s)
 {
     T dax_dy = 0.0;
@@ -116,22 +104,12 @@ T intx_dax_dy(const double& brho, const double& kx, const double& ks,
             double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
             double fac1 = coefs1[m - 1][n - 1] * ky / (n * ks * m * kx);
             double fac2 = -coefs2[m - 1][n - 1] * ky / (n * ks * m * kx);
-            double fac3 = -coefs3[m - 1][n - 1] * ky / (n * ks * m * kx);
-            double fac4 = coefs4[m - 1][n - 1] * ky / (n * ks * m * kx);
             dax_dy += fac1 * sin(m * kx * x) * std::sin(n * ks * s) * sinh(ky * y);
-            dax_dy += fac2 * cos(m * kx * x) * std::sin(n * ks * s) * sinh(ky * y);
-            dax_dy += fac3 * sin(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
-            dax_dy += fac4 * cos(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
+            dax_dy += fac2 * sin(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
         }
     }
 
     return 1* dax_dy/brho;
-}
-
-template <typename T>
-void exp_h1_z(const double& beta0, Pos<T>& map, const T& d, double step) {
-    T factor = (1.0 / beta0 - (1.0 / beta0 + map.de) / d);
-    map.dl += factor * step / 2.0;
 }
 
 template <typename T>
@@ -141,62 +119,62 @@ void exp_h1_s(T& s, T step) {
 
 template <typename T>
 void exp_iy_px(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-               const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+               const std::vector<std::vector<double>>& coefs1,
+               const std::vector<std::vector<double>>& coefs2,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = inty_day_dx(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
+    T factor = inty_day_dx(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
     map.px += factor;
 }
 
 
 template <typename T>
 void exp_iy_py(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-               const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+               const std::vector<std::vector<double>>& coefs1,
+               const std::vector<std::vector<double>>& coefs2,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = ay(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
+    T factor = ay(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
     map.py += factor;
 }
 
 template <typename T>
-void exp_h2_y(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+void exp_h2_y(Pos<T>& map, const T& pnorm, double step) {
     map.ry += 0.5*step*pnorm*map.py;
 }
 
 
 template <typename T>
-void exp_h2_z(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+void exp_h2_z(Pos<T>& map, const T& pnorm, double step) {
     map.dl += 0.25*step*pnorm*pnorm*(map.py * map.py);
 }
 
 
 template <typename T>
 void exp_ix_px(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-               const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+               const std::vector<std::vector<double>>& coefs1,
+               const std::vector<std::vector<double>>& coefs2,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = ax(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
+    T factor = ax(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
     map.px += factor;
 }
 
 
 template <typename T>
 void exp_ix_py(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-               const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+               const std::vector<std::vector<double>>& coefs1,
+               const std::vector<std::vector<double>>& coefs2,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = intx_dax_dy(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map.rx, map.ry, s) * sign * -1.0;
+    T factor = intx_dax_dy(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
     map.py += factor;
 }
 
 
 template <typename T>
-void exp_h3_x(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+void exp_h3_x(Pos<T>& map, const T& pnorm, double step) {
     map.rx += step*pnorm*map.px;
 }
 
 template <typename T>
-void exp_h3_z(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
+void exp_h3_z(Pos<T>& map, const T& pnorm, double step) {
     map.dl += 0.5*step*pnorm*pnorm*(map.px * map.px);
 }
 
@@ -206,51 +184,51 @@ void prop_h1(Pos<T>& map, double& s, double step) {
 }
 
 template <typename T>
-void prop_h2(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
-    exp_h2_y(beta0, map, pnorm, step);
-    exp_h2_z(beta0, map, pnorm, step);
+void prop_h2(Pos<T>& map, const T& pnorm, double step) {
+    exp_h2_y(map, pnorm, step);
+    exp_h2_z(map, pnorm, step);
 }
 
 template <typename T>
-void prop_h3(const double& beta0, Pos<T>& map, const T& pnorm, double step) {
-    exp_h3_x(beta0, map, pnorm, step);
-    exp_h3_z(beta0, map, pnorm, step);
+void prop_h3(Pos<T>& map, const T& pnorm, double step) {
+    exp_h3_x(map, pnorm, step);
+    exp_h3_z(map, pnorm, step);
 }
 
 template <typename T>
 void prop_ix(const double& brho, const double& kx, const double& ks, 
-             const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-             const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+             const std::vector<std::vector<double>>& coefs1,
+             const std::vector<std::vector<double>>& coefs2,
              Pos<T>& map, double s, int sign, double step) {
-    exp_ix_px(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, sign, step);
-    exp_ix_py(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, sign, step);
+    exp_ix_px(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
+    exp_ix_py(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
 
 }
 
 template <typename T>
 void prop_iy(const double& brho, const double& kx, const double& ks, 
-             const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-             const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+             const std::vector<std::vector<double>>& coefs1,
+             const std::vector<std::vector<double>>& coefs2,
              Pos<T>& map, double s, int sign, double step) {
-    exp_iy_px(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, sign, step);
-    exp_iy_py(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, sign, step);
+    exp_iy_px(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
+    exp_iy_py(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
 
 }
 
 template <typename T>
-void prop_step(const double& beta0, const double& brho, const double& kx, const double& ks,
-               const std::vector<std::vector<double>>& coefs1, const std::vector<std::vector<double>>& coefs2,
-               const std::vector<std::vector<double>>& coefs3, const std::vector<std::vector<double>>& coefs4,
+void prop_step(const double& brho, const double& kx, const double& ks,
+               const std::vector<std::vector<double>>& coefs1,
+               const std::vector<std::vector<double>>& coefs2,
                Pos<T>& map, const T& pnorm, double& s, double step) {
     prop_h1(map, s, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, +1, step);
-    prop_h2(beta0, map, pnorm, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, -1, step);
-    prop_ix(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, +1, step);
-    prop_h3(beta0, map, pnorm, step);
-    prop_ix(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, -1, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, +1, step);
-    prop_h2(beta0, map, pnorm, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, coefs3, coefs4, map, s, -1, step);
+    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, +1, step);
+    prop_h2(map, pnorm, step);
+    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, -1, step);
+    prop_ix(brho, kx, ks, coefs1, coefs2, map, s, +1, step);
+    prop_h3(map, pnorm, step);
+    prop_ix(brho, kx, ks, coefs1, coefs2, map, s, -1, step);
+    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, +1, step);
+    prop_h2(map, pnorm, step);
+    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, -1, step);
     prop_h1(map, s, step);
 }
