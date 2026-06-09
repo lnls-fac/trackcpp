@@ -66,8 +66,14 @@ Status::type track_findm66 (Accelerator& accelerator,
   map.ry = Tpsa<6,1>(fp.ry, 2); map.py = Tpsa<6,1>(fp.py, 3);
   map.de = Tpsa<6,1>(fp.de, 4); map.dl = Tpsa<6,1>(fp.dl, 5);
 
+  // adjust dl to keep the arrival-time in sync with wall clock
+  accelerator.update_time_aware_info();
+
   tm.clear(); tm.reserve(indices.size());
   for(unsigned int i=0; i<lattice.size(); ++i) {
+    // note: for performance reasons, the adjustment of the path length
+    // is done only at the beginning of "time aware" elements (e.g. RF cavities)
+    adjust_path_length(accelerator, i, map);
     if (indcs[i]){
       Matrix m (6);
       m[0][0] = map.rx.c[1]; m[0][1] = map.rx.c[2]; m[0][2] = map.rx.c[3];
@@ -137,7 +143,6 @@ Status::type track_findorbit6(
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
-
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
@@ -146,12 +151,6 @@ Status::type track_findorbit6(
   if (radsts == RadiationState::full){
     accelerator.radiation_on = RadiationState::damping;
   }
-  // calcs longitudinal fixed point
-  double L0 = latt_findspos(the_ring, 1+the_ring.size());
-  double T0 = L0 / light_speed;
-  std::vector<int>    cav_idx = latt_findcells_frequency(the_ring, 0, true);
-  double frf = the_ring[cav_idx[0]].frequency;
-  double fixedpoint = light_speed*((1.0*accelerator.harmonic_number)/frf - T0);
 
   // temporary vectors and matrices
   std::vector<Pos<double> > co(7,0);
@@ -160,9 +159,10 @@ Status::type track_findorbit6(
   std::vector<Pos<double> > D(7,0);
   std::vector<Pos<double> > M(6,0);
   Pos<double> dco(1.0,1.0,1.0,1.0,1.0,1.0);
-  Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
-  theta.dl = fixedpoint;
   matrix6_set_identity_posvec(D, delta);
+
+  // adjust dl to keep the arrival-time in sync with wall clock
+  accelerator.update_time_aware_info();
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {
@@ -208,7 +208,7 @@ Status::type track_findorbit6(
     M[4] = (co2[4] - Rf) / delta;
     M[5] = (co2[5] - Rf) / delta;
 
-    Pos<double> b = Rf - Ri - theta;
+    Pos<double> b = Rf - Ri;
     std::vector<Pos<double> > M_1(6,0);
     matrix6_set_identity_posvec(M_1);
     M_1 = M_1 - M;
@@ -242,7 +242,6 @@ Status::type track_findorbit4(
     const Pos<double>& fixed_point_guess) {
 
   const std::vector<Element>& the_ring = accelerator.lattice;
-
   double delta        = 1e-9;              // [m],[rad],[dE/E]
   double tolerance    = 2.22044604925e-14;
   int    max_nr_iters = 50;
@@ -260,6 +259,9 @@ Status::type track_findorbit4(
   Pos<double> dco(1.0,1.0,1.0,1.0,0.0,0.0);
   Pos<double> theta(0.0,0.0,0.0,0.0,0.0,0.0);
   matrix6_set_identity_posvec(D, delta);
+
+  // adjust dl to keep the arrival-time in sync with wall clock
+  accelerator.update_time_aware_info();
 
   int nr_iter = 0;
   while ((get_max(dco) > tolerance) and (nr_iter <= max_nr_iters)) {

@@ -33,6 +33,7 @@
 #include "linalg.h"
 #include "field3d.hpp"
 #include <cmath>
+#include <algorithm>
 
 template <typename T> inline T SQR(const T& X) { return X*X; }
 template <typename T> inline T POW3(const T& X) { return X*X*X; }
@@ -516,6 +517,19 @@ Status::type pm_matrix_pass(Pos<T> &pos, const Element &elem,
   }
   local_2_global(pos, elem);
   return Status::success;
+}
+
+template <typename T>
+inline void adjust_path_length(
+  const Accelerator& accelerator,
+  unsigned int& element_index,
+  Pos<T>& pos
+) {
+  auto it = std::find(accelerator.time_aware_indices.begin(), accelerator.time_aware_indices.end(), element_index);
+  if (it != accelerator.time_aware_indices.end()) {
+    auto idx = std::distance(accelerator.time_aware_indices.begin(), it);
+    pos.dl -= accelerator.time_aware_dl_kicks[idx];
+  }
 }
 
 #endif
