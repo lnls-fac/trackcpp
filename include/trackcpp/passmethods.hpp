@@ -479,10 +479,10 @@ Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem,
   const double brho = get_magnetic_rigidity(accelerator.energy);
   const double gamma = accelerator.energy / electron_rest_energy_eV;
   double step   = elem.length / float(elem.nr_steps);
-  double s0 = elem.s0;
+  double s0 = elem.field3d_hori_s0;
   T pnorm = 1 / (1 + pos.de);
   for (int i=0; i<elem.nr_steps; ++i){
-    prop_step(-1*brho, elem.kx, elem.ks, elem.coefs1, elem.coefs2, pos, pnorm, s0, step);
+    prop_step(-1*brho, elem.field3d_hori_kx, elem.field3d_hori_ks, elem.field3d_hori_coefs_cos, elem.field3d_hori_coefs_sin, pos, pnorm, s0, step);
   }
   local_2_global(pos, elem);
   return Status::success;

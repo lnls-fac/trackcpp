@@ -21,22 +21,22 @@
 
 
 template <typename T>
-T ay(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1,
-              const std::vector<std::vector<double>>& coefs2,
+T ay(const double& brho, const double& hori_kx, const double& hori_ks, 
+              const std::vector<std::vector<double>>& hori_coefs_cos,
+              const std::vector<std::vector<double>>& hori_coefs_sin,
               const T& x, const T& y, const double& s) 
 {
     T ay_ = 0.0;
-    int M = coefs1.size();
-    int N = coefs1[0].size();
+    int M = hori_coefs_cos.size();
+    int N = hori_coefs_cos[0].size();
 
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
-            double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac1 = coefs1[m - 1][n - 1] * (m * kx) / (n * ks * ky);
-            double fac2 = -coefs2[m - 1][n - 1] * (m * kx) / (n * ks * ky);
-            ay_ += fac1 * sin(m * kx * x) * sinh(ky * y) * std::sin(n * ks * s);
-            ay_ += fac2 * sin(m * kx * x) * sinh(ky * y) * std::cos(n * ks * s);
+            double hori_ky = std::sqrt(std::pow(m * hori_kx, 2) + std::pow(n * hori_ks, 2));
+            double fac1 = hori_coefs_cos[m - 1][n - 1] * (m * hori_kx) / (n * hori_ks * hori_ky);
+            double fac2 = -hori_coefs_sin[m - 1][n - 1] * (m * hori_kx) / (n * hori_ks * hori_ky);
+            ay_ += fac1 * sin(m * hori_kx * x) * sinh(hori_ky * y) * std::sin(n * hori_ks * s);
+            ay_ += fac2 * sin(m * hori_kx * x) * sinh(hori_ky * y) * std::cos(n * hori_ks * s);
         }
     }
 
@@ -44,22 +44,22 @@ T ay(const double& brho, const double& kx, const double& ks,
 }
 
 template <typename T>
-T ax(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1,
-              const std::vector<std::vector<double>>& coefs2,
+T ax(const double& brho, const double& hori_kx, const double& hori_ks, 
+              const std::vector<std::vector<double>>& hori_coefs_cos,
+              const std::vector<std::vector<double>>& hori_coefs_sin,
               const T& x, const T& y, const double& s)
 {
     T ax_ = 0.0;
-    const int M = coefs1.size();
-    const int N = coefs1[0].size();
+    const int M = hori_coefs_cos.size();
+    const int N = hori_coefs_cos[0].size();
 
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
-            double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac1 = coefs1[m - 1][n - 1] / (n * ks);
-            double fac2 = -coefs2[m - 1][n - 1] / (n * ks);
-            ax_ += fac1 * cos(m * kx * x) * cosh(ky * y) * std::sin(n * ks * s);
-            ax_ += fac2 * cos(m * kx * x) * cosh(ky * y) * std::cos(n * ks * s);
+            double hori_ky = std::sqrt(std::pow(m * hori_kx, 2) + std::pow(n * hori_ks, 2));
+            double fac1 = hori_coefs_cos[m - 1][n - 1] / (n * hori_ks);
+            double fac2 = -hori_coefs_sin[m - 1][n - 1] / (n * hori_ks);
+            ax_ += fac1 * cos(m * hori_kx * x) * cosh(hori_ky * y) * std::sin(n * hori_ks * s);
+            ax_ += fac2 * cos(m * hori_kx * x) * cosh(hori_ky * y) * std::cos(n * hori_ks * s);
         }
     }
 
@@ -67,22 +67,22 @@ T ax(const double& brho, const double& kx, const double& ks,
 }
 
 template <typename T>
-T inty_day_dx(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1,
-              const std::vector<std::vector<double>>& coefs2,
+T inty_day_dx(const double& brho, const double& hori_kx, const double& hori_ks, 
+              const std::vector<std::vector<double>>& hori_coefs_cos,
+              const std::vector<std::vector<double>>& hori_coefs_sin,
               const T& x, const T& y, const double& s)
 {
     T day_dx = 0.0;
-    int M = coefs1.size();
-    int N = coefs1[0].size();
+    int M = hori_coefs_cos.size();
+    int N = hori_coefs_cos[0].size();
 
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
-            double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac1 = coefs1[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
-            double fac2 = -coefs2[m - 1][n - 1] * std::pow(m * kx, 2) / (n * ks * std::pow(ky, 2));
-            day_dx += fac1 * cos(m * kx * x) * std::sin(n * ks * s) * (cosh(ky * y) - 1.0);
-            day_dx += fac2 * cos(m * kx * x) * std::cos(n * ks * s) * (cosh(ky * y) - 1.0);
+            double hori_ky = std::sqrt(std::pow(m * hori_kx, 2) + std::pow(n * hori_ks, 2));
+            double fac1 = hori_coefs_cos[m - 1][n - 1] * std::pow(m * hori_kx, 2) / (n * hori_ks * std::pow(hori_ky, 2));
+            double fac2 = -hori_coefs_sin[m - 1][n - 1] * std::pow(m * hori_kx, 2) / (n * hori_ks * std::pow(hori_ky, 2));
+            day_dx += fac1 * cos(m * hori_kx * x) * std::sin(n * hori_ks * s) * (cosh(hori_ky * y) - 1.0);
+            day_dx += fac2 * cos(m * hori_kx * x) * std::cos(n * hori_ks * s) * (cosh(hori_ky * y) - 1.0);
         }
     }
 
@@ -90,22 +90,22 @@ T inty_day_dx(const double& brho, const double& kx, const double& ks,
 }
 
 template <typename T>
-T intx_dax_dy(const double& brho, const double& kx, const double& ks, 
-              const std::vector<std::vector<double>>& coefs1,
-              const std::vector<std::vector<double>>& coefs2,
+T intx_dax_dy(const double& brho, const double& hori_kx, const double& hori_ks, 
+              const std::vector<std::vector<double>>& hori_coefs_cos,
+              const std::vector<std::vector<double>>& hori_coefs_sin,
               const T& x, const T& y, const double& s)
 {
     T dax_dy = 0.0;
-    int M = coefs1.size();
-    int N = coefs1[0].size();
+    int M = hori_coefs_cos.size();
+    int N = hori_coefs_cos[0].size();
 
     for (int m = 1; m <= M; ++m) {
         for (int n = 1; n <= N; ++n) {
-            double ky = std::sqrt(std::pow(m * kx, 2) + std::pow(n * ks, 2));
-            double fac1 = coefs1[m - 1][n - 1] * ky / (n * ks * m * kx);
-            double fac2 = -coefs2[m - 1][n - 1] * ky / (n * ks * m * kx);
-            dax_dy += fac1 * sin(m * kx * x) * std::sin(n * ks * s) * sinh(ky * y);
-            dax_dy += fac2 * sin(m * kx * x) * std::cos(n * ks * s) * sinh(ky * y);
+            double hori_ky = std::sqrt(std::pow(m * hori_kx, 2) + std::pow(n * hori_ks, 2));
+            double fac1 = hori_coefs_cos[m - 1][n - 1] * hori_ky / (n * hori_ks * m * hori_kx);
+            double fac2 = -hori_coefs_sin[m - 1][n - 1] * hori_ky / (n * hori_ks * m * hori_kx);
+            dax_dy += fac1 * sin(m * hori_kx * x) * std::sin(n * hori_ks * s) * sinh(hori_ky * y);
+            dax_dy += fac2 * sin(m * hori_kx * x) * std::cos(n * hori_ks * s) * sinh(hori_ky * y);
         }
     }
 
@@ -118,21 +118,21 @@ void exp_h1_s(T& s, T step) {
 }
 
 template <typename T>
-void exp_iy_px(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1,
-               const std::vector<std::vector<double>>& coefs2,
+void exp_iy_px(const double& brho, const double& hori_kx, const double& hori_ks, 
+               const std::vector<std::vector<double>>& hori_coefs_cos,
+               const std::vector<std::vector<double>>& hori_coefs_sin,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = inty_day_dx(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
+    T factor = inty_day_dx(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map.rx, map.ry, s) * sign * -1.0;
     map.px += factor;
 }
 
 
 template <typename T>
-void exp_iy_py(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1,
-               const std::vector<std::vector<double>>& coefs2,
+void exp_iy_py(const double& brho, const double& hori_kx, const double& hori_ks, 
+               const std::vector<std::vector<double>>& hori_coefs_cos,
+               const std::vector<std::vector<double>>& hori_coefs_sin,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = ay(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
+    T factor = ay(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map.rx, map.ry, s) * sign * -1.0;
     map.py += factor;
 }
 
@@ -149,21 +149,21 @@ void exp_h2_z(Pos<T>& map, const T& pnorm, double step) {
 
 
 template <typename T>
-void exp_ix_px(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1,
-               const std::vector<std::vector<double>>& coefs2,
+void exp_ix_px(const double& brho, const double& hori_kx, const double& hori_ks, 
+               const std::vector<std::vector<double>>& hori_coefs_cos,
+               const std::vector<std::vector<double>>& hori_coefs_sin,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = ax(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
+    T factor = ax(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map.rx, map.ry, s) * sign * -1.0;
     map.px += factor;
 }
 
 
 template <typename T>
-void exp_ix_py(const double& brho, const double& kx, const double& ks, 
-               const std::vector<std::vector<double>>& coefs1,
-               const std::vector<std::vector<double>>& coefs2,
+void exp_ix_py(const double& brho, const double& hori_kx, const double& hori_ks, 
+               const std::vector<std::vector<double>>& hori_coefs_cos,
+               const std::vector<std::vector<double>>& hori_coefs_sin,
                Pos<T>& map, double s, int sign, double step) {
-    T factor = intx_dax_dy(brho, kx, ks, coefs1, coefs2, map.rx, map.ry, s) * sign * -1.0;
+    T factor = intx_dax_dy(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map.rx, map.ry, s) * sign * -1.0;
     map.py += factor;
 }
 
@@ -196,39 +196,39 @@ void prop_h3(Pos<T>& map, const T& pnorm, double step) {
 }
 
 template <typename T>
-void prop_ix(const double& brho, const double& kx, const double& ks, 
-             const std::vector<std::vector<double>>& coefs1,
-             const std::vector<std::vector<double>>& coefs2,
+void prop_ix(const double& brho, const double& hori_kx, const double& hori_ks, 
+             const std::vector<std::vector<double>>& hori_coefs_cos,
+             const std::vector<std::vector<double>>& hori_coefs_sin,
              Pos<T>& map, double s, int sign, double step) {
-    exp_ix_px(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
-    exp_ix_py(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
+    exp_ix_px(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, sign, step);
+    exp_ix_py(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, sign, step);
 
 }
 
 template <typename T>
-void prop_iy(const double& brho, const double& kx, const double& ks, 
-             const std::vector<std::vector<double>>& coefs1,
-             const std::vector<std::vector<double>>& coefs2,
+void prop_iy(const double& brho, const double& hori_kx, const double& hori_ks, 
+             const std::vector<std::vector<double>>& hori_coefs_cos,
+             const std::vector<std::vector<double>>& hori_coefs_sin,
              Pos<T>& map, double s, int sign, double step) {
-    exp_iy_px(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
-    exp_iy_py(brho, kx, ks, coefs1, coefs2, map, s, sign, step);
+    exp_iy_px(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, sign, step);
+    exp_iy_py(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, sign, step);
 
 }
 
 template <typename T>
-void prop_step(const double& brho, const double& kx, const double& ks,
-               const std::vector<std::vector<double>>& coefs1,
-               const std::vector<std::vector<double>>& coefs2,
+void prop_step(const double& brho, const double& hori_kx, const double& hori_ks,
+               const std::vector<std::vector<double>>& hori_coefs_cos,
+               const std::vector<std::vector<double>>& hori_coefs_sin,
                Pos<T>& map, const T& pnorm, double& s, double step) {
     prop_h1(map, s, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, +1, step);
+    prop_iy(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, +1, step);
     prop_h2(map, pnorm, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, -1, step);
-    prop_ix(brho, kx, ks, coefs1, coefs2, map, s, +1, step);
+    prop_iy(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, -1, step);
+    prop_ix(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, +1, step);
     prop_h3(map, pnorm, step);
-    prop_ix(brho, kx, ks, coefs1, coefs2, map, s, -1, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, +1, step);
+    prop_ix(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, -1, step);
+    prop_iy(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, +1, step);
     prop_h2(map, pnorm, step);
-    prop_iy(brho, kx, ks, coefs1, coefs2, map, s, -1, step);
+    prop_iy(brho, hori_kx, hori_ks, hori_coefs_cos, hori_coefs_sin, map, s, -1, step);
     prop_h1(map, s, step);
 }

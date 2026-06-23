@@ -156,12 +156,12 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
   return e;
 }
 
-Element Element::field3d (const std::string& fam_name_, const double& length_, const double& s0_, const double& kx_, const double& ks_,
-                          const std::vector<std::vector<double>>& coefs1_,
-                          const std::vector<std::vector<double>>& coefs2_,
+Element Element::field3d (const std::string& fam_name_, const double& length_, const double& hori_s0_, const double& hori_kx_, const double& hori_ks_,
+                          const std::vector<std::vector<double>>& hori_coefs_cos_,
+                          const std::vector<std::vector<double>>& hori_coefs_sin_,
                           const int nr_steps_) {
   Element e = Element(fam_name_, length_);
-    initialize_field3d(e, s0_, kx_, ks_, coefs1_, coefs2_, nr_steps_);
+    initialize_field3d(e, hori_s0_, hori_kx_, hori_ks_, hori_coefs_cos_, hori_coefs_sin_, nr_steps_);
   return e;
 }
 
@@ -318,15 +318,15 @@ void initialize_kickmap(Element& element, const int& kicktable_idx, const int& n
     element.rescale_kicks = rescale_kicks;
 }
 
-void initialize_field3d(Element& element, const double& s0, const double& kx, const double& ks, 
-                        const std::vector<std::vector<double>>& coefs1, 
-                        const std::vector<std::vector<double>>& coefs2, 
+void initialize_field3d(Element& element, const double& hori_s0, const double& hori_kx, const double& hori_ks, 
+                        const std::vector<std::vector<double>>& hori_coefs_cos, 
+                        const std::vector<std::vector<double>>& hori_coefs_sin, 
                         const int nr_steps) {
     element.pass_method = PassMethod::pm_field3d_pass;
     element.nr_steps = nr_steps;
-    element.coefs1 = coefs1;
-    element.coefs2 = coefs2;
-    element.kx = kx;
-    element.ks = ks;
-    element.s0 = s0;
+    element.field3d_hori_coefs_cos = hori_coefs_cos;
+    element.field3d_hori_coefs_sin = hori_coefs_sin;
+    element.field3d_hori_kx = hori_kx;
+    element.field3d_hori_ks = hori_ks;
+    element.field3d_hori_s0 = hori_s0;
 }

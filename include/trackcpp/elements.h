@@ -63,11 +63,11 @@ public:
   double        phase_lag   = 0;  // [rad]
   int           kicktable_idx = -1;   // index of kickmap object in kicktable_list
   double        rescale_kicks = 1.0;  // for kickmaps
-  double        ks = 0;       // [1/m]
-  double        kx = 0;       // [1/m]
-  double        s0 = 0;       // [m]
-  std::vector<std::vector<double>> coefs1;
-  std::vector<std::vector<double>> coefs2;
+  double        field3d_hori_ks = 0;       // [1/m]
+  double        field3d_hori_kx = 0;       // [1/m]
+  double        field3d_hori_s0 = 0;       // [m]
+  std::vector<std::vector<double>> field3d_hori_coefs_cos;
+  std::vector<std::vector<double>> field3d_hori_coefs_sin;
   
   std::vector<double> polynom_a = default_polynom;
   std::vector<double> polynom_b = default_polynom;
@@ -116,9 +116,9 @@ public:
   static Element sextupole  (const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
   static Element rfcavity   (const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag_);
   static Element kickmap    (const std::string& fam_name_, const std::string& kicktable_fname_, const int nr_steps_ = 20, const double& rescale_length_ = 1.0, const double& rescale_kicks_ = 1.0);
-  static Element field3d    (const std::string& fam_name_, const double& length_, const double& s0_, const double& kx_, const double& ks_,
-                             const std::vector<std::vector<double>>& coefs1_,
-                             const std::vector<std::vector<double>>& coefs2_,
+  static Element field3d    (const std::string& fam_name_, const double& length_, const double& field3d_hori_s0_, const double& field3d_hori_kx_, const double& field3d_hori_ks_,
+                             const std::vector<std::vector<double>>& field3d_hori_coefs_cos_,
+                             const std::vector<std::vector<double>>& field3d_hori_coefs_sin_,
                              const int nr_steps_ = 40);
 
   bool operator==(const Element& o) const;
@@ -141,9 +141,9 @@ void initialize_quadrupole(Element& element, const double& K, const int& nr_step
 void initialize_sextupole(Element& element, const double& S, const int& nr_steps);
 void initialize_rfcavity(Element& element, const double& frequency, const double& voltage, const double& phase_lag);
 void initialize_kickmap(Element& element, const int& kicktable_idx, const int& nr_steps, const double &rescale_kicks);
-void initialize_field3d(Element& element, const double& s0_, const double& kx_, const double& ks_,
-                        const std::vector<std::vector<double>>& coefs1_,
-                        const std::vector<std::vector<double>>& coefs2_,
+void initialize_field3d(Element& element, const double& field3d_hori_s0_, const double& field3d_hori_kx_, const double& field3d_hori_ks_,
+                        const std::vector<std::vector<double>>& field3d_hori_coefs_cos_,
+                        const std::vector<std::vector<double>>& field3d_hori_coefs_sin_,
                         const int nr_steps_);
 
 #endif

@@ -129,11 +129,11 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.angle_in != 0) { fp << std::setw(pw) << "angle_in" << e.angle_in << '\n'; }
     if (e.angle_out != 0) { fp << std::setw(pw) << "angle_out" << e.angle_out << '\n'; }
     if (e.rescale_kicks != 1.0) { fp << std::setw(pw) << "rescale_kicks" << e.rescale_kicks << '\n'; }
-    if (e.kx != 0) { fp << std::setw(pw) << "kx" << e.kx << '\n'; }
-    if (e.ks != 0) { fp << std::setw(pw) << "ks" << e.ks << '\n'; }
-    if (e.s0 != 0) { fp << std::setw(pw) << "s0" << e.s0 << '\n'; }
-    if (has_coeffs(e.coefs1)) write_coeffs(fp, "coefs1", e.coefs1);
-    if (has_coeffs(e.coefs2)) write_coeffs(fp, "coefs2", e.coefs2);
+    if (e.field3d_hori_kx != 0) { fp << std::setw(pw) << "kx" << e.field3d_hori_kx << '\n'; }
+    if (e.field3d_hori_ks != 0) { fp << std::setw(pw) << "ks" << e.field3d_hori_ks << '\n'; }
+    if (e.field3d_hori_s0 != 0) { fp << std::setw(pw) << "s0" << e.field3d_hori_s0 << '\n'; }
+    if (has_coeffs(e.field3d_hori_coefs_cos)) write_coeffs(fp, "coefs_cos", e.field3d_hori_coefs_cos);
+    if (has_coeffs(e.field3d_hori_coefs_sin)) write_coeffs(fp, "coefs_sin", e.field3d_hori_coefs_sin);
     
     
     if (e.has_t_in) write_6d_vector(fp, "t_in", e.t_in);
@@ -235,9 +235,9 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
     if (cmd.compare("angle_in")    == 0) { ss >> e.angle_in;  continue; }
     if (cmd.compare("angle_out")   == 0) { ss >> e.angle_out; continue; }
     if (cmd.compare("rescale_kicks")   == 0) { ss >> e.rescale_kicks; continue; }
-    if (cmd.compare("kx")       == 0) { ss >> e.kx;     continue; }
-    if (cmd.compare("ks")       == 0) { ss >> e.ks;     continue; }
-    if (cmd.compare("s0")       == 0) { ss >> e.s0;     continue; }
+    if (cmd.compare("kx")       == 0) { ss >> e.field3d_hori_kx;     continue; }
+    if (cmd.compare("ks")       == 0) { ss >> e.field3d_hori_ks;     continue; }
+    if (cmd.compare("s0")       == 0) { ss >> e.field3d_hori_s0;     continue; }
     if (cmd.compare("t_in")      == 0) { for(auto i=0; i<6; ++i) ss >> e.t_in[i]; e.reflag_t_in(); continue; }
     if (cmd.compare("t_out")     == 0) { for(auto i=0; i<6; ++i) ss >> e.t_out[i]; e.reflag_t_out(); continue; }
     if (cmd.compare("rx|r_in")   == 0) { for(auto i=0; i<6; ++i) ss >> e.r_in[0*6+i]; e.reflag_r_in(); continue; }
@@ -316,12 +316,12 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
       continue;
     }
 
-    if (cmd.compare("coefs1") == 0 || 
-        cmd.compare("coefs2") == 0) {
+    if (cmd.compare("coefs_cos") == 0 || 
+        cmd.compare("coefs_sin") == 0) {
         std::vector<std::vector<double>> Element::* M = nullptr;
       
-        if (cmd == "coefs1")  M = &Element::coefs1;
-        if (cmd == "coefs2") M = &Element::coefs2;
+        if (cmd == "coefs_cos")  M = &Element::field3d_hori_coefs_cos;
+        if (cmd == "coefs_sin") M = &Element::field3d_hori_coefs_sin;
 
         std::vector<unsigned int> row;
         std::vector<unsigned int> col;
