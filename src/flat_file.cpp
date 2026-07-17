@@ -30,11 +30,11 @@ static int process_rad_property(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
 static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
-static bool has_coeffs(const std::vector<std::vector<double>>& matrix);
+static bool has_coeffs(const CoefMatrix& matrix);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
-static void write_coeffs(std::ostream& fp, const std::string& label, const std::vector<std::vector<double>>& matrix);
+static void write_coeffs(std::ostream& fp, const std::string& label, const CoefMatrix& matrix);
 static void synchronize_polynomials(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
 static void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator);
@@ -318,10 +318,13 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
 
     if (cmd.compare("coefs_cos") == 0 || 
         cmd.compare("coefs_sin") == 0) {
-        std::vector<std::vector<double>> Element::* M = nullptr;
+        CoefMatrix Element::* M = nullptr;
       
-        if (cmd == "coefs_cos")  M = &Element::field3d_hori_coefs_cos;
-        if (cmd == "coefs_sin") M = &Element::field3d_hori_coefs_sin;
+        if (cmd == "coefs_cos")
+        M = &Element::field3d_hori_coefs_cos;
+
+        if (cmd == "coefs_sin")
+        M = &Element::field3d_hori_coefs_sin;
 
         std::vector<unsigned int> row;
         std::vector<unsigned int> col;
@@ -346,7 +349,7 @@ Status::type read_flat_file_trackcpp(std::istream& fp, Accelerator& accelerator)
         }
 
         if (max_row > 0 && max_col > 0) {
-            (e.*M).assign(max_row, std::vector<double>(max_col, 0.0));
+            (e.*M).resize(max_row, max_col);
 
           for (unsigned int k = 0; k < val.size(); ++k)
               (e.*M)[row[k]][col[k]] = val[k];
@@ -541,11 +544,9 @@ static bool has_matrix66(const Matrix& m) {
   return false;
 }
 
-static bool has_coeffs(const std::vector<std::vector<double>>& matrix) {
-    if (!matrix.empty())
-      return true;
-    else
-      return false;
+static bool has_coeffs(const CoefMatrix& matrix)
+{
+    return !matrix.empty();
 }
 
 static bool has_polynom(const std::vector<double>& p) {
@@ -572,20 +573,20 @@ static void write_6d_vector(std::ostream& fp, const std::string& label, const st
 
 static void write_coeffs(std::ostream& fp,
                          const std::string& label,
-                         const std::vector<std::vector<double>>& M)
+                         const CoefMatrix& M)
 {
     fp << std::setw(pw) << label;
 
-    for (unsigned int i = 0; i < M.size(); ++i) {
-        for (unsigned int j = 0; j < M[i].size(); ++j) {
-          
-          fp.unsetf(std::ios_base::showpos);
-          fp << i << ' ' << j << ' ';
-          fp.setf(std::ios_base::showpos);
-          fp << M[i][j] << ' ';
-          
+    for (size_t i = 0; i < M.rows(); ++i) {
+        for (size_t j = 0; j < M.cols(); ++j) {
+
+            fp.unsetf(std::ios_base::showpos);
+            fp << i << ' ' << j << ' ';
+            fp.setf(std::ios_base::showpos);
+            fp << M[i][j] << ' ';
         }
     }
+
     fp << '\n';
 }
 

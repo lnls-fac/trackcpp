@@ -243,8 +243,8 @@ Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kickta
 
 Element field3d_wrapper(const std::string& fam_name_, const double& length_,
                         const double& hori_s0_, const double& hori_kx_, const double& hori_ks_, 
-                        const std::vector<std::vector<double>>& hori_coefs_cos_,
-                        const std::vector<std::vector<double>>& hori_coefs_sin_,
+                        const CoefMatrix& hori_coefs_cos_,
+                        const CoefMatrix& hori_coefs_sin_,
                         const int nr_steps_) {
     return Element::field3d(fam_name_, length_, hori_s0_, hori_kx_, hori_ks_, hori_coefs_cos_, hori_coefs_sin_, nr_steps_);
 }

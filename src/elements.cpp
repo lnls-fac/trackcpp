@@ -19,6 +19,7 @@
 #include <trackcpp/kicktable.h>
 #include <cfloat>
 #include <cstring> // necessary for memcmp
+#include <trackcpp/coefmatrix.h>
 
 const std::vector<double> Element::default_polynom = std::vector<double>(3,0);
 
@@ -157,8 +158,8 @@ Element Element::kickmap (const std::string& fam_name_, const std::string& kickt
 }
 
 Element Element::field3d (const std::string& fam_name_, const double& length_, const double& hori_s0_, const double& hori_kx_, const double& hori_ks_,
-                          const std::vector<std::vector<double>>& hori_coefs_cos_,
-                          const std::vector<std::vector<double>>& hori_coefs_sin_,
+                          const CoefMatrix& hori_coefs_cos_,
+                          const CoefMatrix& hori_coefs_sin_,
                           const int nr_steps_) {
   Element e = Element(fam_name_, length_);
     initialize_field3d(e, hori_s0_, hori_kx_, hori_ks_, hori_coefs_cos_, hori_coefs_sin_, nr_steps_);
@@ -319,8 +320,8 @@ void initialize_kickmap(Element& element, const int& kicktable_idx, const int& n
 }
 
 void initialize_field3d(Element& element, const double& hori_s0, const double& hori_kx, const double& hori_ks, 
-                        const std::vector<std::vector<double>>& hori_coefs_cos, 
-                        const std::vector<std::vector<double>>& hori_coefs_sin, 
+                        const CoefMatrix& hori_coefs_cos, 
+                        const CoefMatrix& hori_coefs_sin, 
                         const int nr_steps) {
     element.pass_method = PassMethod::pm_field3d_pass;
     element.nr_steps = nr_steps;
