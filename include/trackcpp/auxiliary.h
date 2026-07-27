@@ -218,7 +218,7 @@ void set_random_distribution(unsigned value);
 double gen_random_number();
 
 
-#if __GNUC__ < 6
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 6
     bool isfinite(const double& v);
 #endif
 

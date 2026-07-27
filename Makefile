@@ -117,6 +117,9 @@ CFLAGS += $(WARNINGS_CFLAGS)
 LIBOBJECTS  = $(addprefix $(OBJDIR)/, $(LIBSOURCES_CPP:.cpp=.o))
 BINOBJECTS  = $(addprefix $(OBJDIR)/, $(BINSOURCES_CPP:.cpp=.o))
 LDFLAGS    = $(MACHINE)
+ifneq ($(CONDA_PREFIX),)
+    LDFLAGS += -Wl,-rpath,$(CONDA_PREFIX)/lib
+endif
 
 #### DERIVED CONDITIONALS AND VARIABLES ####
 ifeq ($(shell hostname), uv100)
@@ -134,7 +137,7 @@ endif
 all:  libtrackcpp trackcpp python_package
 
 #### GENERATES DEPENDENCY FILE ####
-$(shell $(CXX) -MM $(CFLAGS) $(addprefix $(SRCDIR)/, $(LIBSOURCES_CPP)) $(addprefix $(SRCDIR)/, $(BINSOURCES_CPP)) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
+$(shell $(CXX) -MM $(CFLAGS) $(INC) $(addprefix $(SRCDIR)/, $(LIBSOURCES_CPP)) $(addprefix $(SRCDIR)/, $(BINSOURCES_CPP)) | sed 's/.*\.o/$(OBJDIR)\/&/' > .depend)
 -include .depend
 
 libtrackcpp: $(OBJDIR)/libtrackcpp.a
