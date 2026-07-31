@@ -30,11 +30,11 @@ static int process_rad_property(std::istringstream& ss);
 static std::string get_boolean_string(bool value);
 static bool has_matrix66(const Matrix& r);
 static bool has_polynom(const std::vector<double>& p);
-static bool has_coeffs(const CoefMatrix& matrix);
+static bool has_coefs(const CoefMatrix& matrix);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const double* t);
 static void write_6d_vector(std::ostream& fp, const std::string& label, const std::vector<double>& t);
 static void write_polynom(std::ostream& fp, const std::string& label, const std::vector<double>& p);
-static void write_coeffs(std::ostream& fp, const std::string& label, const CoefMatrix& matrix);
+static void write_coefs(std::ostream& fp, const std::string& label, const CoefMatrix& matrix);
 static void synchronize_polynomials(Element& e);
 static void read_polynomials(std::ifstream& fp, Element& e);
 static void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator);
@@ -132,8 +132,8 @@ void write_flat_file_trackcpp(std::ostream& fp, const Accelerator& accelerator) 
     if (e.field3d_hori_kx != 0) { fp << std::setw(pw) << "kx" << e.field3d_hori_kx << '\n'; }
     if (e.field3d_hori_ks != 0) { fp << std::setw(pw) << "ks" << e.field3d_hori_ks << '\n'; }
     if (e.field3d_hori_s0 != 0) { fp << std::setw(pw) << "s0" << e.field3d_hori_s0 << '\n'; }
-    if (has_coeffs(e.field3d_hori_coefs_cos)) write_coeffs(fp, "coefs_cos", e.field3d_hori_coefs_cos);
-    if (has_coeffs(e.field3d_hori_coefs_sin)) write_coeffs(fp, "coefs_sin", e.field3d_hori_coefs_sin);
+    if (has_coefs(e.field3d_hori_coefs_cos)) write_coefs(fp, "coefs_cos", e.field3d_hori_coefs_cos);
+    if (has_coefs(e.field3d_hori_coefs_sin)) write_coefs(fp, "coefs_sin", e.field3d_hori_coefs_sin);
     
     
     if (e.has_t_in) write_6d_vector(fp, "t_in", e.t_in);
@@ -544,7 +544,7 @@ static bool has_matrix66(const Matrix& m) {
   return false;
 }
 
-static bool has_coeffs(const CoefMatrix& matrix)
+static bool has_coefs(const CoefMatrix& matrix)
 {
     return !matrix.empty();
 }
@@ -571,7 +571,7 @@ static void write_6d_vector(std::ostream& fp, const std::string& label, const st
   fp << '\n';
 }
 
-static void write_coeffs(std::ostream& fp,
+static void write_coefs(std::ostream& fp,
                          const std::string& label,
                          const CoefMatrix& M)
 {
