@@ -34,19 +34,31 @@ INC += -I../include $(PYTHON_INCLUDES) $(NUMPY_INCLUDE)
 INTERFACESRCS = $(INTERFACEOBJS:.o=.cpp)
 INTERFACEHDRS = $(INTERFACEOBJS:.o=.h)
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    SOFLAGS = -bundle -undefined dynamic_lookup
+    ifneq ($(CONDA_PREFIX),)
+        SOFLAGS += -Wl,-rpath,$(CONDA_PREFIX)/lib
+    endif
+    ARCHIVE_LINK = -Wl,-force_load,$(TRACKCPPLIB)
+else
+    SOFLAGS = -shared
+    ARCHIVE_LINK = -Wl,--whole-archive $(TRACKCPPLIB) -Wl,--no-whole-archive
+endif
+
 .NOTPARALLEL:
 
 all: trackcpp/_trackcpp.so
 
-$(shell $(CXX) -MM $(INTERFACESRCS) > .depend)
+$(shell $(CXX) -MM $(INC) $(INTERFACESRCS) > .depend)
 -include .depend
 
 trackcpp/_trackcpp.so: $(TRACKCPPLIB) $(OBJECTS)
-	$(CXX) -shared -Wl,--whole-archive $(TRACKCPPLIB) -Wl,--no-whole-archive $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
+	$(CXX) $(SOFLAGS) $(ARCHIVE_LINK) $(OBJECTS) $(LIBS) -o trackcpp/_trackcpp.so
 
 trackcpp_wrap.cxx: $(SOURCES_I) $(INTERFACESRCS) $(INTERFACEHDRS)
 	[ -f ./numpy.i ] && echo "numpy.i already here, good" || \
-	wget https://raw.githubusercontent.com/numpy/numpy/v$(NUMPY_VERSION)/tools/swig/numpy.i
+	(command -v wget >/dev/null 2>&1 && wget https://raw.githubusercontent.com/numpy/numpy/v$(NUMPY_VERSION)/tools/swig/numpy.i || curl -sL -o numpy.i https://raw.githubusercontent.com/numpy/numpy/v$(NUMPY_VERSION)/tools/swig/numpy.i)
 	$(SWIG) -c++ -python $(INC) trackcpp.i && cp -f trackcpp.py trackcpp
 
 install: uninstall all

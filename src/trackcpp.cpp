@@ -22,9 +22,11 @@
 
 bool verbose_on = true;
 
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 6
 bool isfinite(const double& v) {
 	return std::isfinite(v);
 }
+#endif
 
 std::string get_timestamp() {
 
