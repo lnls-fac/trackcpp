@@ -13,6 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// This code applies the symplectic integrator for 3D field tracking as described in the paper:
+// "Explicit symplectic integrator for s-dependent static magnetic field"
+//  DOI: https://doi.org/10.1103/PhysRevE.68.046502
 #ifndef _FIELD3D_H
 #define _FIELD3D_H
 
