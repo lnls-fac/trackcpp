@@ -31,6 +31,7 @@
 #include "auxiliary.h"
 #include "tpsa.h"
 #include "linalg.h"
+#include "field3d.hpp"
 #include <cmath>
 #include <algorithm>
 
@@ -113,6 +114,7 @@ Status::type kicktablethinkick(Pos<T>& pos, const int& kicktable_idx,
   }
   return status;
 }
+
 
 template <typename T>
 void matthinkick(Pos<T> &pos, const Matrix &m) {
@@ -467,6 +469,23 @@ Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
   local_2_global(pos, elem);
 
   return status;
+}
+
+template <typename T>
+Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem,
+                            const Accelerator& accelerator) {
+                  
+  global_2_local(pos, elem);
+  const double brho = get_magnetic_rigidity(accelerator.energy);
+  const double gamma = accelerator.energy / electron_rest_energy_eV;
+  double step   = elem.length / float(elem.nr_steps);
+  double s0 = elem.field3d_hori_s0;
+  T pnorm = 1 / (1 + pos.de);
+  for (int i=0; i<elem.nr_steps; ++i){
+    prop_step(-1*brho, elem.field3d_hori_kx, elem.field3d_hori_ks, elem.field3d_hori_coefs_cos, elem.field3d_hori_coefs_sin, pos, pnorm, s0, step);
+  }
+  local_2_global(pos, elem);
+  return Status::success;
 }
 
 template <typename T>

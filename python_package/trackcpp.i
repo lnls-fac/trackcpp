@@ -29,6 +29,7 @@
 #include <trackcpp/diffusion_matrix.h>
 #include <trackcpp/naff.h>
 #include <trackcpp/linalg.h>
+#include <trackcpp/coefmatrix.h>
 #include "interface.h"
 %}
 
@@ -124,6 +125,7 @@ double get_double_max() {
 %include "../include/trackcpp/diffusion_matrix.h"
 %include "../include/trackcpp/naff.h"
 %include "../include/trackcpp/linalg.h"
+%include "../include/trackcpp/coefmatrix.h"
 %include "interface.h"
 
 %template(CppDoublePos) Pos<double>;

@@ -26,6 +26,7 @@
 #include <trackcpp/diffusion_matrix.h>
 #include <trackcpp/pos.h>
 #include <trackcpp/naff.h>
+#include <trackcpp/coefmatrix.h>
 
 struct LinePassArgs {
     unsigned int element_offset;
@@ -91,6 +92,10 @@ Element quadrupole_wrapper(const std::string& fam_name_, const double& length_, 
 Element sextupole_wrapper(const std::string& fam_name_, const double& length_, const double& S_, const int nr_steps_ = 5);
 Element rfcavity_wrapper(const std::string& fam_name_, const double& length_, const double& frequency_, const double& voltage_, const double& phase_lag);
 Element kickmap_wrapper(const std::string& fam_name_,  const std::string& kicktable_fname_, const int nr_steps_ = 20, const double& rescale_length = 1.0, const double& rescale_kicks = 1.0);
+Element field3d_wrapper(const std::string& fam_name_, const double& length_, const double& field3d_hori_s0_, const double& field3d_hori_kx_,
+                        const double& field3d_hori_ks_, const CoefMatrix& field3d_hori_coefs_cos_,
+                        const CoefMatrix& field3d_hori_coefs_sin_,
+                        const int nr_steps_);
 Element rbend_wrapper(const std::string& fam_name_, const double& length_,
                       const double& angle_, const double& angle_in_, const double& angle_out_,
                       const double& gap_, const double& fint_in_, const double& fint_out_,

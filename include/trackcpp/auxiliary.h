@@ -38,7 +38,8 @@ public:
     static const int pm_kickmap_pass                   = 8;
     static const int pm_matrix_pass                    = 9;
     static const int pm_drift_g2l_pass                 = 10;
-    static const int pm_nr_pms                         = 11;  // counter for number of passmethods
+    static const int pm_field3d_pass                   = 11;
+    static const int pm_nr_pms                         = 12;  // counter for number of passmethods
     static const std::vector<int> time_aware_passmethods;
     PassMethodsClass() {
         passmethods.push_back("identity_pass");
@@ -52,6 +53,7 @@ public:
         passmethods.push_back("kicktable_pass");
         passmethods.push_back("matrix_pass");
         passmethods.push_back("drift_g2l_pass");
+        passmethods.push_back("field3d_pass");
     }
     int size() const { return passmethods.size(); }
     std::string operator[](const int i) const { return passmethods[i]; }
@@ -76,7 +78,8 @@ struct PassMethod {
         pm_kickmap_pass                   = 8,
         pm_matrix_pass                    = 9,
         pm_drift_g2l_pass                 = 10,
-        pm_nr_pms                         = 11,
+        pm_field3d_pass                   = 11,
+        pm_nr_pms                         = 12,
     };
 };
 
@@ -94,6 +97,7 @@ const std::vector<std::string> pm_dict = {
     "kicktable_pass",
     "matrix_pass",
     "drift_g2l_pass",
+    "field3d_pass",
 };
 
 struct RadiationState {
