@@ -472,18 +472,39 @@ Status::type pm_kickmap_pass(Pos<T> &pos, const Element &elem,
 }
 
 template <typename T>
-Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem,
-                            const Accelerator& accelerator) {
-                  
+Status::type pm_field3d_pass(Pos<T> &pos, const Element &elem, 
+                             const Accelerator& accelerator) {
+           
   global_2_local(pos, elem);
+
   const double brho = get_magnetic_rigidity(accelerator.energy);
-  const double gamma = accelerator.energy / electron_rest_energy_eV;
-  double step   = elem.length / float(elem.nr_steps);
+  const double step   = elem.length / elem.nr_steps;
   double s0 = elem.field3d_hori_s0;
   T pnorm = 1 / (1 + pos.de);
-  for (int i=0; i<elem.nr_steps; ++i){
-    prop_step(-1*brho, elem.field3d_hori_kx, elem.field3d_hori_ks, elem.field3d_hori_coefs_cos, elem.field3d_hori_coefs_sin, pos, pnorm, s0, step);
+  const CoefMatrix& coefs_cos = elem.field3d_hori_coefs_cos;
+  const CoefMatrix& coefs_sin = elem.field3d_hori_coefs_sin;
+  const std::size_t M = coefs_cos.rows();
+  const std::size_t N = coefs_cos.cols();
+  
+  CoefMatrix hori_ky(M, N), sdependence(M, N);
+  std::vector<double> mkx(M), mkx2(M), nks(N);
+
+  calc_mn_factors(
+    elem.field3d_hori_ks, 
+    elem.field3d_hori_kx, 
+    hori_ky, mkx, mkx2, nks
+  );
+
+  for (int i=0; i<elem.nr_steps; ++i)
+  {
+    prop_step(
+      pos, s0, -brho, step, pnorm, 
+      coefs_cos, coefs_sin, 
+      hori_ky, sdependence, 
+      mkx, mkx2, nks
+    );
   }
+  
   local_2_global(pos, elem);
   return Status::success;
 }

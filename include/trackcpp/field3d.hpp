@@ -28,57 +28,82 @@
 #include "coefmatrix.h"
 
 
+inline void calc_mn_factors(
+    double hori_ks, double hori_kx,
+    CoefMatrix& hori_ky,
+    std::vector<double>& mkx,
+    std::vector<double>& mkx2,
+    std::vector<double>& nks
+)
+{
+    // (M, N) is the shape of the "hori_coefs_cos/sin" matrices
+    size_t M = mkx.size(), N = nks.size();
+    double _mkx, _nks, _nks2;
+    for (size_t m = 0; m < M; ++m) {
+        _mkx = (m + 1) * hori_kx;
+        mkx[m] = _mkx;
+        mkx2[m] = _mkx * _mkx;
+    }
+    for (size_t n = 0; n < N; ++n) {
+        _nks = (n + 1) * hori_ks;
+        nks[n] = _nks;
+        _nks2 = _nks * _nks; 
+        for (size_t m = 0; m < M; ++m) {
+            hori_ky[m][n] = std::sqrt(mkx2[m] + _nks2);
+        }
+    }
+}
+
 inline void calc_sdependence(
     const CoefMatrix& hori_coefs_cos,
     const CoefMatrix& hori_coefs_sin,
-    const double& hori_ks,
-    const double& s,
+    const std::vector<double>& nks,
+    double s,
     CoefMatrix& sdependence
 )
 {
     size_t M = hori_coefs_cos.rows();
     size_t N = hori_coefs_cos.cols();
-    for (int n = 1; n <= N; ++n) {
-        const double nks = n * hori_ks;
-        const double coss = cos(nks * s);
-        const double sins = sin(nks * s);
-        for (int m = 1; m <= M; ++m) {
-            const double fac1 = hori_coefs_cos[m - 1][n - 1];
-            const double fac2 = -hori_coefs_sin[m - 1][n - 1];
-            sdependence[m-1][n-1] = fac1 * sins + fac2 * coss;
+    double coss, sins, fac1, fac2;
+
+    for (size_t n = 0; n < N; ++n) {
+        coss = cos(nks[n] * s);
+        sins = sin(nks[n] * s);
+        for (size_t m = 0; m < M; ++m) {
+            fac1 = hori_coefs_cos[m][n];
+            fac2 = -hori_coefs_sin[m][n];
+            sdependence[m][n] = fac1 * sins + fac2 * coss;
         }
     }
 }
 
 template <typename T>
 void ay_inty_day_dx(
-    const double& brho, const double& hori_kx, const double& hori_ks,
-    const CoefMatrix& sdependence,
-    const T& x, const T& y, const double& s,
+    double brho,
+    const T& x, const T& y,
+    const CoefMatrix& sdependence, const CoefMatrix& hori_ky,
+    const std::vector<double>& mkx, const std::vector<double>& mkx2,
+    const std::vector<double>& nks,
     T& ayn, T& idayn
 )
 {
     size_t M = sdependence.rows();
     size_t N = sdependence.cols();
 
-    std::vector<double> nks(N), nks2(N);
-    for (int n = 1; n <= N; ++n) {
-        nks[n-1] = n * hori_ks;
-        nks2[n-1] = nks[n-1] * nks[n-1];
-    }
-
-    for (int m = 1; m <= M; ++m) {
-        const double mkx = m * hori_kx;
-        const double mkx2 = mkx * mkx;
-        const T sinx = sin(mkx * x);
-        const T cosx = cos(mkx * x);
-        for (int n = 1; n <= N; ++n) {
-            const double hori_ky = std::sqrt(mkx2 + nks2[n-1]);
-            double ratio = mkx / (nks[n-1] * hori_ky);
-            ayn += sinx * sinh(hori_ky * y) * ratio * sdependence[m-1][n-1];
-
-            ratio = mkx2 / (nks[n-1] * hori_ky * hori_ky);
-            idayn += cosx * (cosh(hori_ky * y) - 1.0) * ratio * sdependence[m-1][n-1];
+    double _mkx, _mkx2, _nks, _hori_ky, ratio, _sdep;
+    for (size_t m = 0; m < M; ++m) {
+        _mkx = mkx[m];
+        _mkx2 = mkx2[m];
+        const T sinx = sin(_mkx * x);
+        const T cosx = cos(_mkx * x);
+        for (size_t n = 0; n < N; ++n) {
+            _nks = nks[n];
+            _hori_ky = hori_ky[m][n];
+            _sdep = sdependence[m][n];
+            ratio = _mkx / (_nks * _hori_ky);
+            ayn += sinx * sinh(_hori_ky * y) * ratio * _sdep;
+            ratio = _mkx2 / (_nks * _hori_ky * _hori_ky);
+            idayn += cosx * (cosh(_hori_ky * y) - 1.0) * ratio * _sdep;
         }
     }
     ayn /= brho;
@@ -87,131 +112,102 @@ void ay_inty_day_dx(
 
 template <typename T>
 void ax_intx_dax_dy(
-    const double& brho, const double& hori_kx, const double& hori_ks,
-    const CoefMatrix& sdependence,
-    const T& x, const T& y, const double& s,
+    double brho,
+    const T& x, const T& y,
+    const CoefMatrix& sdependence, const CoefMatrix& hori_ky,
+    const std::vector<double>& mkx,
+    const std::vector<double>& nks,
     T& axn, T& idaxn
 )
 {
     size_t M = sdependence.rows();
     size_t N = sdependence.cols();
 
-    std::vector<double> nks(N), nks2(N);
-    for (int n = 1; n <= N; ++n) {
-        nks[n-1] = n * hori_ks;
-        nks2[n-1] = nks[n-1] * nks[n-1];
-    }
-
-    for (int m = 1; m <= M; ++m) {
-        const double mkx = m * hori_kx;
-        const double mkx2 = mkx * mkx;
-        const T sinx = sin(mkx * x);
-        const T cosx = cos(mkx * x);
-        for (int n = 1; n <= N; ++n) {
-            const double hori_ky = std::sqrt(mkx2 + nks2[n-1]);
-            double ratio = 1 / nks[n-1];
-            axn += cosx * cosh(hori_ky * y) * ratio * sdependence[m-1][n-1];
-
-            ratio = hori_ky / (nks[n-1] * mkx);
-            idaxn += sinx * sinh(hori_ky * y) * ratio * sdependence[m-1][n-1];
+    double _mkx, _nks, _hori_ky, ratio, _sdep;
+    for (size_t m = 0; m < M; ++m) {
+        _mkx = mkx[m];
+        const T sinx = sin(_mkx * x);
+        const T cosx = cos(_mkx * x);
+        for (size_t n = 0; n < N; ++n) {
+            _nks = nks[n];
+            _hori_ky = hori_ky[m][n];
+            _sdep = sdependence[m][n];
+            ratio = 1 / _nks;
+            axn += cosx * cosh(_hori_ky * y) * ratio * _sdep;
+            ratio = _hori_ky / (_nks * _mkx);
+            idaxn += sinx * sinh(_hori_ky * y) * ratio * _sdep;
         }
     }
     axn /= brho;
     idaxn /= brho;
 }
 
-template <typename T>
-void exp_h1_s(T& s, T step) {
+inline void prop_h1(double& s, double step) {
     s += step / 2.0;
 }
 
 template <typename T>
-void exp_h2_y(Pos<T>& map, const T& pnorm, double step) {
-    map.ry += 0.5*step*pnorm*map.py;
-}
-
-
-template <typename T>
-void exp_h2_z(Pos<T>& map, const T& pnorm, double step) {
-    map.dl += 0.25*step*pnorm*pnorm*(map.py * map.py);
-}
-
-
-template <typename T>
-void exp_h3_x(Pos<T>& map, const T& pnorm, double step) {
-    map.rx += step*pnorm*map.px;
-}
-
-template <typename T>
-void exp_h3_z(Pos<T>& map, const T& pnorm, double step) {
-    map.dl += 0.5*step*pnorm*pnorm*(map.px * map.px);
-}
-
-template <typename T>
-void prop_h1(Pos<T>& map, double& s, double step) {
-    exp_h1_s(s, step);
-}
-
-template <typename T>
 void prop_h2(Pos<T>& map, const T& pnorm, double step) {
-    exp_h2_y(map, pnorm, step);
-    exp_h2_z(map, pnorm, step);
+    map.ry += 0.5*step*pnorm*map.py;
+    map.dl += 0.25*step*pnorm*pnorm*(map.py * map.py);
 }
 
 template <typename T>
 void prop_h3(Pos<T>& map, const T& pnorm, double step) {
-    exp_h3_x(map, pnorm, step);
-    exp_h3_z(map, pnorm, step);
+    map.rx += step*pnorm*map.px;
+    map.dl += 0.5*step*pnorm*pnorm*(map.px * map.px);
 }
 
 template <typename T>
-void prop_ix(const double& brho, const double& hori_kx, const double& hori_ks,
-             const CoefMatrix& sdependence,
-             Pos<T>& map, double s, int sign, double step) {
-    T axn = 0.0;
-    T idaxn = 0.0;
-    ax_intx_dax_dy(
-        brho, hori_kx, hori_ks, sdependence,
-        map.rx, map.ry, s, axn, idaxn
-    );
+void prop_ix(Pos<T>& map, double brho, int sign,
+            const CoefMatrix& sdependence, const CoefMatrix& hori_ky,
+            const std::vector<double>& mkx, const std::vector<double>& nks)
+{
+    T axn = 0.0, idaxn = 0.0;
+    ax_intx_dax_dy(brho, map.rx, map.ry, sdependence, hori_ky, mkx, nks, axn, idaxn);
     map.px += axn * sign * -1.0;
     map.py += idaxn * sign * -1.0;
 }
 
 template <typename T>
-void prop_iy(const double& brho, const double& hori_kx, const double& hori_ks,
-             const CoefMatrix& sdependence,
-             Pos<T>& map, double s, int sign, double step) {
-    T ayn = 0.0;
-    T idayn = 0.0;
-    ay_inty_day_dx(
-        brho, hori_kx, hori_ks, sdependence,
-        map.rx, map.ry, s, ayn, idayn
-    );
+void prop_iy(Pos<T>& map, double brho, int sign,
+            const CoefMatrix& sdependence, const CoefMatrix& hori_ky,
+            const std::vector<double>& mkx, const std::vector<double>& mkx2,
+            const std::vector<double>& nks)
+{
+    T ayn = 0.0, idayn = 0.0;
+    ay_inty_day_dx(brho, map.rx, map.ry, sdependence, hori_ky, mkx, mkx2, nks, ayn, idayn);
     map.px += idayn * sign * -1.0;
     map.py += ayn * sign * -1.0;
 }
 
 template <typename T>
-void prop_step(const double& brho, const double& hori_kx, const double& hori_ks,
-               const CoefMatrix& hori_coefs_cos,
-               const CoefMatrix& hori_coefs_sin,
-               Pos<T>& map, const T& pnorm, double& s, double step) {
-    prop_h1(map, s, step);
+void prop_step(
+    Pos<T>& map, double& s,
+    double brho, double step, 
+    const T& pnorm,
+    const CoefMatrix& hori_coefs_cos,
+    const CoefMatrix& hori_coefs_sin,
+    const CoefMatrix& hori_ky,
+    CoefMatrix& sdependence,
+    const std::vector<double>& mkx, 
+    const std::vector<double>& mkx2,
+    const std::vector<double>& nks
+) {
+    prop_h1(s, step);
 
-    CoefMatrix sdependence(hori_coefs_cos.rows(), hori_coefs_cos.cols());
-    calc_sdependence(hori_coefs_cos, hori_coefs_sin, hori_ks, s, sdependence);
+    calc_sdependence(hori_coefs_cos, hori_coefs_sin, nks, s, sdependence);
 
-    prop_iy(brho, hori_kx, hori_ks, sdependence, map, s, +1, step);
+    prop_iy(map, brho, +1, sdependence, hori_ky, mkx, mkx2, nks);
     prop_h2(map, pnorm, step);
-    prop_iy(brho, hori_kx, hori_ks, sdependence, map, s, -1, step);
-    prop_ix(brho, hori_kx, hori_ks, sdependence, map, s, +1, step);
+    prop_iy(map, brho, -1, sdependence, hori_ky, mkx, mkx2, nks);
+    prop_ix(map, brho, +1, sdependence, hori_ky, mkx, nks);
     prop_h3(map, pnorm, step);
-    prop_ix(brho, hori_kx, hori_ks, sdependence, map, s, -1, step);
-    prop_iy(brho, hori_kx, hori_ks, sdependence, map, s, +1, step);
+    prop_ix(map, brho, -1, sdependence, hori_ky, mkx, nks);
+    prop_iy(map, brho, +1, sdependence, hori_ky, mkx, mkx2, nks);
     prop_h2(map, pnorm, step);
-    prop_iy(brho, hori_kx, hori_ks, sdependence, map, s, -1, step);
-    prop_h1(map, s, step);
+    prop_iy(map, brho, -1, sdependence, hori_ky, mkx, mkx2, nks);
+    prop_h1(s, step);
 }
 
 #endif
